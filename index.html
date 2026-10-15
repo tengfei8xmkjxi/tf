@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="528滕菲《高级网页设计》课堂实践作品索引">
+    <title>528滕菲 · 高级网页设计课堂实践</title>
+    <style>
+        :root {
+            --ink: #17202d;
+            --muted: #67717f;
+            --paper: #f5f2eb;
+            --card: #fffdf8;
+            --navy: #13283d;
+            --gold: #d7a84d;
+            --line: #d9d5cb;
+            --red: #bb4e3e;
+        }
+
+        * { box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            margin: 0;
+            color: var(--ink);
+            background: var(--paper);
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            line-height: 1.7;
+        }
+
+        a { color: inherit; }
+
+        .page-shell {
+            width: min(1180px, calc(100% - 48px));
+            margin: 0 auto;
+        }
+
+        header {
+            padding: 24px 0;
+            border-bottom: 1px solid rgba(217, 213, 203, .8);
+        }
+
+        .topbar, nav, .hero, .section-heading, .prompt-box, footer {
+            display: flex;
+            align-items: center;
+        }
+
+        .topbar { justify-content: space-between; }
+
+        .brand {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-weight: 700;
+            letter-spacing: .08em;
+        }
+
+        .brand-mark {
+            display: grid;
+            place-items: center;
+            width: 38px;
+            height: 38px;
+            color: var(--paper);
+            background: var(--navy);
+            border-radius: 50%;
+            font-family: Georgia, serif;
+            font-size: 18px;
+        }
+
+        nav { gap: 24px; }
+        nav a { color: var(--muted); text-decoration: none; font-size: 14px; }
+        nav a:hover { color: var(--red); }
+
+        .hero {
+            min-height: 610px;
+            padding: 76px 0 86px;
+            gap: 8%;
+            align-items: center;
+        }
+
+        .hero-copy { flex: 1 1 46%; }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 0 22px;
+            color: var(--red);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: .18em;
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 30px;
+            height: 2px;
+            background: var(--gold);
+        }
+
+        h1, h2, h3 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-weight: 700; }
+
+        h1 {
+            max-width: 640px;
+            color: var(--navy);
+            font-size: clamp(44px, 7vw, 78px);
+            line-height: 1.06;
+            letter-spacing: .01em;
+        }
+
+        .hero-copy p {
+            max-width: 520px;
+            margin: 26px 0 30px;
+            color: var(--muted);
+            font-size: 17px;
+        }
+
+        .hero-actions { display: flex; align-items: center; gap: 20px; }
+
+        .primary-link {
+            display: inline-block;
+            padding: 12px 21px;
+            color: #fff;
+            background: var(--red);
+            text-decoration: none;
+            border-radius: 2px;
+            box-shadow: 5px 5px 0 var(--gold);
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .primary-link:hover { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--gold); }
+        .note { color: var(--muted); font-size: 13px; }
+
+        .hero-gallery {
+            position: relative;
+            flex: 1 1 46%;
+            width: 100%;
+            min-height: 410px;
+        }
+
+        .hero-gallery figure {
+            position: absolute;
+            margin: 0;
+            overflow: hidden;
+            background: #ddd;
+            box-shadow: 0 18px 36px rgba(19, 40, 61, .18);
+        }
+
+        .hero-gallery figure:nth-child(1) { top: 0; right: 8%; width: 62%; height: 270px; z-index: 2; }
+        .hero-gallery figure:nth-child(2) { bottom: 0; left: 0; width: 67%; height: 230px; z-index: 1; }
+        .hero-gallery figure:nth-child(3) { right: 0; bottom: 12px; width: 42%; height: 174px; z-index: 3; border: 8px solid var(--paper); }
+        .hero-gallery img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        .section {
+            padding: 82px 0;
+            border-top: 1px solid var(--line);
+        }
+
+        .section-heading { justify-content: space-between; margin-bottom: 28px; }
+        .section-heading h2 { color: var(--navy); font-size: clamp(30px, 4vw, 46px); }
+        .section-heading p { color: var(--muted); font-size: 14px; }
+
+        .works { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+
+        .work-card {
+            display: flex;
+            min-height: 250px;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 30px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            transition: transform .2s ease, border-color .2s ease;
+        }
+
+        .work-card:hover { transform: translateY(-5px); border-color: var(--gold); }
+        .work-number { color: var(--gold); font-family: Georgia, serif; font-size: 36px; line-height: 1; }
+        .work-card h3 { margin: 18px 0 8px; color: var(--navy); font-size: 28px; }
+        .work-card p { margin: 0; color: var(--muted); font-size: 14px; }
+        .card-link { align-self: flex-start; margin-top: 24px; color: var(--red); font-size: 14px; font-weight: 700; text-decoration: none; }
+        .card-link::after { content: "  →"; }
+
+        .prompt-box {
+            display: block;
+            padding: 28px 32px;
+            background: var(--navy);
+            color: #f8f3e8;
+            border-left: 5px solid var(--gold);
+        }
+
+        .prompt-label { margin: 0 0 12px; color: var(--gold); font-size: 12px; font-weight: 700; letter-spacing: .15em; }
+        .prompt-text { margin: 0; font-size: 17px; }
+
+        footer {
+            justify-content: space-between;
+            padding: 26px 0 36px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .footer-mark { color: var(--red); font-family: Georgia, serif; font-size: 20px; }
+
+        @media (max-width: 760px) {
+            .page-shell { width: min(100% - 32px, 560px); }
+            nav { gap: 12px; }
+            nav a { font-size: 12px; }
+            .hero { display: block; padding: 58px 0 70px; }
+            .hero-gallery { min-height: 350px; margin-top: 52px; }
+            .hero-gallery figure:nth-child(1) { height: 220px; }
+            .hero-gallery figure:nth-child(2) { height: 190px; }
+            .hero-gallery figure:nth-child(3) { height: 145px; }
+            .works { grid-template-columns: 1fr; }
+            .section-heading { display: block; }
+            .section-heading p { margin-top: 8px; }
+            footer { display: block; }
+            footer span { display: block; margin-top: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="page-shell topbar">
+            <a class="brand" href="./index.html" aria-label="返回首页">
+                <span class="brand-mark">滕</span>
+                <span>528 / TENG FEI</span>
+            </a>
+            <nav aria-label="页面导航">
+                <a href="#works">课堂作品</a>
+                <a href="#prompt">提示词</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="page-shell hero" aria-labelledby="hero-title">
+            <div class="hero-copy">
+                <p class="eyebrow">CLASSROOM PRACTICE / 2025</p>
+                <h1 id="hero-title">高级网页设计<br>课堂实践</h1>
+                <p>这里是 528 滕菲的网页练习档案。用原生 HTML 与 CSS，记录从元素、结构到超链接与媒体内容的每一步尝试。</p>
+                <div class="hero-actions">
+                    <a class="primary-link" href="#works">查看全部作品</a>
+                    <span class="note">08 个本地页面</span>
+                </div>
+            </div>
+            <div class="hero-gallery" aria-label="课堂实践图片展示">
+                <figure><img src="./img/553b457e3aec03dcaa18cfd0cdebbe0e.jpg" alt="道路与旗帜图片"></figure>
+                <figure><img src="./img/6311d91963929c2e1578620659212d57.jpg" alt="海面上飞行的飞机图片"></figure>
+                <figure><img src="./img/0a61ea8caeedc5f9806c1c2f143f0152.jpg" alt="会晤场景图片"></figure>
+            </div>
+        </section>
+
+        <section class="section" id="works" aria-labelledby="works-title">
+            <div class="page-shell">
+                <div class="section-heading">
+                    <h2 id="works-title">作品索引</h2>
+                    <p>每个页面都在本目录中，可以直接打开。</p>
+                </div>
+                <div class="works">
+                    <article class="work-card">
+                        <div>
+                            <span class="work-number">01</span>
+                            <h3>HTML 基础元素</h3>
+                            <p>从开始标签、内容与结束标记出发，练习标题、段落、列表、区域和行内样式。</p>
+                        </div>
+                        <a class="card-link" href="./2-1.html">打开 2-1.html</a>
+                    </article>
+
+                    <article class="work-card">
+                        <div>
+                            <span class="work-number">02</span>
+                            <h3>链接与媒体</h3>
+                            <p>练习本地与外部超链接、图片超链接，以及使用表格呈现信息。</p>
+                        </div>
+                        <a class="card-link" href="./2-2.html">打开 2-2.html</a>
+                    </article>
+
+                    <article class="work-card">
+                        <div>
+                            <span class="work-number">03</span>
+                            <h3>5-1 页面</h3>
+                            <p>本课题中用于验证结构和样式组合的实操页面。</p>
+                        </div>
+                        <a class="card-link" href="./5-1.html">打开 5-1.html</a>
+                    </article>
+
+                    <article class="work-card">
+                        <div>
+                            <span class="work-number">04</span>
+                            <h3>盒模型练习</h3>
+                            <p>以边距、边框和内容区为核心，进行盒模型样式训练。</p>
+                        </div>
+                        <a class="card-link" href="./5-2盒模型.html">打开 5-2盒模型.html</a>
+                    </article>
+
+                    <article class="work-card">
+                        <div>
+                            <span class="work-number">05</span>
+                            <h3>Flex 布局</h3>
+                            <p>练习弹性布局、主轴和交叉轴方向的页面排版方法。</p>
+                        </div>
+                        <a class="card-link" href="./6-1 flex.html">打开 6-1 flex.html</a>
+                    </article>
+
+                    <article class="work-card">
+                        <div>
+                            <span class="work-number">06</span>
+                            <h3>左右分栏</h3>
+                            <p>将两列布局结构用于内容展示，继续完成一左一右排版练习。</p>
+                        </div>
+                        <a class="card-link" href="./6-2一左一右.html">打开 6-2一左一右.html</a>
+                    </article>
+
+                    <article class="work-card">
+                        <div>
+                            <span class="work-number">07</span>
+                            <h3>上图下文</h3>
+                            <p>针对图片与内容分层组合的典型布局，完成“上图下文”排版。</p>
+                        </div>
+                        <a class="card-link" href="./7-1 上图下文.html">打开 7-1 上图下文.html</a>
+                    </article>
+
+                    <article class="work-card">
+                        <div>
+                            <span class="work-number">08</span>
+                            <h3>左图右文</h3>
+                            <p>采用左右并排结构，强化图片与文字的展示比例与视觉平衡。</p>
+                        </div>
+                        <a class="card-link" href="./7-2 左图右文.html">打开 7-2 左图右文.html</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="prompt" aria-labelledby="prompt-title">
+            <div class="page-shell">
+                <div class="prompt-box">
+                    <p class="prompt-label" id="prompt-title">本次页面提示词 / ORIGINAL PROMPT</p>
+                    <p class="prompt-text">“创建一个新页面，包括本目录下的所有网页的超链接，使用原生代码，不使用cdn，新页面名称为index.html，主题为528滕菲《高级网页设计》课堂实践，美化页面，页面中包括本提示词。”</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="page-shell">
+        <span class="footer-mark">528 滕菲</span>
+        <span>高级网页设计 · 课堂实践档案</span>
+    </footer>
+</body>
+</html>

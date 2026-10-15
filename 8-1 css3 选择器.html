@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>css3</title>
+    <style>
+        .main{
+            display: flex;
+            flex-wrap: wrap;
+            margin:10px;
+
+        }
+        .box{
+            width:150px;
+            height:150px;
+            background-color:#fff;
+            margin: 10px;
+            display:flex;
+            /* 水平垂直居中 */
+            justify-content: center;
+            align-items: center;
+            font-size:40px;
+            transition: all 0.6s;
+            box-sizing: border-box;
+            /* width:包含padding和border */
+        }
+        .box:first-child:hover{
+            
+            background-color: red;
+            color: white;
+            font-size: 140px;
+        }
+        .box:nth-child(2):hover{
+    
+            border-radius: 50%;
+            border-width: 10px;
+        }
+        .box:nth-child(3):hover{
+            box-shadow:10px 10px 10px #ccc ;
+        }
+        .box:nth-of-type(4):hover{
+            text-shadow:100px 10px 10px #ccc;
+        }
+        .box:nth-of-type(5):hover{
+            /* 线性渐变 */
+            background:linear-gradient(#000,  #ccc, #fff);
+        }
+        .box:nth-of-type(5)+.box{
+            /* 径向渐变 */
+            background:radial-gradient(#000,  #ccc, #fff);
+        }
+        .box:nth-of-type(7):hover{
+            transform:scale(1.5)
+        }
+        .box:nth-child(8):hover{
+            transform:translate(-150px);
+        }
+        .box:nth-child(9):hover{
+            transform:rotatex(-180deg);
+        }
+        .box:nth-child(10):hover{
+            transform:skewX(20deg);
+        }
+        .box:nth-last-child(2):hover::before{
+            content:"滕菲";
+            color:red;
+        }
+        /* 扩展，第12个盒子，鼠标在上面时显示自己的名字，要求名字深色背景白色文字，水平垂直居中 */
+        .box:nth-child(12):hover::before{
+            content:"滕菲";
+            display:block;
+            padding:5px 10px;
+            font-size:16px;
+    
+        }
+        .box:nth-child(3n):hover{
+            border: 3px solid red;
+        }
+        /* 扩展2：鼠标在偶数个盒子上时，盒子变成紫色 */
+        .box:nth-child(even):hover{
+            /* 用 background 简写，顺便清掉第6个盒子原有的径向渐变，否则紫色会被盖住 */
+            background: purple;
+        }
+    </style>
+</head>
+<body>
+    <div class="main">
+        <div class="box">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+        <div class="box">4</div>
+        <div class="box">5</div>
+        <div class="box">6</div>
+        <div class="box">7</div>
+        <div class="box">8</div>
+        <div class="box">9</div>
+        <div class="box">10</div>
+        <div class="box">11</div>
+        <div class="box">12</div>
+    </div>
+</body>
+</html>

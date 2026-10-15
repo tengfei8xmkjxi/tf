@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+    
+            margin: 0 auto;
+            padding: 0;
+        }
+        .flex{
+            display: flex;
+            /* 容器，它的子元素在一行显示 */
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .flex li{
+            width: 20%;
+            height: 200px;
+            color: #333;
+            border: 1px solid #333;
+            float: left;
+            list-style: none;
+            display: flex;
+            /* 矩形之间的空隙 */
+            gap: 10px;
+        }
+        .box{
+            width: 70px;
+            height: 70px;
+            background-color: #f2f3f4;
+            
+        }
+        .box-big{
+            width: 100%;
+            height: 70px;
+            background-color: #f2f3f4;
+        }
+        .box-small{
+            width: 40px;
+            height: 70px;
+            background-color: #f2f3f4;
+        }
+        .flex li:nth-child(1){
+            /* 水平垂直对齐 */
+            align-items: center;
+            justify-content: center;
+        }
+        .flex li:nth-child(3){
+            /* 换行，一行两个 */
+            flex-wrap: wrap;
+            align-content: center;
+        }
+        .flex li:nth-child(3) .box{
+            /* 减去空隙占的地方，一行正好两个 */
+            width: calc(50% - 5px);
+        }
+        .flex li:nth-child(4){
+            /* 换行，长方形独占一行 */
+            flex-wrap: wrap;
+            align-content: center;
+        }
+    </style>
+</head>
+<body>
+    <h2>滕菲的flex</h2>
+    <ul class="flex">
+        <li>
+             <div class="box"></div>
+        </li>
+                
+        <li>
+            <div class="box"></div>
+            <div class="box"></div>
+        </li>
+
+        <li>
+            <div class="box"></div>
+            <div class="box"></div>
+            <div class="box"></div>
+            <div class="box"></div>
+        </li>
+
+        <li>
+            <div class="box-big"></div>
+            <div class="box-small"></div>
+            <div class="box-small"></div>
+        </li>
+    </ul>
+</body>
+</html>

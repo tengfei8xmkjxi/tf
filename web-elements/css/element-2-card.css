@@ -1,0 +1,227 @@
+@charset "utf-8";
+/* ==========================================================================
+   element-2-card.css — 网页元素二：图文悬浮卡片（Hover Card）
+   学号：24001010528    姓名：滕菲
+   --------------------------------------------------------------------------
+   还原要点：
+     1. 鼠标移入时卡片整体上浮 + 阴影加深 + 描边转金色；
+     2. 卡片内图片轻微放大（transform: scale），文字块向上让位；
+     3. 底部“了解更多”的下划线从左向右展开，箭头同时右移；
+     4. 键盘 Tab 聚焦到卡片内按钮时，用 :focus-within 触发同样的状态。
+   ========================================================================== */
+
+.tf-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--tf-space-5);
+}
+
+.tf-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--tf-color-card);
+  border: 1px solid var(--tf-color-line);
+  border-radius: var(--tf-radius);
+  transition: transform var(--tf-dur) var(--tf-ease),
+              box-shadow var(--tf-dur) var(--tf-ease),
+              border-color var(--tf-dur) var(--tf-ease);
+}
+
+/* 单一悬停状态：鼠标与键盘共用同一套规则 */
+.tf-card:hover,
+.tf-card:focus-within {
+  border-color: var(--tf-color-gold);
+  transform: translateY(-10px);
+  box-shadow: var(--tf-shadow);
+}
+
+/* ---------- 图片区 ---------- */
+.tf-card__media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background-color: #e6e2d8;
+}
+
+.tf-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1);
+  transition: transform 1.1s var(--tf-ease), filter var(--tf-dur) var(--tf-ease);
+}
+
+.tf-card:hover .tf-card__img,
+.tf-card:focus-within .tf-card__img {
+  transform: scale(1.08);
+  filter: saturate(1.08) contrast(1.04);
+}
+
+/* 图片压一层由下而上的暗角，让角标与标题都读得清 */
+.tf-card__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(12, 23, 35, 0) 45%, rgba(12, 23, 35, 0.55) 100%);
+  opacity: 0.65;
+  transition: opacity var(--tf-dur) var(--tf-ease);
+}
+
+.tf-card:hover .tf-card__media::after {
+  opacity: 0.85;
+}
+
+.tf-card__badge {
+  position: absolute;
+  top: var(--tf-space-4);
+  left: var(--tf-space-4);
+  z-index: 2;
+  padding: 5px 12px;
+  font-family: var(--tf-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tf-color-navy);
+  background-color: rgba(246, 243, 236, 0.92);
+  border-radius: 999px;
+}
+
+/* ---------- 文字区 ---------- */
+.tf-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--tf-space-3);
+  padding: var(--tf-space-6) var(--tf-space-5) var(--tf-space-5);
+  transition: transform var(--tf-dur) var(--tf-ease);
+}
+
+.tf-card:hover .tf-card__body,
+.tf-card:focus-within .tf-card__body {
+  transform: translateY(-4px);
+}
+
+.tf-card__title {
+  font-family: var(--tf-font-serif);
+  font-size: var(--tf-text-xl);
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--tf-color-navy);
+}
+
+.tf-card__text {
+  font-size: var(--tf-text-sm);
+  color: var(--tf-color-muted);
+}
+
+.tf-card__more {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tf-space-2);
+  align-self: flex-start;
+  margin-top: auto;
+  padding-top: var(--tf-space-4);
+  font-size: var(--tf-text-sm);
+  font-weight: 700;
+  color: var(--tf-color-red);
+}
+
+.tf-card__more-text {
+  position: relative;
+}
+
+.tf-card__more-text::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 100%;
+  height: 1px;
+  background-color: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--tf-dur) var(--tf-ease);
+}
+
+.tf-card:hover .tf-card__more-text::after,
+.tf-card:focus-within .tf-card__more-text::after {
+  transform: scaleX(1);
+}
+
+.tf-card__arrow {
+  display: inline-block;
+  transition: transform var(--tf-dur) var(--tf-ease);
+}
+
+.tf-card:hover .tf-card__arrow,
+.tf-card:focus-within .tf-card__arrow {
+  transform: translateX(6px);
+}
+
+/* ---------- 变体：第三张卡片不用图片，改用深色渐变承接版式节奏 ---------- */
+.tf-card--feature {
+  color: var(--tf-color-white);
+  background-color: var(--tf-color-navy);
+  background-image:
+    radial-gradient(90% 70% at 100% 0%, rgba(201, 162, 39, 0.35) 0%, rgba(201, 162, 39, 0) 60%),
+    linear-gradient(160deg, #0c1723 0%, #1b2c3f 100%);
+  border-color: transparent;
+}
+
+.tf-card--feature .tf-card__body {
+  justify-content: space-between;
+  gap: var(--tf-space-5);
+  padding-block: var(--tf-space-7);
+}
+
+.tf-card--feature .tf-card__title {
+  color: var(--tf-color-white);
+}
+
+.tf-card--feature .tf-card__text {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.tf-card--feature .tf-card__index {
+  font-family: var(--tf-font-serif);
+  font-size: clamp(3rem, 6vw, 4.6rem);
+  line-height: 1;
+  color: rgba(226, 201, 121, 0.9);
+}
+
+.tf-card--feature .tf-card__more {
+  color: var(--tf-color-gold-soft);
+}
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 1024px) {
+  .tf-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tf-card--feature {
+    grid-column: span 2;
+  }
+
+  .tf-card--feature .tf-card__body {
+    padding-block: var(--tf-space-6);
+  }
+}
+
+@media (max-width: 767px) {
+  .tf-cards {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--tf-space-4);
+  }
+
+  .tf-card--feature {
+    grid-column: auto;
+  }
+
+  /* 触屏没有 hover，改为按下时轻微回弹 */
+  .tf-card:active {
+    transform: translateY(-4px);
+  }
+}

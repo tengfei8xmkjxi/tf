@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <!-- 移动端自适应：按设备宽度渲染，禁止用户缩放 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>13-3 字体图标 · 固定底部导航</title>
+    <!-- 引入本地 iconfont 字体图标（font 目录） -->
+    <link rel="stylesheet" href="font/iconfont.css">
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body{
+            font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background-color: #f2f4f8;
+            color: #222;
+            /* 给固定在底部的导航留出位置，否则内容会被挡住 */
+            padding-bottom: calc(60px + env(safe-area-inset-bottom));
+        }
+        /* 内容区：手机上撑满，大屏时居中，宽度自适应 */
+        .app{
+            width: 100%;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        /* ---------- 顶部标题栏 ---------- */
+        .app-header{
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 52px;
+            padding: 0 16px;
+            background-color: #fff;
+            border-bottom: 1px solid #ececf1;
+        }
+        .app-header h1{
+            font-size: 17px;
+            font-weight: 600;
+        }
+        .app-header .iconfont{
+            font-size: 20px !important;
+            color: #7c8698;
+        }
+
+        /* ---------- 主要内容 ---------- */
+        .page{
+            padding: 14px 14px 24px;
+        }
+        .tips{
+            padding: 14px 16px;
+            margin-bottom: 14px;
+            background-color: #eaf2fe;
+            border-left: 4px solid #4a90e2;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #40628c;
+            line-height: 1.9;
+        }
+        .tips b{
+            color: #2b5f9e;
+        }
+
+        .card{
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(23, 32, 45, .05);
+        }
+        .card .avatar{
+            display: grid;
+            place-items: center;
+            flex: 0 0 auto;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background-color: #eaf2fe;
+            color: #4a90e2;
+        }
+        .card .avatar .iconfont{
+            font-size: 22px !important;
+        }
+        .card .info{
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+        .card .info h2{
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .card .info p{
+            font-size: 13px;
+            color: #8b95a5;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .card .time{
+            flex: 0 0 auto;
+            align-self: flex-start;
+            font-size: 12px;
+            color: #b3bbc7;
+        }
+
+        /* ---------- 固定底部导航（全屏宽度） ---------- */
+        .tabbar{
+            position: fixed;              /* 固定在窗口底部 */
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;                  /* 全屏宽度 */
+            display: flex;                /* 四项平分宽度 */
+            background-color: #fff;
+            border-top: 1px solid #e8eaf0;
+            box-shadow: 0 -2px 12px rgba(23, 32, 45, .07);
+            /* iPhone 底部安全区，避免被小黑条盖住 */
+            padding-bottom: env(safe-area-inset-bottom);
+            z-index: 100;
+        }
+        .tabbar-item{
+            flex: 1 1 0;                  /* 自适应宽度：每项都占 1/4 */
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            height: 59px;
+            color: #9099a8;
+            text-decoration: none;
+            font-size: 11px;
+            transition: color .2s;
+        }
+        .tabbar-item.active{
+            color: #4a90e2;
+        }
+        /* 图标容器：作为徽章 / 红点定位的参照物 */
+        .tabbar-icon{
+            position: relative;
+            display: block;
+            height: 25px;
+            line-height: 25px;
+        }
+        /* iconfont.css 里把 .iconfont 写成了 font-size:16px !important，这里用更高优先级覆盖 */
+        .tabbar .iconfont{
+            font-size: 24px !important;
+        }
+
+        /* 数字徽章：贴在图标右上角 */
+        .badge{
+            position: absolute;
+            top: -7px;
+            right: -14px;
+            min-width: 17px;
+            height: 17px;
+            padding: 0 5px;
+            border-radius: 9px;
+            background-color: #ff3b30;
+            color: #fff;
+            font-size: 11px;
+            font-style: normal;
+            line-height: 17px;
+            text-align: center;
+            white-space: nowrap;
+            box-shadow: 0 0 0 2px #fff;
+        }
+        /* 纯红点：只有一个小圆点，不带数字 */
+        .dot{
+            position: absolute;
+            top: -2px;
+            right: -5px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #ff3b30;
+            box-shadow: 0 0 0 2px #fff;
+        }
+        /* 红点外圈的呼吸效果 */
+        .dot::after{
+            content: "";
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 59, 48, .55);
+            animation: pulse 1.6s ease-out infinite;
+        }
+        @keyframes pulse{
+            0%{ transform: scale(.5); opacity: 1; }
+            100%{ transform: scale(1.5); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <header class="app-header">
+            <h1>消息中心</h1>
+            <i class="iconfont icon-sousuo"></i>
+        </header>
+
+        <main class="page">
+            <div class="tips">
+                <b>本页要点：</b><br>
+                1. 字体图标：<code>&lt;i class="iconfont icon-shouye"&gt;&lt;/i&gt;</code>，图标就是字体里的一个字符；<br>
+                2. 自适应宽度：<code>flex: 1 1 0</code> 让 4 个导航项平分全屏宽度；<br>
+                3. 固定底栏：<code>position: fixed; left: 0; right: 0; bottom: 0; width: 100%</code>；<br>
+                4. 数字徽章 <code>.badge</code> 与红点 <code>.dot</code> 用绝对定位贴在图标右上角。
+            </div>
+
+            <article class="card">
+                <span class="avatar"><i class="iconfont icon-xiaoxitongzhi"></i></span>
+                <div class="info">
+                    <h2>系统通知</h2>
+                    <p>你的《高级网页设计》第 13 次作业已提交成功</p>
+                </div>
+                <span class="time">10:24</span>
+            </article>
+
+            <article class="card">
+                <span class="avatar"><i class="iconfont icon-31haoyou"></i></span>
+                <div class="info">
+                    <h2>好友请求</h2>
+                    <p>有 12 位同学申请添加你为好友</p>
+                </div>
+                <span class="time">09:41</span>
+            </article>
+
+            <article class="card">
+                <span class="avatar"><i class="iconfont icon-shoucang"></i></span>
+                <div class="info">
+                    <h2>我的收藏</h2>
+                    <p>「底部导航栏的 5 种常见做法」已收藏到默认分组</p>
+                </div>
+                <span class="time">昨天</span>
+            </article>
+
+            <article class="card">
+                <span class="avatar"><i class="iconfont icon-yaoqinghaoyou"></i></span>
+                <div class="info">
+                    <h2>邀请好友</h2>
+                    <p>邀请好友一起完成课程作品，可得 5 个积分</p>
+                </div>
+                <span class="time">昨天</span>
+            </article>
+
+            <article class="card">
+                <span class="avatar"><i class="iconfont icon-iconfonticon4"></i></span>
+                <div class="info">
+                    <h2>帮助与反馈</h2>
+                    <p>关于固定定位遮挡内容的问题，这里有解答</p>
+                </div>
+                <span class="time">周一</span>
+            </article>
+
+            <article class="card">
+                <span class="avatar"><i class="iconfont icon-iconfonticon5"></i></span>
+                <div class="info">
+                    <h2>个人中心</h2>
+                    <p>完善资料后可以同步多台设备上的收藏内容</p>
+                </div>
+                <span class="time">周一</span>
+            </article>
+        </main>
+    </div>
+
+    <!-- ---------- 固定的全屏宽度底部导航 ---------- -->
+    <nav class="tabbar" aria-label="底部导航">
+        <a class="tabbar-item active" href="#">
+            <span class="tabbar-icon">
+                <i class="iconfont icon-shouye"></i>
+                <!-- 红点：右上角不带数字的提示 -->
+                <em class="dot"></em>
+            </span>
+            <span class="tabbar-text">首页</span>
+        </a>
+
+        <a class="tabbar-item" href="#">
+            <span class="tabbar-icon">
+                <i class="iconfont icon-31haoyou"></i>
+                <!-- 数字徽章 -->
+                <em class="badge">12</em>
+            </span>
+            <span class="tabbar-text">好友</span>
+        </a>
+
+        <a class="tabbar-item" href="#">
+            <span class="tabbar-icon">
+                <i class="iconfont icon-xiaoxitongzhi"></i>
+                <!-- 数字徽章（超过 99 用 99+） -->
+                <em class="badge">99+</em>
+            </span>
+            <span class="tabbar-text">消息</span>
+        </a>
+
+        <a class="tabbar-item" href="#">
+            <span class="tabbar-icon">
+                <i class="iconfont icon-iconfonticon5"></i>
+                <!-- 红点 -->
+                <em class="dot"></em>
+            </span>
+            <span class="tabbar-text">我的</span>
+        </a>
+    </nav>
+</body>
+</html>

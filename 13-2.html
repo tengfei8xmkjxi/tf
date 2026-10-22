@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>13-2 Lucide SVG 图标</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body{
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background-color: #f5f6fa;
+            color: #333;
+            padding: 30px 20px 50px;
+        }
+        header{
+            max-width: 1100px;
+            margin: 0 auto 30px;
+            text-align: center;
+        }
+        header h1{
+            font-size: 28px;
+            font-weight: 600;
+        }
+        header h1 svg{
+            width: 30px;
+            height: 30px;
+            vertical-align: -4px;
+            margin-right: 8px;
+            color: #4a90e2;
+        }
+        header p{
+            margin-top: 12px;
+            font-size: 14px;
+            color: #888;
+            line-height: 1.9;
+        }
+        main{
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        h2{
+            font-size: 18px;
+            margin: 34px 0 16px;
+            padding-left: 12px;
+            border-left: 5px solid #4a90e2;
+            line-height: 1.4;
+        }
+        h2 small{
+            font-size: 12px;
+            color: #aaa;
+            font-weight: normal;
+            margin-left: 8px;
+        }
+        /* 图标列表 */
+        .icon-list{
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .icon-list li{
+            width: 118px;
+            padding: 18px 6px 14px;
+            background-color: #fff;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+            transition: all .3s;
+            cursor: pointer;
+        }
+        .icon-list li:hover{
+            transform: translateY(-6px);
+            box-shadow: 0 10px 20px rgba(74, 144, 226, .25);
+        }
+        /* 这里是真正的 svg 元素：大小、颜色、线宽都能用 CSS 改 */
+        .icon-list li svg{
+            display: block;
+            width: 32px;
+            height: 32px;
+            margin: 0 auto 10px;
+            color: #4a90e2;
+            stroke-width: 1.8;
+            transition: all .3s;
+        }
+        .icon-list li:hover svg{
+            color: #e8564a;
+            stroke-width: 2.4;
+        }
+        .icon-list li span{
+            font-size: 12px;
+            color: #999;
+        }
+        /* 单独演示修改线宽 / 颜色的效果 */
+        .stroke-demo{
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+        }
+        .stroke-demo li{
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+        }
+        .stroke-demo svg{
+            display: block;
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 8px;
+        }
+        /* 代码示例 */
+        .code{
+            margin-top: 16px;
+            padding: 16px 20px;
+            background-color: #282c34;
+            color: #abb2bf;
+            border-radius: 8px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            line-height: 2;
+            overflow-x: auto;
+            white-space: pre;
+        }
+        .code .tag{
+            color: #e06c75;
+        }
+        .code .attr{
+            color: #d19a66;
+        }
+        footer{
+            max-width: 1100px;
+            margin: 40px auto 0;
+            text-align: center;
+            font-size: 13px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><i data-lucide="shapes"></i>Lucide SVG 图标</h1>
+        <p>
+            SVG 图标：每个图标都是一段矢量图形代码，页面上写一个带 data-lucide 属性的占位标签，<br>
+            由本地引入的 lucide.min.js 把它替换成真正的 &lt;svg&gt; 元素，缩放不失真，颜色、线宽都可以用 CSS 控制。
+        </p>
+    </header>
+
+    <main>
+        <h2>一、常用图标 <small>createIcons() 生成的内联 svg</small></h2>
+        <ul class="icon-list">
+            <li><i data-lucide="house"></i><span>house</span></li>
+            <li><i data-lucide="user"></i><span>user</span></li>
+            <li><i data-lucide="heart"></i><span>heart</span></li>
+            <li><i data-lucide="star"></i><span>star</span></li>
+            <li><i data-lucide="bell"></i><span>bell</span></li>
+            <li><i data-lucide="mail"></i><span>mail</span></li>
+            <li><i data-lucide="camera"></i><span>camera</span></li>
+            <li><i data-lucide="settings"></i><span>settings</span></li>
+            <li><i data-lucide="cloud"></i><span>cloud</span></li>
+            <li><i data-lucide="music"></i><span>music</span></li>
+            <li><i data-lucide="shopping-cart"></i><span>shopping-cart</span></li>
+            <li><i data-lucide="trash-2"></i><span>trash-2</span></li>
+            <li><i data-lucide="download"></i><span>download</span></li>
+            <li><i data-lucide="map-pin"></i><span>map-pin</span></li>
+            <li><i data-lucide="search"></i><span>search</span></li>
+            <li><i data-lucide="calendar"></i><span>calendar</span></li>
+            <li><i data-lucide="sun"></i><span>sun</span></li>
+            <li><i data-lucide="moon"></i><span>moon</span></li>
+            <li><i data-lucide="smartphone"></i><span>smartphone</span></li>
+            <li><i data-lucide="laptop"></i><span>laptop</span></li>
+            <li><i data-lucide="wifi"></i><span>wifi</span></li>
+            <li><i data-lucide="battery"></i><span>battery</span></li>
+            <li><i data-lucide="clock"></i><span>clock</span></li>
+            <li><i data-lucide="message-circle"></i><span>message-circle</span></li>
+            <li><i data-lucide="image"></i><span>image</span></li>
+            <li><i data-lucide="file-text"></i><span>file-text</span></li>
+            <li><i data-lucide="smile"></i><span>smile</span></li>
+            <li><i data-lucide="thumbs-up"></i><span>thumbs-up</span></li>
+            <li><i data-lucide="circle-check"></i><span>circle-check</span></li>
+            <li><i data-lucide="shield"></i><span>shield</span></li>
+            <li><i data-lucide="rocket"></i><span>rocket</span></li>
+        </ul>
+
+        <h2>二、SVG 的优势：改线宽和颜色 <small>stroke-width / color</small></h2>
+        <ul class="stroke-demo">
+            <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="#4a90e2" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 6v6l4 2"></path>
+                </svg>
+                线宽 1
+            </li>
+            <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="#4a90e2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 6v6l4 2"></path>
+                </svg>
+                线宽 2
+            </li>
+            <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="#4a90e2" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 6v6l4 2"></path>
+                </svg>
+                线宽 3.5
+            </li>
+            <li>
+                <svg viewBox="0 0 24 24" fill="#e8564a" stroke="#e8564a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"></path>
+                </svg>
+                填充色
+            </li>
+        </ul>
+
+        <h2>三、使用方法</h2>
+        <div class="code"><span class="tag">&lt;!-- 1. 引入本地下载的 lucide（会挂到 window.lucide 上） --&gt;</span>
+&lt;<span class="tag">script</span> <span class="attr">src</span>="cdn/lucide/lucide.min.js"&gt;&lt;/<span class="tag">script</span>&gt;
+
+<span class="tag">&lt;!-- 2. 写一个带 data-lucide 属性的标签，属性值就是图标名 --&gt;</span>
+&lt;<span class="tag">i</span> <span class="attr">data-lucide</span>="house"&gt;&lt;/<span class="tag">i</span>&gt;
+&lt;<span class="tag">i</span> <span class="attr">data-lucide</span>="shopping-cart"&gt;&lt;/<span class="tag">i</span>&gt;
+
+<span class="tag">&lt;!-- 3. 调用 createIcons()，上面的标签会被替换成内联 svg --&gt;</span>
+&lt;<span class="tag">script</span>&gt;
+    lucide.createIcons();
+&lt;/<span class="tag">script</span>&gt;
+
+<span class="tag">&lt;!-- 4. 生成出来的结构大致是这样，可以直接用 CSS 设置大小、颜色、线宽 --&gt;</span>
+&lt;<span class="tag">svg</span> <span class="attr">class</span>="lucide lucide-house" <span class="attr">width</span>="24" <span class="attr">height</span>="24" <span class="attr">viewBox</span>="0 0 24 24"
+     <span class="attr">fill</span>="none" <span class="attr">stroke</span>="currentColor" <span class="attr">stroke-width</span>="2" ...&gt;
+    &lt;<span class="tag">path</span> <span class="attr">d</span>="..."&gt;&lt;/<span class="tag">path</span>&gt;
+&lt;/<span class="tag">svg</span>&gt;
+
+&lt;<span class="tag">style</span>&gt;
+    .lucide{ width: 32px; height: 32px; color: #4a90e2; stroke-width: 1.8; }
+&lt;/<span class="tag">style</span>&gt;</div>
+    </main>
+
+    <footer>24001010528 滕菲 &nbsp;|&nbsp; 图标为 svg 矢量图形，可无损缩放</footer>
+
+    <!-- 本地引入 lucide，放在页面最后，保证占位标签已经存在 -->
+    <script src="cdn/lucide/lucide.min.js"></script>
+    <script>
+        // 把页面上所有 data-lucide 的占位标签渲染成 svg
+        lucide.createIcons();
+    </script>
+</body>
+</html>

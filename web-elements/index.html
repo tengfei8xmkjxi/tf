@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="24001010528 滕菲 · 高级网页设计 I 网页元素设计项目：全屏首屏、图文悬浮卡片、数字滚动统计三处效果复现。">
+  <title>滕菲 · 视觉设计工作室｜《高级网页设计 I》网页元素设计</title>
+
+  <!-- 学号 24001010528 姓名 滕菲 -->
+  <!-- 只有在 JS 可用时才给根元素加 tf-js，保证无脚本环境图表依然完整可见 -->
+  <script>document.documentElement.classList.add('tf-js');</script>
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='16' fill='%23c9a227'/%3E%3Ctext x='16' y='23' font-size='18' text-anchor='middle' fill='%230c1723' font-family='serif'%3E滕%3C/text%3E%3C/svg%3E">
+
+  <!-- 全局样式必须最先引入，各元素样式依赖其中的设计变量 -->
+  <link rel="stylesheet" href="./css/global.css">
+  <link rel="stylesheet" href="./css/element-1-hero.css">
+  <link rel="stylesheet" href="./css/element-2-card.css">
+  <link rel="stylesheet" href="./css/element-3-stat.css">
+</head>
+
+<body>
+  <!-- ============================================================
+       吸顶导航（元素一的组成部分）
+       ============================================================ -->
+  <header class="tf-header">
+    <div class="tf-container tf-header__inner">
+      <a class="tf-brand" href="./index.html" aria-label="滕菲视觉设计工作室，返回首页">
+        <span class="tf-brand__mark" aria-hidden="true">滕</span>
+        <span class="tf-brand__text">
+          TF STUDIO
+          <em>24001010528</em>
+        </span>
+      </a>
+
+      <nav class="tf-nav" aria-label="主导航">
+        <button class="tf-nav__link tf-nav__link--hide-sm" type="button" data-tf-scroll="hero">首页</button>
+        <button class="tf-nav__link" type="button" data-tf-scroll="works">作品</button>
+        <button class="tf-nav__link tf-nav__link--hide-sm" type="button" data-tf-scroll="stats">数据</button>
+        <button class="tf-nav__link tf-nav__link--cta" type="button" data-tf-scroll="about">项目说明</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============================================================
+         网页元素一：全屏首屏（Full-screen Hero）
+         ============================================================ -->
+    <section class="tf-hero" aria-label="网页元素一：全屏首屏">
+      <div class="tf-hero__bg" aria-hidden="true"></div>
+
+      <div class="tf-container tf-hero__inner">
+        <p class="tf-eyebrow tf-hero__eyebrow tf-reveal" style="--tf-delay: .1s">
+          01 / Full-screen Hero
+        </p>
+
+        <h1 class="tf-hero__title tf-reveal" style="--tf-delay: .24s">
+          让每一屏<br>
+          都有<span class="tf-hero__accent">呼吸感</span>
+        </h1>
+
+        <p class="tf-hero__lead tf-reveal" style="--tf-delay: .38s">
+          这是一份《高级网页设计 I》网页元素设计的实践作品：用原生 HTML 与 CSS，
+          复现品牌官网里最常见的三处视觉语言——全屏首屏、图文悬浮卡片与数据统计。
+        </p>
+
+        <div class="tf-hero__actions tf-reveal" style="--tf-delay: .52s">
+          <button class="tf-btn tf-btn--primary" type="button" data-tf-scroll="works">查看三处元素</button>
+          <button class="tf-btn tf-btn--ghost" type="button" data-tf-scroll="stats">数据看板</button>
+        </div>
+
+        <ul class="tf-hero__meta tf-reveal" style="--tf-delay: .66s">
+          <li>3 处效果复现</li>
+          <li>0 个 id 选择器</li>
+          <li>1 套全局 CSS</li>
+          <li>100% 手写代码</li>
+        </ul>
+      </div>
+
+      <div class="tf-hero__cue" aria-hidden="true">
+        <span class="tf-hero__cue-line"></span>
+        SCROLL
+      </div>
+    </section>
+
+    <!-- ============================================================
+         网页元素二：图文悬浮卡片（Hover Card）
+         ============================================================ -->
+    <section class="tf-section tf-section--works tf-section--line" aria-label="网页元素二：图文悬浮卡片">
+      <div class="tf-container">
+        <div class="tf-section__head">
+          <div>
+            <p class="tf-eyebrow">02 / Hover Card</p>
+            <h2 class="tf-section__title">图文悬浮卡片</h2>
+          </div>
+          <p class="tf-section__desc">
+            鼠标移入或键盘聚焦时，卡片整体上浮、图片缓慢放大、底部下划线自左向右展开。
+            三张卡片同时覆盖「图片卡」与「纯色渐变卡」两种排版，只靠一套 class 完成。
+          </p>
+        </div>
+
+        <div class="tf-cards">
+          <article class="tf-card">
+            <figure class="tf-card__media">
+              <img class="tf-card__img" src="./img/card-plane.jpg"
+                   alt="海面上飞行的飞机（项目视觉素材）" width="720" height="405" loading="lazy">
+              <span class="tf-card__badge">01 / 品牌视觉</span>
+            </figure>
+            <div class="tf-card__body">
+              <h3 class="tf-card__title">城市飞行计划</h3>
+              <p class="tf-card__text">以一张航拍主视觉串起整套海报、导视与线上触点，让品牌在每一次曝光里保持同一种呼吸节奏。</p>
+              <button class="tf-card__more" type="button" data-tf-scroll="stats">
+                <span class="tf-card__more-text">了解更多</span>
+                <span class="tf-card__arrow" aria-hidden="true">→</span>
+              </button>
+            </div>
+          </article>
+
+          <article class="tf-card">
+            <figure class="tf-card__media">
+              <img class="tf-card__img" src="./img/card-meeting.jpg"
+                   alt="会晤场景（项目视觉素材）" width="828" height="466" loading="lazy">
+              <span class="tf-card__badge">02 / 空间影像</span>
+            </figure>
+            <div class="tf-card__body">
+              <h3 class="tf-card__title">会晤空间</h3>
+              <p class="tf-card__text">把品牌调性搬进线下空间，用材质、光线与动线讲同一个故事，屏幕上与现场不再割裂。</p>
+              <button class="tf-card__more" type="button" data-tf-scroll="stats">
+                <span class="tf-card__more-text">了解更多</span>
+                <span class="tf-card__arrow" aria-hidden="true">→</span>
+              </button>
+            </div>
+          </article>
+
+          <article class="tf-card tf-card--feature">
+            <div class="tf-card__body">
+              <span class="tf-card__index" aria-hidden="true">03</span>
+              <h3 class="tf-card__title">数据与节奏</h3>
+              <p class="tf-card__text">
+                真正决定页面质感的，是留白、层级与动效的节奏。
+                第三张卡片不用图片，用深色渐变承接版式，让视线在整行里有一个落点。
+              </p>
+              <button class="tf-card__more" type="button" data-tf-scroll="stats">
+                <span class="tf-card__more-text">查看数据统计</span>
+                <span class="tf-card__arrow" aria-hidden="true">→</span>
+              </button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         网页元素三：数字滚动统计 + 纯 CSS 柱状图
+         ============================================================ -->
+    <section class="tf-section tf-section--stats tf-section--line" aria-label="网页元素三：数字统计与图表">
+      <div class="tf-container">
+        <div class="tf-section__head">
+          <div>
+            <p class="tf-eyebrow">03 / Data</p>
+            <h2 class="tf-section__title">数字滚动统计</h2>
+          </div>
+          <p class="tf-section__desc">
+            四个数字进入视口后从 0 滚动到目标值；下方柱状图不借助图表库、不用 canvas，
+            柱高由 CSS 变量 <code>--tf-h</code> 驱动，进视口后按 70ms 的间隔依次生长。
+          </p>
+        </div>
+
+        <div class="tf-stats">
+          <div class="tf-stat">
+            <p class="tf-stat__value">
+              <span class="tf-stat__num" data-tf-count="3">3</span><span class="tf-stat__unit">处</span>
+            </p>
+            <p class="tf-stat__label">网页元素复现</p>
+            <p class="tf-stat__note">原图 / 实现图对照</p>
+          </div>
+
+          <div class="tf-stat">
+            <p class="tf-stat__value">
+              <span class="tf-stat__num" data-tf-count="4">4</span><span class="tf-stat__unit">档</span>
+            </p>
+            <p class="tf-stat__label">响应式断点</p>
+            <p class="tf-stat__note">375 / 768 / 1024 / 1440</p>
+          </div>
+
+          <div class="tf-stat">
+            <p class="tf-stat__value">
+              <span class="tf-stat__num" data-tf-count="1">1</span><span class="tf-stat__unit">套</span>
+            </p>
+            <p class="tf-stat__label">全局样式文件</p>
+            <p class="tf-stat__note">:root 变量统一管理</p>
+          </div>
+
+          <div class="tf-stat">
+            <p class="tf-stat__value">
+              <span class="tf-stat__num" data-tf-count="0">0</span><span class="tf-stat__unit">个</span>
+            </p>
+            <p class="tf-stat__label">id 选择器</p>
+            <p class="tf-stat__note">样式钩子全部用 class</p>
+          </div>
+        </div>
+
+        <div class="tf-chart">
+          <div class="tf-chart__head">
+            <h3 class="tf-chart__title">三处元素调试耗时</h3>
+            <p class="tf-chart__note">单位：小时 · 纯 CSS 绘制</p>
+          </div>
+
+          <div class="tf-chart__plot">
+            <div class="tf-chart__grid" aria-hidden="true"></div>
+            <ul class="tf-chart__bars">
+              <li class="tf-chart__item">
+                <span class="tf-chart__bar" style="--tf-h: 55%"><span class="tf-chart__tip">6</span></span>
+                <span class="tf-chart__label">首屏</span>
+              </li>
+              <li class="tf-chart__item">
+                <span class="tf-chart__bar" style="--tf-h: 82%"><span class="tf-chart__tip">9</span></span>
+                <span class="tf-chart__label">导航</span>
+              </li>
+              <li class="tf-chart__item">
+                <span class="tf-chart__bar" style="--tf-h: 36%"><span class="tf-chart__tip">4</span></span>
+                <span class="tf-chart__label">卡片</span>
+              </li>
+              <li class="tf-chart__item">
+                <span class="tf-chart__bar" style="--tf-h: 100%"><span class="tf-chart__tip">11</span></span>
+                <span class="tf-chart__label">图表</span>
+              </li>
+              <li class="tf-chart__item">
+                <span class="tf-chart__bar" style="--tf-h: 64%"><span class="tf-chart__tip">7</span></span>
+                <span class="tf-chart__label">交互</span>
+              </li>
+              <li class="tf-chart__item">
+                <span class="tf-chart__bar" style="--tf-h: 45%"><span class="tf-chart__tip">5</span></span>
+                <span class="tf-chart__label">响应式</span>
+              </li>
+              <li class="tf-chart__item">
+                <span class="tf-chart__bar" style="--tf-h: 73%"><span class="tf-chart__tip">8</span></span>
+                <span class="tf-chart__label">测试</span>
+              </li>
+              <li class="tf-chart__item">
+                <span class="tf-chart__bar" style="--tf-h: 91%"><span class="tf-chart__tip">10</span></span>
+                <span class="tf-chart__label">总结</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         项目说明
+         ============================================================ -->
+    <section class="tf-section tf-section--about tf-section--line" aria-label="项目说明">
+      <div class="tf-container">
+        <div class="tf-section__head">
+          <div>
+            <p class="tf-eyebrow">04 / About</p>
+            <h2 class="tf-section__title">项目说明</h2>
+          </div>
+          <p class="tf-section__desc">
+            全部页面手写完成，未使用 Bootstrap、Tailwind 等 UI 框架，也未引入任何 CDN 资源，
+            所有图标与装饰均由 CSS 绘制。
+          </p>
+        </div>
+
+        <dl class="tf-facts">
+          <div class="tf-facts__item">
+            <dt class="tf-facts__term">课程</dt>
+            <dd class="tf-facts__desc">高级网页设计 I · 网页元素设计</dd>
+          </div>
+          <div class="tf-facts__item">
+            <dt class="tf-facts__term">学号</dt>
+            <dd class="tf-facts__desc">24001010528</dd>
+          </div>
+          <div class="tf-facts__item">
+            <dt class="tf-facts__term">姓名</dt>
+            <dd class="tf-facts__desc">滕菲</dd>
+          </div>
+          <div class="tf-facts__item">
+            <dt class="tf-facts__term">技术栈</dt>
+            <dd class="tf-facts__desc">HTML5 + CSS3 + 原生 JavaScript</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+  </main>
+
+  <footer class="tf-footer">
+    <div class="tf-container tf-footer__inner">
+      <p class="tf-footer__brand">24001010528 · 滕菲</p>
+      <p class="tf-footer__text">《高级网页设计 I》网页元素设计 · 项目作品</p>
+      <button class="tf-footer__top" type="button" data-tf-scroll="hero">回到顶部 ↑</button>
+    </div>
+  </footer>
+
+  <script src="./js/tf-main.js"></script>
+</body>
+</html>

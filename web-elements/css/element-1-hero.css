@@ -1,0 +1,338 @@
+@charset "utf-8";
+/* ==========================================================================
+   element-1-hero.css — 网页元素一：吸顶导航 + 全屏首屏（Hero）
+   学号：24001010528    姓名：滕菲
+   --------------------------------------------------------------------------
+   还原要点：
+     1. 导航栏初始透明浮在图片上，滚动后变为半透明毛玻璃 + 细描边；
+     2. 首屏高度用 100svh（移动端地址栏收缩不跳动），100vh 作为降级；
+     3. 主标题、副标题、按钮按 120ms 节奏逐个入场（纯 CSS 动画）。
+   ========================================================================== */
+
+/* ---------- 1. 吸顶导航 ---------- */
+.tf-header {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: var(--tf-z-header);
+  padding-block: var(--tf-space-5);
+  transition: padding var(--tf-dur) var(--tf-ease),
+              background-color var(--tf-dur) var(--tf-ease),
+              box-shadow var(--tf-dur) var(--tf-ease);
+}
+
+/* 滚动后由 JS 追加的修饰类 */
+.tf-header--solid {
+  padding-block: var(--tf-space-3);
+  background-color: rgba(12, 23, 35, 0.82);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+.tf-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--tf-space-5);
+}
+
+.tf-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tf-space-3);
+  color: var(--tf-color-white);
+}
+
+.tf-brand__mark {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  font-family: var(--tf-font-serif);
+  font-size: var(--tf-text-lg);
+  color: var(--tf-color-navy);
+  background-color: var(--tf-color-gold-soft);
+  border-radius: 50%;
+  transition: transform var(--tf-dur) var(--tf-ease);
+}
+
+.tf-brand:hover .tf-brand__mark {
+  transform: rotate(-8deg) scale(1.06);
+}
+
+.tf-brand__text {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--tf-font-serif);
+  font-size: var(--tf-text-sm);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.16em;
+}
+
+.tf-brand__text em {
+  font-family: var(--tf-font-mono);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.tf-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--tf-space-5);
+}
+
+.tf-nav__link {
+  position: relative;
+  padding-block: 4px;
+  font-size: var(--tf-text-sm);
+  color: rgba(255, 255, 255, 0.78);
+  transition: color var(--tf-dur-fast) var(--tf-ease);
+}
+
+.tf-nav__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background-color: var(--tf-color-gold-soft);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--tf-dur) var(--tf-ease);
+}
+
+.tf-nav__link:hover {
+  color: var(--tf-color-white);
+}
+
+.tf-nav__link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.tf-nav__link--cta {
+  padding: 8px 18px;
+  color: var(--tf-color-navy);
+  background-color: var(--tf-color-gold-soft);
+  border-radius: 999px;
+}
+
+.tf-nav__link--cta::after {
+  display: none;
+}
+
+.tf-nav__link--cta:hover {
+  color: var(--tf-color-navy);
+  background-color: #efdc9f;
+}
+
+/* ---------- 2. 全屏首屏 ---------- */
+.tf-hero {
+  position: relative;
+  display: grid;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding-block: 140px 110px;
+  overflow: hidden;
+  color: var(--tf-color-white);
+  background-color: var(--tf-color-navy);
+  isolation: isolate;
+}
+
+/* 背景大图：低透明度做质感，靠渐变压出层次 */
+.tf-hero__bg {
+  position: absolute;
+  inset: -6%;
+  z-index: -2;
+  background-image: url("../img/hero-road.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  opacity: 0.42;
+  transform: scale(1.04);
+  animation: tf-hero-zoom 18s var(--tf-ease) forwards;
+}
+
+/* 遮罩：上深下更深，保证文字对比度 */
+.tf-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    radial-gradient(120% 90% at 15% 10%, rgba(12, 23, 35, 0.55) 0%, rgba(12, 23, 35, 0.9) 62%, #0c1723 100%),
+    linear-gradient(180deg, rgba(12, 23, 35, 0.75) 0%, rgba(12, 23, 35, 0.35) 45%, rgba(12, 23, 35, 0.96) 100%);
+}
+
+@keyframes tf-hero-zoom {
+  from { transform: scale(1.12); }
+  to   { transform: scale(1.04); }
+}
+
+.tf-hero__inner {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+}
+
+.tf-hero__eyebrow {
+  color: var(--tf-color-gold-soft);
+}
+
+.tf-hero__title {
+  margin-top: var(--tf-space-5);
+  font-family: var(--tf-font-serif);
+  font-size: var(--tf-text-hero);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: 0.01em;
+  text-wrap: balance;
+}
+
+/* 关键词：金色下划线随入场动画一起“长”出来 */
+.tf-hero__accent {
+  position: relative;
+  display: inline-block;
+  color: var(--tf-color-gold-soft);
+}
+
+.tf-hero__accent::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0.08em;
+  z-index: -1;
+  width: 100%;
+  height: 0.18em;
+  background-color: rgba(201, 162, 39, 0.35);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: tf-underline 0.8s var(--tf-ease) 0.85s forwards;
+}
+
+@keyframes tf-underline {
+  to { transform: scaleX(1); }
+}
+
+.tf-hero__lead {
+  max-width: 54ch;
+  margin-top: var(--tf-space-5);
+  font-size: var(--tf-text-lg);
+  line-height: 1.85;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.tf-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--tf-space-4);
+  margin-top: var(--tf-space-7);
+}
+
+.tf-hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--tf-space-5);
+  margin-top: var(--tf-space-8);
+  padding-top: var(--tf-space-5);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  font-family: var(--tf-font-mono);
+  font-size: var(--tf-text-xs);
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.tf-hero__meta li {
+  display: flex;
+  align-items: center;
+  gap: var(--tf-space-2);
+}
+
+.tf-hero__meta li::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  background-color: var(--tf-color-gold);
+  border-radius: 50%;
+}
+
+/* 底部滚动提示 */
+.tf-hero__cue {
+  position: absolute;
+  left: 50%;
+  bottom: 34px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tf-space-2);
+  font-family: var(--tf-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: rgba(255, 255, 255, 0.55);
+  transform: translateX(-50%);
+}
+
+.tf-hero__cue-line {
+  width: 1px;
+  height: 52px;
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.85));
+  animation: tf-cue 2.2s var(--tf-ease) infinite;
+  transform-origin: top;
+}
+
+@keyframes tf-cue {
+  0%   { transform: scaleY(0); opacity: 0; }
+  40%  { transform: scaleY(1); opacity: 1; }
+  100% { transform: scaleY(1); opacity: 0; }
+}
+
+/* ---------- 3. 响应式 ---------- */
+@media (max-width: 1024px) {
+  .tf-nav {
+    gap: var(--tf-space-4);
+  }
+}
+
+@media (max-width: 767px) {
+  .tf-header {
+    padding-block: var(--tf-space-4);
+  }
+
+  .tf-brand__text {
+    font-size: var(--tf-text-xs);
+  }
+
+  .tf-nav__link--hide-sm {
+    display: none;
+  }
+
+  .tf-hero {
+    padding-block: 118px 96px;
+  }
+
+  .tf-hero__lead {
+    font-size: var(--tf-text-base);
+  }
+
+  .tf-hero__actions {
+    margin-top: var(--tf-space-6);
+  }
+
+  .tf-hero__meta {
+    margin-top: var(--tf-space-6);
+    gap: var(--tf-space-3) var(--tf-space-4);
+  }
+
+  .tf-hero__cue {
+    display: none;
+  }
+}

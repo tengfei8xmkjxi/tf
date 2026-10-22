@@ -1,0 +1,247 @@
+@charset "utf-8";
+/* ==========================================================================
+   element-3-stat.css — 网页元素三：数字滚动统计 + 纯 CSS 柱状图
+   学号：24001010528    姓名：滕菲
+   --------------------------------------------------------------------------
+   还原要点：
+     1. 四个统计数字进入视口后从 0 滚动到目标值（JS 只负责改文本，动画曲线用 rAF）；
+     2. 柱状图不用图表库、不用 canvas，柱高由 CSS 变量 --tf-h 控制；
+     3. 柱子进入视口后按 70ms 间隔依次“长”出来（scaleY + transition-delay）；
+     4. 未加载 JS 时不加 .tf-js 类，图表直接以最终高度呈现，保证内容可读。
+   ========================================================================== */
+
+/* ---------- 1. 数字统计 ---------- */
+.tf-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin-bottom: clamp(40px, 5vw, 64px);
+  border-block: 1px solid var(--tf-color-line);
+}
+
+.tf-stat {
+  padding: var(--tf-space-6) var(--tf-space-5);
+  border-left: 1px solid var(--tf-color-line);
+}
+
+.tf-stat:first-child {
+  border-left: 0;
+  padding-left: 0;
+}
+
+.tf-stat__value {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  font-family: var(--tf-font-serif);
+  font-size: clamp(2.2rem, 4.4vw, 3.4rem);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--tf-color-navy);
+  font-variant-numeric: tabular-nums;
+}
+
+.tf-stat__unit {
+  font-family: var(--tf-font-sans);
+  font-size: var(--tf-text-sm);
+  font-weight: 400;
+  color: var(--tf-color-red);
+}
+
+.tf-stat__label {
+  margin-top: var(--tf-space-3);
+  font-size: var(--tf-text-sm);
+  color: var(--tf-color-muted);
+}
+
+.tf-stat__note {
+  margin-top: 2px;
+  font-family: var(--tf-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: #a7a196;
+}
+
+/* ---------- 2. 柱状图面板 ---------- */
+.tf-chart {
+  padding: clamp(24px, 3.4vw, 40px);
+  color: var(--tf-color-white);
+  background-color: var(--tf-color-navy);
+  background-image:
+    radial-gradient(80% 60% at 100% 0%, rgba(201, 162, 39, 0.22) 0%, rgba(201, 162, 39, 0) 62%),
+    linear-gradient(180deg, #0c1723 0%, #142434 100%);
+  border-radius: var(--tf-radius-lg);
+  box-shadow: var(--tf-shadow);
+}
+
+.tf-chart__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--tf-space-3);
+  padding-bottom: var(--tf-space-5);
+  margin-bottom: var(--tf-space-6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.tf-chart__title {
+  font-family: var(--tf-font-serif);
+  font-size: var(--tf-text-xl);
+  font-weight: 700;
+}
+
+.tf-chart__note {
+  font-family: var(--tf-font-mono);
+  font-size: var(--tf-text-xs);
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* 绘图区：上留数值气泡位、下留月份文字位，中间才是柱子 */
+.tf-chart__plot {
+  position: relative;
+  height: clamp(200px, 26vw, 300px);
+  padding-block: var(--tf-space-6) 28px;
+}
+
+/* 四条水平网格线，用重复渐变一次画完 */
+.tf-chart__grid {
+  position: absolute;
+  inset: var(--tf-space-6) 0 28px;
+  background-image: repeating-linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.1) 0 1px,
+    transparent 1px 25%
+  );
+}
+
+.tf-chart__bars {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(8px, 1.6vw, 22px);
+  height: 100%;
+}
+
+.tf-chart__item {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+  min-width: 0;
+  text-align: center;
+}
+
+.tf-chart__bar {
+  position: relative;
+  width: 100%;
+  height: var(--tf-h, 50%);
+  background-image: linear-gradient(180deg, var(--tf-color-gold-soft) 0%, var(--tf-color-gold) 100%);
+  border-radius: 4px 4px 0 0;
+  transform-origin: bottom center;
+  transition: transform 0.85s var(--tf-ease),
+              filter var(--tf-dur-fast) var(--tf-ease);
+}
+
+/* 只有“有 JS”时才先把柱子压扁，避免无 JS 时页面一片空白 */
+.tf-js .tf-chart__bar {
+  transform: scaleY(0);
+}
+
+.tf-js .tf-chart--visible .tf-chart__bar {
+  transform: scaleY(1);
+}
+
+/* 依次生长的节奏：每根柱子比前一根晚 70ms */
+.tf-chart__item:nth-child(1) .tf-chart__bar { transition-delay: 0.02s; }
+.tf-chart__item:nth-child(2) .tf-chart__bar { transition-delay: 0.09s; }
+.tf-chart__item:nth-child(3) .tf-chart__bar { transition-delay: 0.16s; }
+.tf-chart__item:nth-child(4) .tf-chart__bar { transition-delay: 0.23s; }
+.tf-chart__item:nth-child(5) .tf-chart__bar { transition-delay: 0.30s; }
+.tf-chart__item:nth-child(6) .tf-chart__bar { transition-delay: 0.37s; }
+.tf-chart__item:nth-child(7) .tf-chart__bar { transition-delay: 0.44s; }
+.tf-chart__item:nth-child(8) .tf-chart__bar { transition-delay: 0.51s; }
+
+/* 悬停：柱子提亮 + 数值气泡 */
+.tf-chart__item:hover .tf-chart__bar {
+  filter: brightness(1.15);
+}
+
+.tf-chart__tip {
+  position: absolute;
+  left: 50%;
+  top: -22px;
+  font-family: var(--tf-font-mono);
+  font-size: 11px;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.55);
+  transform: translateX(-50%);
+  transition: color var(--tf-dur-fast) var(--tf-ease),
+              transform var(--tf-dur-fast) var(--tf-ease);
+}
+
+.tf-chart__item:hover .tf-chart__tip {
+  color: var(--tf-color-gold-soft);
+  transform: translate(-50%, -3px);
+}
+
+/* 月份文字脱出 flex 流，避免把柱子挤出绘图区 */
+.tf-chart__label {
+  position: absolute;
+  bottom: -28px;
+  left: 0;
+  width: 100%;
+  font-size: var(--tf-text-xs);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ---------- 3. 响应式 ---------- */
+@media (max-width: 1024px) {
+  .tf-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tf-stat {
+    padding-inline: var(--tf-space-5);
+  }
+
+  .tf-stat:nth-child(odd) {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .tf-stat:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--tf-color-line);
+  }
+}
+
+@media (max-width: 767px) {
+  .tf-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tf-stat {
+    padding: var(--tf-space-5) var(--tf-space-4);
+  }
+
+  .tf-chart {
+    padding: var(--tf-space-5) var(--tf-space-4);
+    border-radius: var(--tf-radius);
+  }
+
+  .tf-chart__plot {
+    height: 190px;
+  }
+
+  .tf-chart__tip {
+    font-size: 10px;
+    top: -20px;
+  }
+
+  .tf-chart__label {
+    font-size: 10px;
+  }
+}

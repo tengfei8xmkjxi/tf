@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>528 滕菲</title>
+    <style>
+       h3{
+            color:red;
+       }
+       p{
+            color:blue;
+       }
+       /*标签选择器，选择器名称为标签*/
+       #box{
+        width: 500px;
+        height: 500px;
+        background-color:#ccc ;
+       }
+       /*id选择题，以#开始，唯一*/
+       .n1{
+           color:#7A9;
+       }
+       /* 扩展2：名字第二个字单独设置颜色（与第一个字颜色不同，同一行显示）*/
+       .n2{
+           color:#F60;
+       }
+       /* 扩展3：“选择器”第三个字（器）设置为白色 */
+       .n3{
+           color:#fff;
+       }
+       /* 扩展1：h2黑底白字 */
+       h2{
+           background-color:#000;
+           color:#fff;
+       }
+       /* 扩展4：学号盒子（有宽高背景）*/
+       #box2{
+           width: 500px;
+           height: 100px;
+           background-color:#6C9;
+           color:#fff;
+           text-align:center;
+           line-height:100px;
+           font-weight:bold;
+       }
+
+    </style>
+</head>
+<body>
+    <h2>层叠样式表CSS</h2>
+    <div id="box">
+        <h3>CSS选择<span class="n3">器</span></h3>
+        <p><span class="n1">滕</span><span class="n2">菲</span></p>
+        <p>CSS属性</p>
+    </div>
+
+    <!-- 扩展4：学号盒子 -->
+    <div id="box2">24001010528</div>
+</body>
+</html>

@@ -181,6 +181,18 @@
         .card-link { align-self: flex-start; margin-top: 24px; color: var(--red); font-size: 14px; font-weight: 700; text-decoration: none; }
         .card-link::after { content: "  →"; }
 
+        /* 置顶项目卡：横跨整行，深色反白强调 */
+        .work-card--feature {
+            grid-column: 1 / -1;
+            color: #f3efe6;
+            background: var(--navy);
+            border-color: var(--navy);
+        }
+        .work-card--feature h3 { color: #fff; }
+        .work-card--feature p { color: rgba(243, 239, 230, .72); }
+        .work-card--feature .work-number { color: var(--gold); }
+        .work-card--feature .card-link { color: var(--gold); }
+
         .prompt-box {
             display: block;
             padding: 28px 32px;
@@ -240,7 +252,7 @@
                 <p>这里是 528 滕菲的网页练习档案。用原生 HTML 与 CSS，记录从元素、结构到超链接与媒体内容的每一步尝试。</p>
                 <div class="hero-actions">
                     <a class="primary-link" href="#works">查看全部作品</a>
-                    <span class="note">13 个页面</span>
+                    <span class="note">19 个页面</span>
                 </div>
             </div>
             <div class="hero-gallery" aria-label="课堂实践图片展示">
@@ -260,6 +272,15 @@
                     <article class="work-card">
                         <div>
                             <span class="work-number">01</span>
+                            <h3>第一个页面</h3>
+                            <p>课程的第一张页面，用最少的标记在浏览器里写出「528 滕菲」。</p>
+                        </div>
+                        <a class="card-link" href="./1.html">打开 1.html</a>
+                    </article>
+
+                    <article class="work-card">
+                        <div>
+                            <span class="work-number">02</span>
                             <h3>HTML 基础元素</h3>
                             <p>从开始标签、内容与结束标记出发，练习标题、段落、列表、区域和行内样式。</p>
                         </div>
@@ -268,7 +289,7 @@
 
                     <article class="work-card">
                         <div>
-                            <span class="work-number">02</span>
+                            <span class="work-number">03</span>
                             <h3>链接与媒体</h3>
                             <p>练习本地与外部超链接、图片超链接，以及使用表格呈现信息。</p>
                         </div>
@@ -277,7 +298,34 @@
 
                     <article class="work-card">
                         <div>
-                            <span class="work-number">03</span>
+                            <span class="work-number">04</span>
+                            <h3>表单 form</h3>
+                            <p>练习 form、input、label、下拉框与按钮，把用户输入组织成结构化数据。</p>
+                        </div>
+                        <a class="card-link" href="./3-1.html">打开 3-1.html</a>
+                    </article>
+
+                    <article class="work-card">
+                        <div>
+                            <span class="work-number">05</span>
+                            <h3>层叠样式表 CSS</h3>
+                            <p>第一次把样式从结构里抽出来，认识选择器、层叠与继承的关系。</p>
+                        </div>
+                        <a class="card-link" href="./3-2.html">打开 3-2.html</a>
+                    </article>
+
+                    <article class="work-card">
+                        <div>
+                            <span class="work-number">06</span>
+                            <h3>群组与后代选择器</h3>
+                            <p>练习群组选择器和后代选择器的写法，用一条规则批量命中多个元素。</p>
+                        </div>
+                        <a class="card-link" href="./4-1.html">打开 4-1.html</a>
+                    </article>
+
+                    <article class="work-card">
+                        <div>
+                            <span class="work-number">07</span>
                             <h3>5-1 页面</h3>
                             <p>本课题中用于验证结构和样式组合的实操页面。</p>
                         </div>
@@ -286,7 +334,7 @@
 
                     <article class="work-card">
                         <div>
-                            <span class="work-number">04</span>
+                            <span class="work-number">08</span>
                             <h3>盒模型练习</h3>
                             <p>以边距、边框和内容区为核心，进行盒模型样式训练。</p>
                         </div>
@@ -295,7 +343,7 @@
 
                     <article class="work-card">
                         <div>
-                            <span class="work-number">05</span>
+                            <span class="work-number">09</span>
                             <h3>Flex 布局</h3>
                             <p>练习弹性布局、主轴和交叉轴方向的页面排版方法。</p>
                         </div>
@@ -304,7 +352,7 @@
 
                     <article class="work-card">
                         <div>
-                            <span class="work-number">06</span>
+                            <span class="work-number">10</span>
                             <h3>左右分栏</h3>
                             <p>将两列布局结构用于内容展示，继续完成一左一右排版练习。</p>
                         </div>
@@ -313,7 +361,7 @@
 
                     <article class="work-card">
                         <div>
-                            <span class="work-number">07</span>
+                            <span class="work-number">11</span>
                             <h3>上图下文</h3>
                             <p>针对图片与内容分层组合的典型布局，完成“上图下文”排版。</p>
                         </div>
@@ -322,7 +370,7 @@
 
                     <article class="work-card">
                         <div>
-                            <span class="work-number">08</span>
+                            <span class="work-number">12</span>
                             <h3>左图右文</h3>
                             <p>采用左右并排结构，强化图片与文字的展示比例与视觉平衡。</p>
                         </div>
@@ -331,7 +379,16 @@
 
                     <article class="work-card">
                         <div>
-                            <span class="work-number">09</span>
+                            <span class="work-number">13</span>
+                            <h3>CSS3 选择器</h3>
+                            <p>练习 CSS3 新增的伪类、伪元素与属性选择器，让样式命中得更精准。</p>
+                        </div>
+                        <a class="card-link" href="./8-1 css3 选择器.html">打开 8-1 css3 选择器.html</a>
+                    </article>
+
+                    <article class="work-card">
+                        <div>
+                            <span class="work-number">14</span>
                             <h3>Font Awesome 字体图标</h3>
                             <p>引入本地 Font Awesome 字体文件，用 &lt;i&gt; 标签加类名的方式把图标当成字符显示，练习实心、线性与品牌图标。</p>
                         </div>
@@ -340,7 +397,7 @@
 
                     <article class="work-card">
                         <div>
-                            <span class="work-number">10</span>
+                            <span class="work-number">15</span>
                             <h3>Lucide SVG 图标</h3>
                             <p>通过本地 lucide.min.js 把占位标签渲染成内联 svg，练习矢量图标的无损缩放、颜色与线宽控制。</p>
                         </div>
@@ -349,7 +406,7 @@
 
                     <article class="work-card">
                         <div>
-                            <span class="work-number">11</span>
+                            <span class="work-number">16</span>
                             <h3>底部导航（字体图标）</h3>
                             <p>用 font 目录的 iconfont 字体图标做移动端自适应宽度的固定底栏，4 项平分全屏宽度，带数字徽章与右上角红点。</p>
                         </div>
@@ -358,7 +415,7 @@
 
                     <article class="work-card">
                         <div>
-                            <span class="work-number">12</span>
+                            <span class="work-number">17</span>
                             <h3>底部导航（SVG 图标）</h3>
                             <p>改用 iconfont.js 的 symbol 精灵图，以 &lt;use&gt; 引用内联 svg 复用图标，完成同样的自适应固定底栏。</p>
                         </div>
@@ -367,7 +424,16 @@
 
                     <article class="work-card">
                         <div>
-                            <span class="work-number">13</span>
+                            <span class="work-number">18</span>
+                            <h3>JavaScript 基础</h3>
+                            <p>三种输出方式 document.write、alert、console.log，外加 confirm 与 prompt 两个交互对话框。</p>
+                        </div>
+                        <a class="card-link" href="./14-1.html">打开 14-1.html</a>
+                    </article>
+
+                    <article class="work-card work-card--feature">
+                        <div>
+                            <span class="work-number">19</span>
                             <h3>网页元素设计项目</h3>
                             <p>《高级网页设计 I》网页元素设计项目：吸顶导航 + 全屏首屏、图文悬浮卡片、数字滚动统计三处元素完整还原，附带多视口测试截图与说明文档。</p>
                         </div>

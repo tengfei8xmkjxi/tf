@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24001010528 滕菲 · JavaScript 六种基础数据类型</title>
+    <style>
+        body {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            font-size: 15px;
+            line-height: 1.75;
+            color: #17202d;
+            background-color: #f6f3ec;
+        }
+
+        h2 {
+            margin: 0 0 8px;
+            font-size: 24px;
+            color: #13283d;
+        }
+
+        .tip {
+            max-width: 820px;
+            margin: 0 0 26px;
+            padding-left: 14px;
+            font-size: 14px;
+            color: #67717f;
+            border-left: 3px solid #c9a227;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fffdf8;
+            box-shadow: 0 10px 26px rgba(19, 40, 61, .08);
+        }
+
+        th, td {
+            padding: 10px 14px;
+            text-align: left;
+            border: 1px solid #d9d5cb;
+            vertical-align: top;
+        }
+
+        thead th {
+            font-size: 13px;
+            letter-spacing: .06em;
+            color: #fff;
+            background-color: #13283d;
+            white-space: nowrap;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #faf7f0;
+        }
+
+        tbody tr:hover {
+            background-color: #f3ede0;
+        }
+
+        .type {
+            font-weight: 700;
+            color: #b8483a;
+            white-space: nowrap;
+        }
+
+        .value {
+            font-family: Consolas, "Courier New", monospace;
+            color: #13283d;
+            word-break: break-all;
+        }
+
+        code {
+            padding: 1px 6px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            color: #13283d;
+            background-color: #efeadd;
+            border-radius: 3px;
+        }
+
+        .note {
+            font-size: 13px;
+            color: #67717f;
+        }
+
+        h3 {
+            margin: 40px 0 12px;
+            font-size: 18px;
+            color: #13283d;
+        }
+
+        .check {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 14px;
+            padding: 16px 20px;
+            color: #f3efe6;
+            background-color: #0c1723;
+            border-radius: 6px;
+        }
+
+        .check span {
+            display: block;
+        }
+
+        .check em {
+            font-style: normal;
+            color: #e2c979;
+        }
+    </style>
+</head>
+<body>
+    <h2>24001010528 滕菲：JavaScript 六种基础数据类型</h2>
+    <p class="tip">
+        基础（原始）数据类型共 6 种：Undefined、Null、Boolean、Number、String、Symbol。
+        数组、函数、对象属于引用类型，不在六种基础类型之内。
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>序号</th>
+                <th>数据类型</th>
+                <th>定义方式</th>
+                <th>值</th>
+                <th>typeof 结果</th>
+                <th>说明</th>
+            </tr>
+        </thead>
+        <tbody class="rows"></tbody>
+    </table>
+
+    <h3>用 typeof 快速验证</h3>
+    <div class="check">
+        <!-- 由脚本生成 -->
+    </div>
+
+    <h3>两个容易踩的点</h3>
+    <p class="tip">
+        1. <code>typeof null</code> 返回 <code>"object"</code>，是 JavaScript 早期实现留下的 bug，一直没修，判断 null 要用 <code>值 === null</code>。<br>
+        2. <code>Symbol()</code> 前面不能加 <code>new</code>，每次调用都返回一个独一无二的值，所以 <code>Symbol("tf") === Symbol("tf")</code> 是 <code>false</code>。
+    </p>
+
+    <script>
+        /* ---------- 六种基础数据类型的定义 ---------- */
+
+        // 1. Undefined：变量声明了，但没有赋值
+        var undef;
+
+        // 2. Null：空值，必须手动赋值
+        var nul = null;
+
+        // 3. Boolean：布尔值，只有 true / false
+        var bool = true;
+
+        // 4. Number：数字，整数、小数、NaN、Infinity 都算
+        var num = 24001010528;
+
+        // 5. String：字符串，单引号、双引号、反引号都可以
+        var str = "滕菲";
+
+        // 6. Symbol：ES6 新增，表示独一无二的值，不能 new
+        var sym = Symbol("tf");
+
+        /* ---------- 数据表 ---------- */
+        var list = [
+            { name: "Undefined", code: "var undef;", value: undef, note: "变量声明了但没赋值，默认就是 undefined" },
+            { name: "Null", code: "var nul = null;", value: nul, note: "空值，要手动赋值；typeof null 返回 object 是历史遗留问题" },
+            { name: "Boolean", code: "var bool = true;", value: bool, note: "只有两个值：true 和 false" },
+            { name: "Number", code: "var num = 24001010528;", value: num, note: "整数、小数、NaN、Infinity 统一算 Number" },
+            { name: "String", code: "var str = '滕菲';", value: str, note: "单引号、双引号、反引号都能定义字符串" },
+            { name: "Symbol", code: "var sym = Symbol('tf');", value: sym, note: "每次调用都产生唯一值，不能使用 new Symbol()" }
+        ];
+
+        var html = "";
+        for (var i = 0; i < list.length; i++) {
+            var item = list[i];
+            html += "<tr>";
+            html += "<td>" + (i + 1) + "</td>";
+            html += '<td class="type">' + item.name + "</td>";
+            html += "<td><code>" + item.code + "</code></td>";
+            html += '<td class="value">' + String(item.value) + "</td>";
+            html += '<td class="value">' + typeof item.value + "</td>";
+            html += '<td class="note">' + item.note + "</td>";
+            html += "</tr>";
+        }
+        document.querySelector(".rows").innerHTML = html;
+
+        /* ---------- typeof 验证 ---------- */
+        var checks = [
+            ['typeof undefined', typeof undefined],
+            ['typeof null', typeof null],
+            ['typeof true', typeof true],
+            ['typeof 100', typeof 100],
+            ['typeof "100"', typeof "100"],
+            ['typeof Symbol("tf")', typeof Symbol("tf")],
+            ['typeof 数组 / 对象（引用类型）', typeof [] + " / " + typeof {}]
+        ];
+
+        var box = document.querySelector(".check");
+        var out = "";
+        for (var j = 0; j < checks.length; j++) {
+            out += "<span>" + checks[j][0] + "　→　<em>" + checks[j][1] + "</em></span>";
+        }
+        box.innerHTML = out;
+
+        /* ---------- 控制台输出，方便老师核对 ---------- */
+        console.log("24001010528 滕菲：JavaScript 六种基础数据类型");
+        for (var k = 0; k < list.length; k++) {
+            console.log(list[k].name + " | 值：" + String(list[k].value) + " | typeof：" + typeof list[k].value);
+        }
+    </script>
+</body>
+</html>

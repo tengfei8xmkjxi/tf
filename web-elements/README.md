@@ -14,7 +14,7 @@
 ## 二、目录结构
 
 ```
-3/
+web-elements/
 ├─ index.html                  三处元素同页演示
 ├─ css/
 │  ├─ global.css               全局样式：:root 变量 / 重置 / 基础组件 / 页脚

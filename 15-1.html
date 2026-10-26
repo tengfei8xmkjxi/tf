@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>15-1 数7游戏</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        h2 {
+            text-align: center;
+            font-family: "微软雅黑", sans-serif;
+        }
+
+        .tip {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        /* 盒子容器：一排 10 个 */
+        #box-wrap {
+            width: 660px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .box {
+            width: 60px;
+            height: 60px;
+            line-height: 58px;
+            text-align: center;
+            font-size: 18px;
+            border: 1px solid #9bbce8;
+            border-radius: 6px;
+            background: #eaf2ff;
+            color: #1a4d8f;
+        }
+
+        /* 符合数7规则的盒子：内部为空 */
+        .box.empty {
+            background: #fff;
+            border: 1px dashed #cccccc;
+            color: transparent;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>滕菲：数7游戏（1 - 100）</h2>
+    <p class="tip">7 的倍数、含数字 7 的数 → 空盒子；其余 → 盒子内显示数字</p>
+
+    <div id="box-wrap"></div>
+
+    <script>
+        // 判断是否符合"数7"规则：是 7 的倍数，或数字中含有 7
+        function isSeven(n) {
+            return n % 7 === 0 || String(n).indexOf("7") !== -1;
+        }
+
+        var wrap = document.getElementById("box-wrap");
+        var html = "";
+
+        // 循环 1-100，符合规则输出空盒子，不符合输出带数字的盒子
+        for (var i = 1; i <= 100; i++) {
+            if (isSeven(i)) {
+                html += '<div class="box empty"></div>';
+            } else {
+                html += '<div class="box">' + i + "</div>";
+            }
+        }
+
+        wrap.innerHTML = html;
+    </script>
+</body>
+
+</html>

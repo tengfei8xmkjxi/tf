@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24001010528 滕菲 · JavaScript 的两种定时器</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            font-size: 15px;
+            line-height: 1.75;
+            color: #17202d;
+            background-color: #f6f3ec;
+        }
+
+        h2 {
+            margin: 0 0 8px;
+            font-size: 24px;
+            color: #13283d;
+        }
+
+        h3 {
+            margin: 40px 0 14px;
+            padding-bottom: 8px;
+            font-size: 18px;
+            color: #13283d;
+            border-bottom: 1px solid #d9d5cb;
+        }
+
+        .tip {
+            max-width: 860px;
+            margin: 0 0 22px;
+            padding-left: 14px;
+            font-size: 14px;
+            color: #67717f;
+            border-left: 3px solid #c9a227;
+        }
+
+        code {
+            padding: 1px 6px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            color: #13283d;
+            background-color: #efeadd;
+            border-radius: 3px;
+        }
+
+        pre {
+            margin: 0 0 16px;
+            padding: 16px 18px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #e8e3d6;
+            background-color: #0c1723;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+
+        pre .cmt {
+            color: #7f8c9b;
+        }
+
+        /* 演示卡片 */
+        .demo {
+            padding: 20px 22px;
+            margin-bottom: 18px;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-radius: 8px;
+            box-shadow: 0 10px 26px rgba(19, 40, 61, .06);
+        }
+
+        .demo-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #d9d5cb;
+        }
+
+        .demo-title {
+            font-size: 13px;
+            letter-spacing: .08em;
+            color: #67717f;
+        }
+
+        .btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        button {
+            padding: 7px 18px;
+            font-family: inherit;
+            font-size: 13.5px;
+            color: #fff;
+            background-color: #b8483a;
+            border: 0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color .18s ease;
+        }
+
+        button:hover {
+            background-color: #9d3a2e;
+        }
+
+        button.ghost {
+            color: #13283d;
+            background-color: #f1ebdc;
+            border: 1px solid #e0d9c8;
+        }
+
+        button.ghost:hover {
+            color: #b8483a;
+            background-color: #fbf4e2;
+            border-color: #c9a227;
+        }
+
+        button:disabled {
+            color: #fff;
+            background-color: #c9c3b6;
+            cursor: default;
+        }
+
+        .out {
+            min-height: 56px;
+            padding: 14px 16px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13.5px;
+            line-height: 1.9;
+            color: #67717f;
+            background-color: #f7f4ec;
+            border: 1px dashed #d9d5cb;
+            border-radius: 6px;
+        }
+
+        .out.done {
+            color: #2f6b3f;
+            background-color: #edf3ec;
+            border-color: #bcd6bd;
+        }
+
+        .out span {
+            display: block;
+        }
+
+        /* 秒表 */
+        .clock {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .clock b {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 42px;
+            line-height: 1;
+            color: #13283d;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .clock span {
+            font-size: 13px;
+            color: #8b95a3;
+        }
+
+        /* 序列表 */
+        table {
+            width: 100%;
+            margin-top: 6px;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            background-color: #fffdf8;
+        }
+
+        th,
+        td {
+            padding: 9px 14px;
+            text-align: left;
+            border: 1px solid #d9d5cb;
+        }
+
+        thead th {
+            font-size: 12.5px;
+            letter-spacing: .06em;
+            color: #fff;
+            background-color: #13283d;
+            white-space: nowrap;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #faf7f0;
+        }
+
+        td:first-child {
+            white-space: nowrap;
+            color: #8b95a3;
+        }
+
+        /* 注意事项 */
+        .warn {
+            padding: 16px 20px;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-left: 3px solid #b8483a;
+            border-radius: 6px;
+        }
+
+        .warn p {
+            margin: 0 0 10px;
+            font-size: 13.5px;
+            color: #3d4753;
+        }
+
+        .warn p:last-child {
+            margin-bottom: 0;
+        }
+
+        .warn b {
+            color: #b8483a;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>24001010528 滕菲：JavaScript 的两种定时器</h2>
+    <p class="tip">
+        浏览器只提供两种定时器：<code>setTimeout</code> 到点执行<b>一次</b>，<code>setInterval</code> 每隔一段时间<b>反复</b>执行。
+        两者都返回一个数字编号（定时器 id），分别用 <code>clearTimeout(id)</code>、<code>clearInterval(id)</code> 取消。
+        时间单位都是<b>毫秒</b>，1000 毫秒 = 1 秒。
+    </p>
+
+    <h3>一、setTimeout：延迟执行一次</h3>
+    <p class="tip">点「开始」后，下面的提示先倒数 3 秒，然后由 setTimeout 的回调把结果改掉；点「取消」验证 clearTimeout 的效果。</p>
+
+    <div class="demo">
+        <div class="demo-head">
+            <span class="demo-title">DEMO 01 / setTimeout</span>
+            <div class="btns">
+                <button id="a-start" type="button">开始（3 秒）</button>
+                <button id="a-cancel" type="button" class="ghost">取消</button>
+            </div>
+        </div>
+        <div class="out" id="a-out">还没开始。点「开始」后等 3 秒。</div>
+    </div>
+
+    <pre><span class="cmt">// setTimeout(要执行的函数, 毫秒)</span>
+var id = setTimeout(function () {
+    out.textContent = "3 秒到了，这个回调只执行这一次";
+}, 3000);
+
+<span class="cmt">// 还没执行之前，可以取消：id 就是 setTimeout 的返回值</span>
+clearTimeout(id);</pre>
+
+    <h3>二、setInterval：隔一段时间执行一次</h3>
+    <p class="tip">每 100 毫秒给数字加 1，所以看起来像秒表。点「暂停」要调用 clearInterval，否则它会一直跑下去。</p>
+
+    <div class="demo">
+        <div class="demo-head">
+            <span class="demo-title">DEMO 02 / setInterval</span>
+            <div class="btns">
+                <button id="b-start" type="button">开始</button>
+                <button id="b-pause" type="button" class="ghost">暂停</button>
+                <button id="b-reset" type="button" class="ghost">归零</button>
+            </div>
+        </div>
+        <div class="clock"><b id="b-clock">0.0</b><span>秒（每 100 毫秒更新一次）</span></div>
+        <div class="out" id="b-out">setInterval 还没启动。</div>
+    </div>
+
+    <pre><span class="cmt">// 每 100 毫秒执行一次，直到被 clearInterval 停掉</span>
+var timer = setInterval(function () {
+    tenths++;
+    clock.textContent = (tenths / 10).toFixed(1);
+}, 100);
+
+clearInterval(timer);   <span class="cmt">// 暂停 / 停止</span></pre>
+
+    <h3>三、两种定时器对比</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>对比项</th>
+                <th>setTimeout</th>
+                <th>setInterval</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>执行几次</td>
+                <td>只执行一次</td>
+                <td>每隔一段时间执行，无限次</td>
+            </tr>
+            <tr>
+                <td>怎么取消</td>
+                <td><code>clearTimeout(id)</code></td>
+                <td><code>clearInterval(id)</code></td>
+            </tr>
+            <tr>
+                <td>返回值</td>
+                <td>数字 id</td>
+                <td>数字 id</td>
+            </tr>
+            <tr>
+                <td>常见用途</td>
+                <td>延迟提示、防抖、延迟跳转、递归轮询</td>
+                <td>时钟、轮播图、进度条、定时刷新</td>
+            </tr>
+            <tr>
+                <td>停不下来的后果</td>
+                <td>顶多多执行一次</td>
+                <td>页面一直占用 CPU，回调越积越多</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>四、执行顺序：setTimeout(fn, 0) 也不是马上执行</h3>
+    <p class="tip">定时器的回调必须等主线程的空闲时间，所以写在后面的同步代码反而先执行。点按钮看真实顺序。</p>
+
+    <div class="demo">
+        <div class="demo-head">
+            <span class="demo-title">DEMO 03 / 事件循环</span>
+            <div class="btns">
+                <button id="c-run" type="button">运行一次</button>
+            </div>
+        </div>
+        <div class="out" id="c-out">点「运行一次」看四行输出的顺序。</div>
+    </div>
+
+    <pre>out.push("① 同步代码 A");
+
+setTimeout(function () {
+    out.push("④ setTimeout(…, 0) 的回调");   <span class="cmt">// 排队，等同步代码跑完</span>
+}, 0);
+
+out.push("② 同步代码 B");
+out.push("③ 同步代码 C");</pre>
+
+    <h3>五、写的时候要注意的四件事</h3>
+    <div class="warn">
+        <p><b>1. 单位是毫秒。</b>要 3 秒就写 <code>3000</code>，写 <code>3</code> 是 3 毫秒，肉眼几乎看不出来。</p>
+        <p><b>2. 时间不精确。</b>定时器只保证"至少等这么久"，主线程忙（比如在跑一个大循环）时回调会被推迟。</p>
+        <p><b>3. setInterval 会累积误差。</b>每次执行耗时不同，间隔就会慢慢漂移；需要稳定节奏时用"递归 setTimeout"：
+            <code>setTimeout(step, 1000)</code> 写在 <code>step</code> 里面，每次都重新计时。</p>
+        <p><b>4. 记得停止。</b>页面切换、组件销毁时要 clear；后台标签页里浏览器会把定时器节流到约 1 秒一次，别拿它做精确计时。</p>
+    </div>
+
+    <script>
+        /* ==================== DEMO 01：setTimeout ==================== */
+        var aOut = document.getElementById("a-out");
+        var aTimeout = null;
+        var aInterval = null;
+
+        function stopA() {
+            clearTimeout(aTimeout);
+            clearInterval(aInterval);
+            aTimeout = null;
+            aInterval = null;
+        }
+
+        document.getElementById("a-start").addEventListener("click", function () {
+            stopA();
+            var left = 3;
+            aOut.className = "out";
+            aOut.textContent = "3 秒后显示结果…";
+
+            /* 倒计时只是让等待看得见，真正干活的还是下面那个 setTimeout */
+            aInterval = setInterval(function () {
+                left--;
+                if (left > 0) {
+                    aOut.textContent = left + " 秒…";
+                }
+            }, 1000);
+
+            aTimeout = setTimeout(function () {
+                clearInterval(aInterval);
+                aInterval = null;
+                aOut.className = "out done";
+                aOut.textContent = "✓ setTimeout 的回调执行了：3 秒到了，而且只执行这一次。";
+            }, 3000);
+        });
+
+        document.getElementById("a-cancel").addEventListener("click", function () {
+            stopA();
+            aOut.className = "out";
+            aOut.textContent = "已取消：clearTimeout(id) 之后，那个回调永远不会执行。";
+        });
+
+        /* ==================== DEMO 02：setInterval ==================== */
+        var bClock = document.getElementById("b-clock");
+        var bOut = document.getElementById("b-out");
+        var bTimer = null;
+        var tenths = 0;
+
+        document.getElementById("b-start").addEventListener("click", function () {
+            if (bTimer !== null) {
+                return;          /* 已经在跑了，别重复开两个定时器 */
+            }
+            bOut.textContent = "setInterval 运行中，间隔 100 毫秒。";
+            bTimer = setInterval(function () {
+                tenths++;
+                bClock.textContent = (tenths / 10).toFixed(1);
+            }, 100);
+        });
+
+        document.getElementById("b-pause").addEventListener("click", function () {
+            if (bTimer === null) {
+                return;
+            }
+            clearInterval(bTimer);
+            bTimer = null;
+            bOut.textContent = "已暂停：clearInterval 之后不再累加，数字停在 " + (tenths / 10).toFixed(1) + " 秒。";
+        });
+
+        document.getElementById("b-reset").addEventListener("click", function () {
+            clearInterval(bTimer);
+            bTimer = null;
+            tenths = 0;
+            bClock.textContent = "0.0";
+            bOut.textContent = "已归零，定时器也停掉了。";
+        });
+
+        /* 页面关掉或刷新时把还在跑的定时器清掉，养成习惯 */
+        window.addEventListener("beforeunload", function () {
+            clearTimeout(aTimeout);
+            clearInterval(aInterval);
+            clearInterval(bTimer);
+        });
+
+        /* ==================== DEMO 03：执行顺序 ==================== */
+        var cOut = document.getElementById("c-out");
+
+        function cPush(text) {
+            var line = document.createElement("span");
+            line.textContent = text;
+            cOut.appendChild(line);
+        }
+
+        document.getElementById("c-run").addEventListener("click", function () {
+            cOut.className = "out";
+            cOut.innerHTML = "";
+
+            cPush("① 同步代码 A");
+
+            setTimeout(function () {
+                cPush("④ setTimeout(…, 0) 的回调 —— 最后才轮到它");
+            }, 0);
+
+            cPush("② 同步代码 B");
+            cPush("③ 同步代码 C —— 主线程还没空，回调只能排队");
+        });
+
+        console.log("24001010528 滕菲：setTimeout 与 setInterval 演示页");
+    </script>
+</body>
+
+</html>

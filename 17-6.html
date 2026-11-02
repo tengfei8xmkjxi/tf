@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24001010528 滕菲 · Promise 与 async：包饺子的流程</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            font-size: 15px;
+            line-height: 1.75;
+            color: #17202d;
+            background-color: #f6f3ec;
+        }
+
+        h2 {
+            margin: 0 0 8px;
+            font-size: 24px;
+            color: #13283d;
+        }
+
+        h3 {
+            margin: 34px 0 14px;
+            padding-bottom: 8px;
+            font-size: 17px;
+            color: #13283d;
+            border-bottom: 1px solid #d9d5cb;
+        }
+
+        .tip {
+            max-width: 880px;
+            margin: 0 0 22px;
+            padding-left: 14px;
+            font-size: 14px;
+            color: #67717f;
+            border-left: 3px solid #c9a227;
+        }
+
+        code {
+            padding: 1px 6px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            color: #13283d;
+            background-color: #efeadd;
+            border-radius: 3px;
+        }
+
+        /* 左右两栏：流程 + 日志 */
+        .layout {
+            display: grid;
+            grid-template-columns: 1.15fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .card {
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-radius: 8px;
+            box-shadow: 0 10px 26px rgba(19, 40, 61, .06);
+        }
+
+        .card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 20px;
+            border-bottom: 1px dashed #d9d5cb;
+        }
+
+        .card-title {
+            font-size: 12px;
+            letter-spacing: .1em;
+            color: #67717f;
+        }
+
+        .total {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.5px;
+            color: #b8483a;
+        }
+
+        /* 步骤列表 */
+        .stages {
+            padding: 16px 20px 20px;
+        }
+
+        .stage {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px dashed #e4dfd2;
+        }
+
+        .stage:last-child {
+            border-bottom: 0;
+        }
+
+        .dot {
+            display: grid;
+            place-items: center;
+            flex: none;
+            width: 20px;
+            height: 20px;
+            margin-top: 3px;
+            font-size: 11px;
+            color: #fff;
+            background-color: #fffdf8;
+            border: 2px solid #d5cdba;
+            border-radius: 50%;
+            transition: background-color .2s ease, border-color .2s ease;
+        }
+
+        .main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .main b {
+            display: block;
+            font-size: 14.5px;
+            color: #13283d;
+        }
+
+        .note {
+            display: block;
+            margin-top: 2px;
+            font-size: 12.5px;
+            line-height: 1.6;
+            color: #8b95a3;
+        }
+
+        .subs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .sub {
+            padding: 2px 11px;
+            font-size: 12px;
+            color: #67717f;
+            background-color: #f1ebdc;
+            border-radius: 999px;
+            transition: background-color .2s ease, color .2s ease;
+        }
+
+        .time {
+            flex: none;
+            min-width: 52px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.5px;
+            text-align: right;
+            color: #8b95a3;
+        }
+
+        /* 三种状态 */
+        .stage.running .dot {
+            border-color: #c9a227;
+            background-color: #f7e7b0;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .stage.done .dot {
+            border-color: #3f7d4e;
+            background-color: #3f7d4e;
+        }
+
+        .stage.done .dot::after {
+            content: "✓";
+        }
+
+        .stage.done .main b {
+            color: #2f6b3f;
+        }
+
+        .stage.waiting .main b {
+            color: #9aa1aa;
+        }
+
+        .sub.running {
+            color: #7a5a12;
+            background-color: #f6e4ae;
+        }
+
+        .sub.done {
+            color: #2f6b3f;
+            background-color: #dfeade;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(201, 162, 39, .5);
+            }
+
+            50% {
+                box-shadow: 0 0 0 6px rgba(201, 162, 39, 0);
+            }
+        }
+
+        /* 控制区 */
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 16px 20px 20px;
+            border-top: 1px dashed #d9d5cb;
+        }
+
+        button {
+            padding: 9px 22px;
+            font-family: inherit;
+            font-size: 14px;
+            color: #fff;
+            background-color: #b8483a;
+            border: 0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color .18s ease;
+        }
+
+        button:hover {
+            background-color: #9d3a2e;
+        }
+
+        button.ghost {
+            color: #13283d;
+            background-color: #f1ebdc;
+            border: 1px solid #e0d9c8;
+        }
+
+        button.ghost:hover {
+            color: #b8483a;
+            background-color: #fbf4e2;
+            border-color: #c9a227;
+        }
+
+        button:disabled {
+            color: #fff;
+            background-color: #c9c3b6;
+            cursor: default;
+        }
+
+        select {
+            padding: 7px 8px;
+            font-family: inherit;
+            font-size: 13px;
+            color: #13283d;
+            background-color: #fff;
+            border: 1px solid #d9d5cb;
+            border-radius: 4px;
+        }
+
+        .controls label {
+            font-size: 13px;
+            color: #67717f;
+        }
+
+        /* 日志 */
+        .log {
+            padding: 14px 18px 18px;
+            min-height: 360px;
+            max-height: 520px;
+            overflow-y: auto;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.5px;
+            line-height: 1.85;
+            color: #c9d4cc;
+            background-color: #0c1723;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .log div {
+            padding: 1px 0;
+            word-break: break-word;
+        }
+
+        .log .ts {
+            margin-right: 8px;
+            color: #6b7a86;
+        }
+
+        .log .ok {
+            color: #8fd19e;
+        }
+
+        .log .hi {
+            color: #e2c979;
+        }
+
+        /* 代码区 */
+        pre {
+            margin: 0 0 16px;
+            padding: 16px 18px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.8px;
+            line-height: 1.75;
+            color: #e8e3d6;
+            background-color: #0c1723;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+
+        pre .cmt {
+            color: #7f8c9b;
+        }
+
+        details.more {
+            margin-top: 18px;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-radius: 6px;
+        }
+
+        details.more summary {
+            padding: 12px 18px;
+            font-size: 13.5px;
+            color: #13283d;
+            cursor: pointer;
+        }
+
+        details.more pre {
+            margin: 0 14px 14px;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .log {
+                min-height: 240px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h2>24001010528 滕菲：用 Promise / async 演示包饺子的流程</h2>
+    <p class="tip">
+        每个步骤都用 <code>setTimeout</code> 模拟耗时。两条并行规则是重点：<b>买原料</b>要线上、线下同时下单，
+        用 <code>Promise.race</code> —— 谁先回来就走下一步；<b>和面、和馅</b>要两件事都做完才能包，
+        用 <code>Promise.all</code>。默认按真实时间跑，嫌慢可以切 4 倍速。
+    </p>
+
+    <div class="layout">
+        <section class="card">
+            <div class="card-head">
+                <span class="card-title">FLOW / 流程</span>
+                <span class="total" id="total">未开始</span>
+            </div>
+
+            <div class="stages">
+                <div class="stage waiting" id="stage-buy">
+                    <span class="dot"></span>
+                    <div class="main">
+                        <b>1　买原料</b>
+                        <span class="note">线上、线下同时下单，完成任何一个就够（Promise.race）</span>
+                        <div class="subs">
+                            <span class="sub" id="sub-online">线上买 · 6 秒</span>
+                            <span class="sub" id="sub-offline">线下买 · 8 秒</span>
+                        </div>
+                    </div>
+                    <span class="time" id="time-buy">—</span>
+                </div>
+
+                <div class="stage waiting" id="stage-pick">
+                    <span class="dot"></span>
+                    <div class="main">
+                        <b>2　取原料</b>
+                        <span class="note">快递送到自提点，去拿回来</span>
+                    </div>
+                    <span class="time" id="time-pick">—</span>
+                </div>
+
+                <div class="stage waiting" id="stage-mix">
+                    <span class="dot"></span>
+                    <div class="main">
+                        <b>3　和面 + 和馅</b>
+                        <span class="note">两件事同时做，都完成才能包（Promise.all）</span>
+                        <div class="subs">
+                            <span class="sub" id="sub-dough">和面 · 4 秒</span>
+                            <span class="sub" id="sub-filling">和馅 · 3 秒</span>
+                        </div>
+                    </div>
+                    <span class="time" id="time-mix">—</span>
+                </div>
+
+                <div class="stage waiting" id="stage-wrap">
+                    <span class="dot"></span>
+                    <div class="main">
+                        <b>4　包饺子</b>
+                        <span class="note">面、馅都齐了才开工</span>
+                    </div>
+                    <span class="time" id="time-wrap">—</span>
+                </div>
+
+                <div class="stage waiting" id="stage-boil">
+                    <span class="dot"></span>
+                    <div class="main">
+                        <b>5　煮饺子</b>
+                        <span class="note">水开下锅，等它们浮起来</span>
+                    </div>
+                    <span class="time" id="time-boil">—</span>
+                </div>
+
+                <div class="stage waiting" id="stage-eat">
+                    <span class="dot"></span>
+                    <div class="main">
+                        <b>6　吃饺子</b>
+                        <span class="note">全部流程结束</span>
+                    </div>
+                    <span class="time" id="time-eat">—</span>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="start" type="button">开始包饺子</button>
+                <button id="reset" type="button" class="ghost">重置</button>
+                <label>速度
+                    <select id="speed">
+                        <option value="1">1× 真实时间</option>
+                        <option value="2">2× 快一点</option>
+                        <option value="4">4× 快速演示</option>
+                    </select>
+                </label>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-head">
+                <span class="card-title">LOG / 运行日志</span>
+            </div>
+            <div class="log" id="log"><div><span class="ts">[0.0s]</span>等待开始…</div></div>
+        </section>
+    </div>
+
+    <h3>主流程：async / await 写法</h3>
+    <pre><span class="cmt">// 每个步骤都是一个返回 Promise 的函数：到点了就 resolve</span>
+function task(name, el, ms) {
+    return new Promise(function (resolve) {
+        setState(el, "running");
+        setTimeout(function () {
+            setState(el, "done");
+            resolve();               <span class="cmt">// 到点才算"完成"</span>
+        }, ms);
+    });
+}
+
+async function makeDumplings() {
+    <span class="cmt">// 线上、线下同时开始，谁先完成就继续（另一个还在路上）</span>
+    await Promise.race([task("线上买", online, 6000),
+                        task("线下买", offline, 8000)]);
+
+    await task("取原料", pick, 2000);
+
+    <span class="cmt">// 和面、和馅同时进行，两个都完成才往下走</span>
+    await Promise.all([task("和面", dough, 4000),
+                       task("和馅", filling, 3000)]);
+
+    await task("包饺子", wrap, 5000);
+    await task("煮饺子", boil, 4000);
+    await task("吃饺子", eat, 2000);
+}</pre>
+
+    <details class="more">
+        <summary>同样的流程，用 Promise 的 then 链怎么写</summary>
+        <pre>Promise.race([buyOnline(), buyOffline()])
+    .then(function () {
+        return pickUp();                         <span class="cmt">// 返回 Promise，链子自动等它</span>
+    })
+    .then(function () {
+        return Promise.all([makeDough(), makeFilling()]);
+    })
+    .then(function () {
+        return wrap();
+    })
+    .then(function () {
+        return boil();
+    })
+    .then(function () {
+        return eat();
+    })
+    .catch(function (err) {
+        console.log("哪一步失败都会到这里：" + err.message);
+    });</pre>
+    </details>
+
+    <h3>为什么用 race 和 all</h3>
+    <p class="tip">
+        <code>Promise.race([A, B])</code> 返回一个新的 Promise，<b>只要 A 或 B 有一个完成</b>它就完成 ——
+        对应"线上线下哪边先到都行"。<code>Promise.all([A, B])</code> 则是<b>两个都完成</b>才完成，
+        而且总耗时等于较慢的那个 —— 对应"面和馅都齐了才能包"。
+        所以并行比串行快：面和馅串着做要 7 秒，同时做只要 4 秒。
+    </p>
+
+    <script>
+        var runId = 0;          /* 每次开始/重置都 +1，用来作废上一轮的回调 */
+        var speed = 1;
+        var t0 = 0;
+        var timers = [];
+
+        var logEl = document.getElementById("log");
+        var totalEl = document.getElementById("total");
+        var startBtn = document.getElementById("start");
+        var resetBtn = document.getElementById("reset");
+        var speedEl = document.getElementById("speed");
+
+        function esc(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+        }
+
+        function now() {
+            return ((Date.now() - t0) / 1000).toFixed(1);
+        }
+
+        function log(msg, kind) {
+            var line = document.createElement("div");
+            line.innerHTML = '<span class="ts">[' + now() + 's]</span>' +
+                '<span' + (kind ? ' class="' + kind + '"' : "") + ">" + esc(msg) + "</span>";
+            logEl.appendChild(line);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        function setState(el, state) {
+            el.classList.remove("waiting", "running", "done");
+            el.classList.add(state);
+        }
+
+        function clearTimers() {
+            for (var i = 0; i < timers.length; i++) {
+                clearTimeout(timers[i]);
+            }
+            timers = [];
+        }
+
+        function resetUI() {
+            var nodes = document.querySelectorAll(".stage, .sub");
+            for (var i = 0; i < nodes.length; i++) {
+                setState(nodes[i], "waiting");
+            }
+            var times = document.querySelectorAll(".time");
+            for (var j = 0; j < times.length; j++) {
+                times[j].textContent = "—";
+            }
+            logEl.innerHTML = "";
+            totalEl.textContent = "未开始";
+        }
+
+        /* 一个步骤：标记进行中 → 等 ms 毫秒 → 标记完成 → resolve */
+        function task(name, el, ms, id, timeEl) {
+            return new Promise(function (resolve) {
+                setState(el, "running");
+                log("开始：" + name);
+
+                var start = Date.now();
+                var timer = setTimeout(function () {
+                    if (id !== runId) {
+                        return;                       /* 已经被重置，丢弃这次结果 */
+                    }
+                    var sec = ((Date.now() - start) / 1000).toFixed(1);
+                    setState(el, "done");
+                    if (timeEl) {
+                        timeEl.textContent = sec + " s";
+                    }
+                    log("完成：" + name + "（" + sec + " s）", "ok");
+                    resolve();
+                }, ms / speed);
+
+                timers.push(timer);
+            });
+        }
+
+        var stages = {
+            buy: document.getElementById("stage-buy"),
+            pick: document.getElementById("stage-pick"),
+            mix: document.getElementById("stage-mix"),
+            wrap: document.getElementById("stage-wrap"),
+            boil: document.getElementById("stage-boil"),
+            eat: document.getElementById("stage-eat")
+        };
+
+        var subs = {
+            online: document.getElementById("sub-online"),
+            offline: document.getElementById("sub-offline"),
+            dough: document.getElementById("sub-dough"),
+            filling: document.getElementById("sub-filling")
+        };
+
+        function timeOf(key) {
+            return document.getElementById("time-" + key);
+        }
+
+        async function makeDumplings() {
+            var id = ++runId;
+            clearTimers();
+            resetUI();
+            startBtn.disabled = true;
+            speedEl.disabled = true;
+            speed = Number(speedEl.value);
+            t0 = Date.now();
+            totalEl.textContent = "进行中…";
+
+            /* ---------- 1. 买原料：线上、线下同时开始 ---------- */
+            setState(stages.buy, "running");
+            log("去买原料：线上、线下同时下单（Promise.race）", "hi");
+            var buyStart = Date.now();
+
+            await Promise.race([
+                task("线上买", subs.online, 6000, id),
+                task("线下买", subs.offline, 8000, id)
+            ]);
+            if (id !== runId) {
+                return;
+            }
+            setState(stages.buy, "done");
+            timeOf("buy").textContent = ((Date.now() - buyStart) / 1000).toFixed(1) + " s";
+            log("原料到手，另一份还在路上也不影响 —— 任意一个完成就能继续", "hi");
+
+            /* ---------- 2. 取原料 ---------- */
+            await task("取原料", stages.pick, 2000, id, timeOf("pick"));
+            if (id !== runId) {
+                return;
+            }
+
+            /* ---------- 3. 和面、和馅：两件都完成才往下 ---------- */
+            setState(stages.mix, "running");
+            log("同时和面、和馅（Promise.all）", "hi");
+            var mixStart = Date.now();
+
+            await Promise.all([
+                task("和面", subs.dough, 4000, id),
+                task("和馅", subs.filling, 3000, id)
+            ]);
+            if (id !== runId) {
+                return;
+            }
+            setState(stages.mix, "done");
+            timeOf("mix").textContent = ((Date.now() - mixStart) / 1000).toFixed(1) + " s";
+            log("面和馅都好了，可以开始包了", "hi");
+
+            /* ---------- 4~6. 包、煮、吃 ---------- */
+            await task("包饺子", stages.wrap, 5000, id, timeOf("wrap"));
+            if (id !== runId) {
+                return;
+            }
+
+            await task("煮饺子", stages.boil, 4000, id, timeOf("boil"));
+            if (id !== runId) {
+                return;
+            }
+
+            await task("吃饺子", stages.eat, 2000, id, timeOf("eat"));
+            if (id !== runId) {
+                return;
+            }
+
+            var total = ((Date.now() - t0) / 1000).toFixed(1);
+            totalEl.textContent = "全部完成，共 " + total + " 秒";
+            log("全部完成，饺子可以吃了！总用时 " + total + " 秒", "ok");
+            startBtn.disabled = false;
+            speedEl.disabled = false;
+        }
+
+        startBtn.addEventListener("click", makeDumplings);
+
+        resetBtn.addEventListener("click", function () {
+            runId++;                 /* 作废还在排队的回调 */
+            clearTimers();
+            resetUI();
+            startBtn.disabled = false;
+            speedEl.disabled = false;
+            logEl.innerHTML = '<div><span class="ts">[0.0s]</span>已重置，等待开始…</div>';
+        });
+
+        console.log("24001010528 滕菲：Promise / async 包饺子流程");
+        console.log("主要用法：Promise.race（买原料）、Promise.all（和面+和馅）、async / await（串起整条流程）");
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24001010528 滕菲 · 远程接口测试 GET / POST</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            font-size: 15px;
+            line-height: 1.75;
+            color: #17202d;
+            background-color: #f6f3ec;
+        }
+
+        h2 {
+            margin: 0 0 8px;
+            font-size: 24px;
+            color: #13283d;
+        }
+
+        h3 {
+            margin: 36px 0 14px;
+            padding-bottom: 8px;
+            font-size: 17px;
+            color: #13283d;
+            border-bottom: 1px solid #d9d5cb;
+        }
+
+        .tip {
+            max-width: 860px;
+            margin: 0 0 22px;
+            padding-left: 14px;
+            font-size: 14px;
+            color: #67717f;
+            border-left: 3px solid #c9a227;
+        }
+
+        code {
+            padding: 1px 6px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            color: #13283d;
+            background-color: #efeadd;
+            border-radius: 3px;
+            word-break: break-all;
+        }
+
+        /* 请求面板 */
+        .panel {
+            padding: 18px 20px 20px;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-radius: 8px;
+            box-shadow: 0 10px 26px rgba(19, 40, 61, .06);
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        select,
+        input,
+        textarea {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13.5px;
+            color: #13283d;
+            background-color: #fff;
+            border: 1px solid #d9d5cb;
+            border-radius: 4px;
+        }
+
+        select {
+            padding: 9px 10px;
+            font-weight: 700;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            min-width: 0;
+            padding: 9px 12px;
+        }
+
+        select:focus,
+        input:focus,
+        textarea:focus {
+            outline: 2px solid #d7c79a;
+            outline-offset: -1px;
+        }
+
+        button {
+            padding: 9px 20px;
+            font-family: inherit;
+            font-size: 14px;
+            color: #fff;
+            background-color: #b8483a;
+            border: 0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color .18s ease;
+        }
+
+        button:hover {
+            background-color: #9d3a2e;
+        }
+
+        button:disabled {
+            background-color: #c9c3b6;
+            cursor: default;
+        }
+
+        .quick {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            font-size: 12.5px;
+            color: #8b95a3;
+        }
+
+        .quick button {
+            padding: 4px 12px;
+            font-size: 12.5px;
+            color: #13283d;
+            background-color: #f1ebdc;
+            border: 1px solid #e0d9c8;
+        }
+
+        .quick button:hover {
+            color: #b8483a;
+            border-color: #c9a227;
+            background-color: #fbf4e2;
+        }
+
+        .body-label {
+            display: block;
+            margin: 18px 0 8px;
+            font-size: 12.5px;
+            letter-spacing: .04em;
+            color: #67717f;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px 14px;
+            line-height: 1.6;
+            color: #e8e3d6;
+            background-color: #0c1723;
+            border-color: #0c1723;
+            resize: vertical;
+        }
+
+        textarea:disabled {
+            color: #6b7686;
+            background-color: #17222f;
+        }
+
+        /* 状态条 */
+        .statusbar {
+            margin: 0 0 12px;
+            padding: 10px 14px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            color: #67717f;
+            background-color: #fffdf8;
+            border: 1px dashed #d9d5cb;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+
+        .statusbar.ok {
+            color: #2f6b3f;
+            background-color: #edf3ec;
+            border-color: #bcd6bd;
+        }
+
+        .statusbar.bad {
+            color: #b8483a;
+            background-color: #fbeeea;
+            border-color: #e6bcb2;
+        }
+
+        .statusbar b {
+            font-size: 14px;
+        }
+
+        /* 错误提示 */
+        .alert {
+            margin: 0 0 12px;
+            padding: 12px 16px;
+            font-size: 13.5px;
+            line-height: 1.8;
+            border-radius: 4px;
+            border-left: 3px solid #b8483a;
+            background-color: #fbeeea;
+            color: #8f3428;
+        }
+
+        .alert[hidden] {
+            display: none;
+        }
+
+        .alert b {
+            display: block;
+            margin-bottom: 2px;
+            color: #b8483a;
+        }
+
+        .result {
+            margin: 0;
+            padding: 16px 18px;
+            min-height: 120px;
+            max-height: 420px;
+            overflow: auto;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #d8e3d6;
+            background-color: #0c1723;
+            border-radius: 6px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        details.raw {
+            margin-top: 14px;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-radius: 6px;
+        }
+
+        details.raw summary {
+            padding: 11px 16px;
+            font-size: 13px;
+            color: #13283d;
+            cursor: pointer;
+        }
+
+        details.raw pre {
+            margin: 0 12px 12px;
+            padding: 12px 14px;
+            max-height: 280px;
+            overflow: auto;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.5px;
+            line-height: 1.7;
+            color: #e8e3d6;
+            background-color: #0c1723;
+            border-radius: 4px;
+        }
+
+        .notes {
+            display: flex;
+            gap: 14px;
+            margin-top: 10px;
+        }
+
+        .notes div {
+            flex: 1;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #67717f;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-top: 3px solid #c9a227;
+        }
+
+        .notes b {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 13px;
+            color: #b8483a;
+        }
+
+        @media (max-width: 700px) {
+            .row {
+                flex-wrap: wrap;
+            }
+
+            input[type="text"] {
+                flex: 1 0 100%;
+                order: 3;
+            }
+
+            .notes {
+                display: block;
+            }
+
+            .notes div {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h2>24001010528 滕菲：远程数据接口测试</h2>
+    <p class="tip">
+        接口就是一个网址：发一个请求过去，它回一段 JSON。GET 用来取数据，POST 用来新建数据，
+        请求体写在 body 里、格式是 JSON。本页用 <code>fetch</code> 直接请求
+        <code>jsonplaceholder.typicode.com</code>（它允许跨域），把状态码、耗时、返回内容和错误信息都显示出来。
+    </p>
+
+    <section class="panel">
+        <div class="row">
+            <select id="method" aria-label="请求方法">
+                <option value="GET">GET</option>
+                <option value="POST">POST</option>
+                <option value="PUT">PUT</option>
+                <option value="PATCH">PATCH</option>
+                <option value="DELETE">DELETE</option>
+            </select>
+            <input id="url" type="text" spellcheck="false" aria-label="接口地址"
+                value="https://jsonplaceholder.typicode.com/posts?_limit=3">
+            <button id="send" type="button">发送请求</button>
+        </div>
+
+        <div class="quick">
+            <span>快捷：</span>
+            <button type="button" data-method="GET"
+                data-url="https://jsonplaceholder.typicode.com/posts?_limit=3">GET 三篇文章</button>
+            <button type="button" data-method="GET" data-url="https://jsonplaceholder.typicode.com/posts/1">GET 单条</button>
+            <button type="button" data-method="GET" data-url="https://jsonplaceholder.typicode.com/posts/9999">GET 一个
+                404</button>
+            <button type="button" data-method="POST" data-url="https://jsonplaceholder.typicode.com/posts">POST
+                新建</button>
+        </div>
+
+        <label class="body-label" for="body">请求体（JSON，只有 POST / PUT / PATCH 会发送）</label>
+        <textarea id="body" rows="6" spellcheck="false">{
+  "title": "17-4 接口测试",
+  "body": "这条数据由浏览器用 fetch POST 提交",
+  "userId": 1
+}</textarea>
+    </section>
+
+    <h3>响应</h3>
+    <div id="statusbar" class="statusbar">还没有发送请求。点上面的「发送请求」试试。</div>
+    <div id="alert" class="alert" hidden></div>
+    <pre id="result" class="result">响应内容会显示在这里。</pre>
+
+    <details class="raw">
+        <summary>查看请求详情与响应头</summary>
+        <pre id="meta">还没有请求。</pre>
+    </details>
+
+    <h3>三种要分清的情况</h3>
+    <div class="notes">
+        <div><b>请求成功</b>HTTP 2xx，<code>res.ok</code> 为 true，正常拿到 JSON 渲染。</div>
+        <div><b>HTTP 错误</b>4xx / 5xx，请求其实发出去了，但服务端拒绝。<code>res.ok</code> 是 false，
+            <b>不会进 catch</b>，必须自己判断。</div>
+        <div><b>网络错误</b>断网、域名写错、没开 CORS，才会抛异常进 catch，这时候连状态码都没有。</div>
+    </div>
+
+    <script>
+        var methodEl = document.getElementById("method");
+        var urlEl = document.getElementById("url");
+        var bodyEl = document.getElementById("body");
+        var sendBtn = document.getElementById("send");
+        var statusbar = document.getElementById("statusbar");
+        var alertEl = document.getElementById("alert");
+        var resultEl = document.getElementById("result");
+        var metaEl = document.getElementById("meta");
+
+        /* 接口返回的文字不可信，拼进 innerHTML 前统一转义 */
+        function esc(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        function setAlert(html) {
+            if (!html) {
+                alertEl.hidden = true;
+                alertEl.innerHTML = "";
+                return;
+            }
+            alertEl.hidden = false;
+            alertEl.innerHTML = html;
+        }
+
+        /* GET / DELETE 不需要请求体，输入框变灰并禁用 */
+        function syncBody() {
+            var noBody = methodEl.value === "GET" || methodEl.value === "DELETE";
+            bodyEl.disabled = noBody;
+        }
+
+        function send() {
+            var method = methodEl.value;
+            var url = urlEl.value.trim();
+
+            if (!url) {
+                setAlert("<b>地址是空的</b>至少要写一个 https:// 开头的接口地址。");
+                return;
+            }
+            if (!/^https?:\/\//i.test(url)) {
+                setAlert("<b>地址格式不对</b>要带上协议，例如 https://jsonplaceholder.typicode.com/posts");
+                return;
+            }
+
+            var opts = { method: method };
+            var bodyText = bodyEl.value;
+
+            if (method !== "GET" && method !== "DELETE" && bodyText.trim()) {
+                /* 先校验 JSON：自己写错格式，就别浪费一次请求 */
+                try {
+                    JSON.parse(bodyText);
+                } catch (err) {
+                    setAlert("<b>请求体不是合法的 JSON</b>" + esc(err.message) + "。改正后再发送。");
+                    return;
+                }
+                opts.headers = { "Content-Type": "application/json" };
+                opts.body = bodyText;
+            }
+
+            sendBtn.disabled = true;
+            setAlert("");
+            statusbar.className = "statusbar";
+            statusbar.textContent = method + " " + url + " ……";
+            resultEl.textContent = "请求中…";
+            metaEl.textContent = "请求中…";
+
+            var start = Date.now();
+
+            fetch(url, opts)
+                .then(function (res) {
+                    var ms = Date.now() - start;
+                    return res.text().then(function (text) {
+                        showResponse(res, text, ms, method, url, opts);
+                    });
+                })
+                .catch(function (err) {
+                    statusbar.className = "statusbar bad";
+                    statusbar.textContent = "请求没有完成";
+                    resultEl.textContent = "没有拿到任何响应体。";
+                    setAlert("<b>网络层失败：" + esc(err.message) + "</b>" +
+                        "这类错误才会进 catch —— 常见原因：断网、域名拼错、接口没允许跨域（CORS）、HTTPS 证书有问题。");
+                    metaEl.textContent = "请求\n" + method + " " + url + "\n\n没有响应头，因为请求根本没走通。";
+                })
+                .finally(function () {
+                    sendBtn.disabled = false;
+                });
+        }
+
+        function showResponse(res, text, ms, method, url, opts) {
+            var type = res.headers.get("content-type") || "未知类型";
+
+            /* 能解析就格式化，不能解析就原样显示 */
+            var pretty = text;
+            try {
+                pretty = JSON.stringify(JSON.parse(text), null, 2);
+            } catch (e) {
+                /* 不是 JSON，保持原文 */
+            }
+            resultEl.textContent = pretty || "（响应体是空的）";
+
+            statusbar.className = "statusbar " + (res.ok ? "ok" : "bad");
+            statusbar.innerHTML = "<b>" + res.status + " " + esc(res.statusText) + "</b>" +
+                " · " + ms + " ms · " + text.length + " 字符 · " + esc(type);
+
+            if (res.ok) {
+                setAlert("");
+            } else {
+                setAlert("<b>HTTP " + res.status + "：" + esc(res.statusText) + "</b>" +
+                    "请求发出去了，服务器拒绝了它。注意 fetch 不会因为 4xx / 5xx 报错，只能靠 res.ok 判断 —— " +
+                    "这就是上面状态条变红、但页面没抛异常的原因。");
+            }
+
+            var lines = [];
+            res.headers.forEach(function (v, k) {
+                lines.push(k + ": " + v);
+            });
+
+            metaEl.textContent =
+                "请求\n" + method + " " + url +
+                (opts.body ? "\n\n请求头\nContent-Type: application/json\n\n请求体\n" + opts.body : "") +
+                "\n\n响应头\n" + (lines.length ? lines.join("\n") : "（浏览器没有暴露任何响应头）");
+        }
+
+        methodEl.addEventListener("change", syncBody);
+
+        document.querySelectorAll(".quick button").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                methodEl.value = btn.dataset.method;
+                urlEl.value = btn.dataset.url;
+                syncBody();
+                send();
+            });
+        });
+
+        sendBtn.addEventListener("click", send);
+
+        syncBody();
+        console.log("24001010528 滕菲：接口测试页，默认接口 https://jsonplaceholder.typicode.com/posts");
+    </script>
+</body>
+
+</html>

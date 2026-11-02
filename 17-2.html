@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24001010528 滕菲 · fetch 取接口数据</title>
+    <style>
+        body {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            font-size: 15px;
+            line-height: 1.75;
+            color: #17202d;
+            background-color: #f6f3ec;
+        }
+
+        h2 {
+            margin: 0 0 8px;
+            font-size: 24px;
+            color: #13283d;
+        }
+
+        h3 {
+            margin: 42px 0 14px;
+            padding-bottom: 8px;
+            font-size: 18px;
+            color: #13283d;
+            border-bottom: 1px solid #d9d5cb;
+        }
+
+        .tip {
+            max-width: 860px;
+            margin: 0 0 24px;
+            padding-left: 14px;
+            font-size: 14px;
+            color: #67717f;
+            border-left: 3px solid #c9a227;
+        }
+
+        code {
+            padding: 1px 6px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            color: #13283d;
+            background-color: #efeadd;
+            border-radius: 3px;
+        }
+
+        /* 接口地址条 */
+        .api {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 14px 18px;
+            font-size: 13px;
+            color: #f3efe6;
+            background-color: #13283d;
+            border-radius: 6px;
+        }
+
+        .api .method {
+            padding: 2px 10px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            color: #13283d;
+            background-color: #c9a227;
+            border-radius: 3px;
+        }
+
+        .api .url {
+            padding: 0;
+            color: #e8e3d6;
+            background: none;
+            word-break: break-all;
+        }
+
+        .api .ret {
+            margin-left: auto;
+            color: #9aa7b5;
+            font-size: 12.5px;
+        }
+
+        /* 三步 */
+        .steps {
+            display: flex;
+            gap: 14px;
+            margin-top: 18px;
+        }
+
+        .steps div {
+            flex: 1;
+            padding: 14px 16px;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-top: 3px solid #c9a227;
+        }
+
+        .steps b {
+            display: block;
+            margin-bottom: 4px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13.5px;
+            color: #b8483a;
+        }
+
+        .steps span {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #67717f;
+        }
+
+        /* 实时请求面板 */
+        .panel {
+            margin-bottom: 18px;
+            padding: 20px 22px 22px;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-radius: 8px;
+            box-shadow: 0 10px 26px rgba(19, 40, 61, .07);
+        }
+
+        .panel-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #d9d5cb;
+        }
+
+        .panel-title {
+            font-size: 12px;
+            letter-spacing: .1em;
+            color: #67717f;
+        }
+
+        button {
+            padding: 7px 20px;
+            font-family: inherit;
+            font-size: 13.5px;
+            color: #fff;
+            background-color: #b8483a;
+            border: 0;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #9d3a2e;
+        }
+
+        button:disabled {
+            background-color: #c9c3b6;
+            cursor: default;
+        }
+
+        .quote-box {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 132px;
+        }
+
+        .quote {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 22px;
+            line-height: 1.7;
+            color: #13283d;
+        }
+
+        .author {
+            margin: 14px 0 0;
+            font-size: 14px;
+            color: #b8483a;
+        }
+
+        .qid {
+            margin: 6px 0 0;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            color: #8b95a3;
+        }
+
+        .state {
+            margin: 0;
+            font-size: 14px;
+            color: #8b95a3;
+        }
+
+        .state.error {
+            color: #b8483a;
+        }
+
+        .status {
+            margin: 18px 0 0;
+            padding-top: 12px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.5px;
+            color: #67717f;
+            border-top: 1px dashed #d9d5cb;
+        }
+
+        .status b {
+            color: #13283d;
+        }
+
+        pre {
+            margin: 0;
+            padding: 16px 18px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #e8e3d6;
+            background-color: #0c1723;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+
+        pre .cmt {
+            color: #7f8c9b;
+        }
+
+        /* 原始 JSON 折叠块 */
+        details.raw {
+            margin-bottom: 26px;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-radius: 6px;
+        }
+
+        details.raw summary {
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #13283d;
+            cursor: pointer;
+        }
+
+        details.raw pre {
+            margin: 0 12px 12px;
+        }
+
+        /* 404 演示 */
+        .try {
+            padding: 20px 22px;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-left: 3px solid #b8483a;
+            border-radius: 6px;
+        }
+
+        .try .out {
+            margin-top: 14px;
+            padding: 14px 16px;
+            font-size: 13.5px;
+            line-height: 1.8;
+            background-color: #f7f4ec;
+            border: 1px dashed #d9d5cb;
+            border-radius: 6px;
+        }
+
+        .try .out p {
+            margin: 0 0 6px;
+        }
+
+        .try .out b {
+            color: #b8483a;
+        }
+
+        @media (max-width: 760px) {
+            .steps {
+                display: block;
+            }
+
+            .steps div {
+                margin-bottom: 10px;
+            }
+
+            .api .ret {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h2>24001010528 滕菲：用 fetch 取一个接口的数据</h2>
+    <p class="tip">
+        接口就是一个会返回 JSON 的网址。<code>fetch()</code> 是浏览器自带的函数，不需要引任何库，
+        给它一个地址就返回一个 Promise；请求回来后再用 <code>res.json()</code> 把响应体读成对象。
+        本页所有数据都是页面打开时从接口实时取回来的。
+    </p>
+
+    <div class="api">
+        <span class="method">GET</span>
+        <code class="url">https://dummyjson.com/quotes/random</code>
+        <span class="ret">返回 { id, quote, author }</span>
+    </div>
+
+    <div class="steps">
+        <div><b>① fetch(url)</b><span>发出请求，马上得到一个 Promise</span></div>
+        <div><b>② res.json()</b><span>把响应体读出来，转成 JS 对象</span></div>
+        <div><b>③ then / catch</b><span>成功在 then 里渲染，失败在 catch 里提示</span></div>
+    </div>
+
+    <h3>一、实时请求：随机一条名言</h3>
+    <div class="panel">
+        <div class="panel-head">
+            <span class="panel-title">接口返回 / RESPONSE</span>
+            <button id="reload" type="button">换一条</button>
+        </div>
+        <div id="quote-box" class="quote-box"></div>
+        <p class="status" id="status">正在请求…</p>
+    </div>
+
+    <p class="tip">
+        下面就是这段效果的全部代码：<code>res.ok</code> 用来判断 HTTP 状态码是不是 2xx，
+        <code>Date.now()</code> 前后相减得到这次请求的耗时。
+    </p>
+    <pre>var API = "https://dummyjson.com/quotes/random";
+
+fetch(API)
+    .then(function (res) {
+        if (!res.ok) {                        <span class="cmt">// 404、500 都算失败</span>
+            throw new Error("HTTP " + res.status);
+        }
+        return res.json();                    <span class="cmt">// 响应体 → 对象</span>
+    })
+    .then(function (data) {
+        box.innerHTML = "&lt;blockquote&gt;" + data.quote + "&lt;/blockquote&gt;";
+    })
+    .catch(function (err) {
+        box.innerHTML = "请求失败：" + err.message;
+    })
+    .finally(function () {
+        button.disabled = false;              <span class="cmt">// 不管成功失败都恢复按钮</span>
+    });</pre>
+
+    <details class="raw">
+        <summary>展开看一眼接口原样返回的 JSON</summary>
+        <pre id="raw">正在请求…</pre>
+    </details>
+
+    <h3>二、404 也要自己判断</h3>
+    <p class="tip">
+        这是 fetch 最容易踩的坑：只有断网、域名写错这类网络层错误才会进 catch，
+        服务器返回 <b>404 / 500</b> 时照样进 then，必须自己看 <code>res.ok</code>。
+    </p>
+    <div class="try">
+        <button id="bad-btn" type="button">请求一个不存在的商品</button>
+        <div class="out" id="bad-out">
+            <p>点一下按钮：<code>https://dummyjson.com/products/99999</code> 会返回 404，看看它进 then 还是 catch。</p>
+        </div>
+    </div>
+
+    <h3>三、同样的逻辑，async / await 写法</h3>
+    <p class="tip">用 async / await 可以把 Promise 写成同步的样子，try…catch 同时接住网络错误和 HTTP 错误。</p>
+    <pre>async function loadQuote() {
+    try {
+        var res = await fetch(API);
+        if (!res.ok) {
+            throw new Error("HTTP " + res.status);
+        }
+        var data = await res.json();
+        render(data);            <span class="cmt">// 拿到数据再渲染</span>
+    } catch (err) {
+        showError(err);          <span class="cmt">// 任何一步出错都到这里</span>
+    }
+}</pre>
+
+    <script>
+        var API = "https://dummyjson.com/quotes/random";
+
+        var btn = document.getElementById("reload");
+        var box = document.getElementById("quote-box");
+        var status = document.getElementById("status");
+        var raw = document.getElementById("raw");
+
+        /* 接口返回的内容来自网络，拼进 innerHTML 前先转义，防止破坏页面结构 */
+        function esc(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        /* ==================== 一、请求并渲染 ==================== */
+        function load() {
+            btn.disabled = true;
+            box.innerHTML = '<p class="state">正在请求接口…</p>';
+            status.textContent = "GET " + API + " …";
+            raw.textContent = "正在请求…";
+
+            var start = Date.now();
+
+            fetch(API)
+                .then(function (res) {
+                    if (!res.ok) {
+                        throw new Error("HTTP " + res.status);
+                    }
+                    return res.json();
+                })
+                .then(function (data) {
+                    var ms = Date.now() - start;
+                    box.innerHTML =
+                        '<blockquote class="quote">“' + esc(data.quote) + '”</blockquote>' +
+                        '<p class="author">— ' + esc(data.author) + "</p>" +
+                        '<p class="qid">id = ' + data.id + "</p>";
+                    status.innerHTML = "HTTP <b>200</b> · 耗时 <b>" + ms + " ms</b> · 返回 3 个字段：id / quote / author";
+                    raw.textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(function (err) {
+                    box.innerHTML = '<p class="state error">请求失败：' + esc(err.message) + "</p>";
+                    status.textContent = "错误：" + err.message + "（先检查网络，再检查地址）";
+                    raw.textContent = "没有拿到数据";
+                })
+                .finally(function () {
+                    btn.disabled = false;
+                });
+        }
+
+        /* ==================== 二、404 演示 ==================== */
+        var badBtn = document.getElementById("bad-btn");
+        var badOut = document.getElementById("bad-out");
+
+        badBtn.addEventListener("click", function () {
+            badBtn.disabled = true;
+            badOut.innerHTML = "<p>正在请求…</p>";
+
+            fetch("https://dummyjson.com/products/99999")
+                .then(function (res) {
+                    return res.json().then(function (data) {
+                        badOut.innerHTML =
+                            "<p>res.status = <b>" + res.status + "</b>　res.ok = <b>" + res.ok + "</b></p>" +
+                            "<p>它走的是 <b>then</b>，不是 catch：HTTP 404 对 fetch 来说也算「请求成功返回了」。</p>" +
+                            "<p>返回体：" + esc(JSON.stringify(data)) + "</p>";
+                    });
+                })
+                .catch(function (err) {
+                    badOut.innerHTML = "<p>这次走了 catch：" + esc(err.message) + "</p>";
+                })
+                .finally(function () {
+                    badBtn.disabled = false;
+                });
+        });
+
+        load();
+
+        console.log("24001010528 滕菲：fetch 取接口数据");
+        console.log("接口地址：" + API);
+    </script>
+</body>
+
+</html>

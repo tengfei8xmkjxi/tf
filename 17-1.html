@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24001010528 滕菲 · JSON 数据的展示与解析</title>
+    <style>
+        body {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            font-size: 15px;
+            line-height: 1.75;
+            color: #17202d;
+            background-color: #f6f3ec;
+        }
+
+        h2 {
+            margin: 0 0 8px;
+            font-size: 24px;
+            color: #13283d;
+        }
+
+        h3 {
+            margin: 42px 0 14px;
+            padding-bottom: 8px;
+            font-size: 18px;
+            color: #13283d;
+            border-bottom: 1px solid #d9d5cb;
+        }
+
+        .tip {
+            max-width: 860px;
+            margin: 0 0 24px;
+            padding-left: 14px;
+            font-size: 14px;
+            color: #67717f;
+            border-left: 3px solid #c9a227;
+        }
+
+        code {
+            padding: 1px 6px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            color: #13283d;
+            background-color: #efeadd;
+            border-radius: 3px;
+        }
+
+        /* JSON 的三条规矩 */
+        .rules {
+            display: flex;
+            gap: 14px;
+        }
+
+        .rules div {
+            flex: 1;
+            padding: 14px 16px;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-top: 3px solid #c9a227;
+        }
+
+        .rules b {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 14px;
+            color: #b8483a;
+        }
+
+        .rules span {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #67717f;
+        }
+
+        pre {
+            margin: 0;
+            padding: 16px 18px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #e8e3d6;
+            background-color: #0c1723;
+            border-radius: 6px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        pre .cmt {
+            color: #7f8c9b;
+        }
+
+        pre.json {
+            margin-bottom: 16px;
+            max-height: 420px;
+            overflow-y: auto;
+        }
+
+        /* 代码 + 结果 两栏对照 */
+        .demo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 26px;
+            align-items: start;
+        }
+
+        .out {
+            padding: 16px 18px;
+            font-size: 13.5px;
+            line-height: 1.9;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-radius: 6px;
+        }
+
+        .out span {
+            display: block;
+        }
+
+        .out em {
+            font-style: normal;
+            font-weight: 700;
+            color: #b8483a;
+        }
+
+        .out .label {
+            display: block;
+            margin-bottom: 6px;
+            padding-bottom: 6px;
+            font-size: 12px;
+            letter-spacing: .06em;
+            color: #67717f;
+            border-bottom: 1px dashed #d9d5cb;
+        }
+
+        .out .mono {
+            margin: 6px 0 0;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.5px;
+            line-height: 1.7;
+            color: #13283d;
+            word-break: break-all;
+        }
+
+        /* 由 JSON 生成的表格 */
+        table.data {
+            width: 100%;
+            margin-top: 6px;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        table.data th,
+        table.data td {
+            padding: 7px 8px;
+            text-align: left;
+            border-bottom: 1px solid #e3dfd4;
+        }
+
+        table.data th {
+            font-weight: 400;
+            font-size: 12px;
+            letter-spacing: .04em;
+            color: #67717f;
+        }
+
+        table.data td {
+            font-family: Consolas, "Courier New", monospace;
+            color: #13283d;
+        }
+
+        /* 自己动手解析 */
+        .try {
+            margin-top: 8px;
+            padding: 18px;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-radius: 6px;
+        }
+
+        .try label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #67717f;
+        }
+
+        textarea {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 12px 14px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #e8e3d6;
+            background-color: #0c1723;
+            border: 1px solid #0c1723;
+            border-radius: 4px;
+            resize: vertical;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 8px 22px;
+            font-family: inherit;
+            font-size: 14px;
+            color: #fff;
+            background-color: #b8483a;
+            border: 0;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #9d3a2e;
+        }
+
+        .try .out {
+            margin-top: 12px;
+        }
+
+        @media (max-width: 760px) {
+            .rules {
+                display: block;
+            }
+
+            .rules div {
+                margin-bottom: 10px;
+            }
+
+            .demo {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h2>24001010528 滕菲：JSON —— 数据的书写格式</h2>
+    <p class="tip">
+        JSON（JavaScript Object Notation）是一种纯文本的数据格式：<code>{}</code> 表示对象，<code>[]</code> 表示数组，
+        键名必须写成双引号。它和编程语言无关，浏览器、服务器、手机都能读，所以接口传数据几乎都用 JSON。
+        本页把「一段 JSON 字符串」和「它解析出来的对象」对着展示。
+    </p>
+
+    <div class="rules">
+        <div><b>① 只有两种结构</b><span>对象 <code>{}</code> 是无序的键值对，数组 <code>[]</code> 是值的有序列表</span></div>
+        <div><b>② 只有六种值</b><span>字符串、数字、布尔、null、对象、数组；没有 undefined，也没有函数</span></div>
+        <div><b>③ 语法很严格</b><span>键名和字符串必须用双引号，最后一项后面不能多写逗号</span></div>
+    </div>
+
+    <h3>一、一段 JSON 长什么样</h3>
+    <p class="tip">
+        下面这段文本是 <code>JSON.stringify(数据, null, 2)</code> 的输出，第三个参数 2 表示用 2 个空格缩进，
+        所以人能一眼看出层级。字符串里没有颜色、没有样式，只有"键"和"值"。
+    </p>
+    <pre class="json" id="json-text"></pre>
+
+    <h3>二、JSON.parse()：字符串 → 对象</h3>
+    <p class="tip">
+        接口返回的响应体是一段<b>字符串</b>，要先 parse 成对象，才能用点号取值、用 length 数个数。
+        这一步不做，<code>data.works</code> 只会得到 undefined。
+    </p>
+    <div class="demo">
+        <pre><span class="cmt">// jsonText 就是上面那段字符串</span>
+var data = JSON.parse(jsonText);
+
+console.log(typeof jsonText);   <span class="cmt">// "string"</span>
+console.log(typeof data);       <span class="cmt">// "object"</span>
+console.log(data.works[1].title);</pre>
+        <div class="out" id="out-parse"></div>
+    </div>
+
+    <h3>三、JSON.stringify()：对象 → 字符串</h3>
+    <p class="tip">
+        方向反过来：把对象变成字符串，才能存进 localStorage、写进文件或者发送给服务器。
+        省略第三个参数就是一行到底，适合传输；带上缩进就是给人阅读的格式。
+    </p>
+    <div class="demo">
+        <pre><span class="cmt">// 不带缩进：一行到底，适合传输</span>
+var oneLine = JSON.stringify(data);
+
+<span class="cmt">// 带缩进：给人看的格式</span>
+var pretty = JSON.stringify(data, null, 2);</pre>
+        <div class="out" id="out-stringify"></div>
+    </div>
+
+    <h3>四、用 JSON 数据点出表格</h3>
+    <p class="tip">
+        JSON 只是数据，页面上长什么样要靠 DOM 决定。下面把 <code>data.works</code> 这个数组循环成表格行，
+        数组有几项，表格就有几行。
+    </p>
+    <div class="demo">
+        <pre>var rows = "";
+for (var i = 0; i &lt; data.works.length; i++) {
+    var w = data.works[i];
+    rows += "&lt;tr&gt;&lt;td&gt;" + w.page + "&lt;/td&gt;"
+          + "&lt;td&gt;" + w.title + "&lt;/td&gt;"
+          + "&lt;td&gt;" + w.file + "&lt;/td&gt;&lt;/tr&gt;";
+}
+document.getElementById("work-table").innerHTML = rows;</pre>
+        <div class="out">
+            <span class="label">渲染结果</span>
+            <table class="data">
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>作品</th>
+                        <th>文件</th>
+                    </tr>
+                </thead>
+                <tbody id="work-table"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <h3>五、parse 会抛错，所以要用 try…catch</h3>
+    <p class="tip">
+        下面这段故意写错：键名 <code>student</code> 没有加双引号。JSON.parse 遇到不合法的格式会直接抛
+        <code>SyntaxError</code>，如果不用 try…catch 接住，后面的代码就全部停住了。
+    </p>
+    <div class="demo">
+        <pre>var text = '{student: "滕菲", score: 95}';   <span class="cmt">// 错：键名少了双引号</span>
+
+try {
+    var obj = JSON.parse(text);
+    console.log("解析成功", obj);
+} catch (err) {
+    console.log(err.name);      <span class="cmt">// SyntaxError</span>
+    console.log(err.message);   <span class="cmt">// 告诉你错在第几个字符</span>
+}</pre>
+        <div class="out" id="out-error"></div>
+    </div>
+
+    <div class="try">
+        <label for="try-input">换你写一段 JSON，点「解析」看看结果（默认这段是合法的）：</label>
+        <textarea id="try-input" rows="7">{"file":"17-1.html","ok":true,"tags":["json","parse"],"score":100}</textarea>
+        <button id="try-btn" type="button">解析</button>
+        <div class="out" id="try-out"></div>
+    </div>
+
+    <script>
+        /* ==================== 一份数据：键值对 + 数组 + 各种值类型 ==================== */
+        var data = {
+            student: "滕菲",
+            id: "24001010528",
+            course: "高级网页设计",
+            finished: true,
+            score: 95,
+            note: null,
+            works: [
+                { page: 20, title: "数7游戏", file: "15-1.html" },
+                { page: 21, title: "条件与循环", file: "15-2.html" },
+                { page: 23, title: "JSON 展示", file: "17-1.html" }
+            ]
+        };
+
+        // 对象 → 字符串（缩进 2 个空格），直接写进上面的 pre
+        var jsonText = JSON.stringify(data, null, 2);
+        document.getElementById("json-text").textContent = jsonText;
+
+        /* ==================== 转义：数据里的 < > & 不能直接拼进 innerHTML ==================== */
+        function esc(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        /* ==================== 二、parse：字符串变对象 ==================== */
+        var parsed = JSON.parse(jsonText);
+        var html = '<span class="label">JSON.parse 之后可以这样取值</span>';
+        html += "<span>typeof jsonText　→　<em>" + typeof jsonText + "</em></span>";
+        html += "<span>typeof parsed　→　<em>" + typeof parsed + "</em></span>";
+        html += "<span>parsed.student　→　<em>" + parsed.student + "</em></span>";
+        html += "<span>parsed.works.length　→　<em>" + parsed.works.length + " 件作品</em></span>";
+        html += "<span>parsed.works[1].title　→　<em>" + parsed.works[1].title + "</em></span>";
+        html += "<span>parsed.note　→　<em>" + parsed.note + "</em>（JSON 没有 undefined，空值只能用 null）</span>";
+        document.getElementById("out-parse").innerHTML = html;
+
+        /* ==================== 三、stringify：对象变字符串 ==================== */
+        var oneLine = JSON.stringify(data);
+        var pretty = JSON.stringify(data, null, 2);
+        html = '<span class="label">两种写法得到的结果</span>';
+        html += "<span>单行字符数　→　<em>" + oneLine.length + " 个字符</em></span>";
+        html += "<span>缩进后的行数　→　<em>" + pretty.split("\n").length + " 行</em></span>";
+        html += '<span style="margin-top:8px">单行内容（太长会自动折行）：</span>';
+        html += '<p class="mono">' + esc(oneLine) + "</p>";
+        document.getElementById("out-stringify").innerHTML = html;
+
+        /* ==================== 四、数组循环成表格 ==================== */
+        var rows = "";
+        for (var i = 0; i < data.works.length; i++) {
+            var w = data.works[i];
+            rows += "<tr><td>" + w.page + "</td><td>" + w.title + "</td><td>" + w.file + "</td></tr>";
+        }
+        document.getElementById("work-table").innerHTML = rows;
+
+        /* ==================== 五、错误演示 ==================== */
+        html = '<span class="label">try…catch 抓到的错误</span>';
+        try {
+            JSON.parse('{student: "滕菲", score: 95}');
+        } catch (err) {
+            html += "<span>err.name　→　<em>" + err.name + "</em></span>";
+            html += "<span>err.message　→　" + esc(err.message) + "</span>";
+        }
+        html += '<span style="margin-top:10px">同一段文字如果键名补上双引号，就能解析成功。</span>';
+        document.getElementById("out-error").innerHTML = html;
+
+        /* ==================== 自己动手 ==================== */
+        document.getElementById("try-btn").addEventListener("click", function () {
+            var text = document.getElementById("try-input").value;
+            var out = document.getElementById("try-out");
+            try {
+                var obj = JSON.parse(text);
+                out.innerHTML =
+                    '<span class="label">解析成功</span>' +
+                    "<span>得到的类型　→　<em>" + Object.prototype.toString.call(obj) + "</em></span>" +
+                    '<span style="margin-top:8px">再 stringify 回来：</span>' +
+                    '<pre style="margin-top:8px">' + esc(JSON.stringify(obj, null, 2)) + "</pre>";
+            } catch (err) {
+                out.innerHTML =
+                    '<span class="label">解析失败</span>' +
+                    "<span>err.name　→　<em>" + err.name + "</em></span>" +
+                    "<span>err.message　→　" + esc(err.message) + "</span>";
+            }
+        });
+
+        /* ==================== 控制台输出，方便老师核对 ==================== */
+        console.log("24001010528 滕菲：JSON 展示页");
+        console.log("stringify 得到的 JSON 字符串：\n" + jsonText);
+        console.log("parse 后 typeof = " + typeof parsed + "，作品数 = " + parsed.works.length);
+        console.log("stringify 单行长度 = " + oneLine.length + " 个字符");
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24001010528 滕菲 · 商品详情（fetch 接口）</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            max-width: 1040px;
+            margin: 0 auto;
+            padding: 24px 20px 60px;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            font-size: 15px;
+            line-height: 1.75;
+            color: #17202d;
+            background-color: #f6f3ec;
+        }
+
+        .crumb {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-size: 13px;
+            color: #8b95a3;
+        }
+
+        .crumb a {
+            color: #b8483a;
+            text-decoration: none;
+        }
+
+        .crumb a:hover {
+            text-decoration: underline;
+        }
+
+        .detail {
+            display: grid;
+            grid-template-columns: 1fr 1.05fr;
+            gap: 34px;
+            margin-top: 22px;
+            align-items: start;
+        }
+
+        /* 左：图片 */
+        .gallery {
+            position: sticky;
+            top: 20px;
+        }
+
+        .main-img {
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            background-color: #fff;
+            border: 1px solid #d9d5cb;
+            border-radius: 8px;
+        }
+
+        .main-img img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            padding: 18px;
+            object-fit: contain;
+        }
+
+        .thumbs {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .thumbs img {
+            width: 64px;
+            height: 64px;
+            padding: 4px;
+            object-fit: contain;
+            background-color: #fff;
+            border: 1px solid #d9d5cb;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: border-color .18s ease;
+        }
+
+        .thumbs img.on,
+        .thumbs img:hover {
+            border-color: #c9a227;
+        }
+
+        /* 右：信息 */
+        .info {
+            min-width: 0;
+        }
+
+        .cat {
+            display: inline-block;
+            padding: 2px 10px;
+            font-size: 11px;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            color: #13283d;
+            background-color: #efeadd;
+            border-radius: 999px;
+        }
+
+        .title {
+            margin: 10px 0 6px;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 30px;
+            line-height: 1.25;
+            color: #13283d;
+        }
+
+        .brand {
+            margin: 0 0 16px;
+            font-size: 12.5px;
+            letter-spacing: .04em;
+            color: #8b95a3;
+        }
+
+        .price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 14px 0;
+            border-top: 1px solid #d9d5cb;
+            border-bottom: 1px solid #d9d5cb;
+        }
+
+        .price {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 30px;
+            font-weight: 700;
+            color: #b8483a;
+        }
+
+        .off {
+            padding: 2px 9px;
+            font-size: 12px;
+            color: #fff;
+            background-color: #b8483a;
+            border-radius: 3px;
+        }
+
+        .origin {
+            font-size: 12.5px;
+            color: #8b95a3;
+            text-decoration: line-through;
+        }
+
+        .rate {
+            margin: 12px 0 0;
+            font-size: 14px;
+            letter-spacing: .06em;
+            color: #c9a227;
+        }
+
+        .rate b {
+            font-size: 14px;
+            letter-spacing: 0;
+            color: #13283d;
+        }
+
+        .stock {
+            margin: 4px 0 0;
+            font-size: 13px;
+            color: #67717f;
+        }
+
+        .desc {
+            margin: 18px 0 0;
+            font-size: 14.5px;
+            line-height: 1.85;
+            color: #3d4753;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .tags span {
+            padding: 2px 10px;
+            font-size: 12px;
+            color: #67717f;
+            background-color: #efeadd;
+            border-radius: 999px;
+        }
+
+        .part {
+            margin: 30px 0 12px;
+            padding-bottom: 8px;
+            font-size: 16px;
+            color: #13283d;
+            border-bottom: 1px solid #d9d5cb;
+        }
+
+        .specs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            margin-top: 20px;
+            overflow: hidden;
+            background-color: #e3dfd4;
+            border: 1px solid #e3dfd4;
+            border-radius: 6px;
+        }
+
+        .specs div {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 9px 12px;
+            font-size: 13px;
+            background-color: #fffdf8;
+        }
+
+        .specs span {
+            color: #8b95a3;
+            white-space: nowrap;
+        }
+
+        .specs b {
+            font-weight: 400;
+            text-align: right;
+            color: #17202d;
+        }
+
+        .review {
+            display: flex;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px dashed #d9d5cb;
+        }
+
+        .review .stars {
+            font-size: 13px;
+            letter-spacing: .06em;
+            white-space: nowrap;
+            color: #c9a227;
+        }
+
+        .review .body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .review p {
+            margin: 0;
+            font-size: 13.5px;
+            color: #3d4753;
+        }
+
+        .review .who {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #8b95a3;
+        }
+
+        details.raw {
+            margin-top: 26px;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-radius: 6px;
+        }
+
+        details.raw summary {
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #13283d;
+            cursor: pointer;
+        }
+
+        pre {
+            margin: 0 12px 12px;
+            padding: 14px 16px;
+            max-height: 420px;
+            overflow: auto;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.5px;
+            line-height: 1.7;
+            color: #e8e3d6;
+            background-color: #0c1723;
+            border-radius: 6px;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding-top: 12px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            color: #8b95a3;
+            border-top: 1px dashed #d9d5cb;
+            word-break: break-all;
+        }
+
+        .pager {
+            display: flex;
+            gap: 10px;
+            margin-top: 26px;
+            flex-wrap: wrap;
+        }
+
+        .pager a {
+            padding: 8px 16px;
+            font-size: 13px;
+            color: #13283d;
+            text-decoration: none;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-radius: 4px;
+            transition: border-color .18s ease, color .18s ease;
+        }
+
+        .pager a:hover {
+            color: #b8483a;
+            border-color: #c9a227;
+        }
+
+        .state {
+            padding: 48px 0;
+            text-align: center;
+            font-size: 14px;
+            color: #8b95a3;
+        }
+
+        .state.error {
+            color: #b8483a;
+        }
+
+        @media (max-width: 820px) {
+            .detail {
+                grid-template-columns: 1fr;
+                gap: 22px;
+            }
+
+            .gallery {
+                position: static;
+            }
+
+            .title {
+                font-size: 24px;
+            }
+
+            .specs {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="crumb">
+        <a href="./17-3.html">← 返回商品列表</a>
+        <span>17-3 / 商品详情</span>
+    </nav>
+
+    <main class="detail" id="detail">
+        <div class="gallery">
+            <div class="main-img"><img id="main-img" alt="商品主图"></div>
+            <div class="thumbs" id="thumbs"></div>
+        </div>
+        <div class="info" id="info">
+            <p class="state">正在请求接口…</p>
+        </div>
+    </main>
+
+    <div class="pager" id="pager"></div>
+
+    <script>
+        /* ==================== 从地址栏取 id ====================
+           列表页点进来时地址是 17-3-detail.html?id=3，
+           location.search 就是 "?id=3"，URLSearchParams 负责把它拆成键值对。
+           直接打开本页（没有参数）时默认显示 id = 1。                            */
+        var params = new URLSearchParams(location.search);
+        var id = parseInt(params.get("id"), 10);
+        if (isNaN(id) || id < 1) {
+            id = 1;
+        }
+
+        var API = "https://dummyjson.com/products/";
+
+        var detail = document.getElementById("detail");
+        var mainImg = document.getElementById("main-img");
+        var thumbs = document.getElementById("thumbs");
+        var info = document.getElementById("info");
+        var pager = document.getElementById("pager");
+
+        /* 接口里的文字要先转义，再拼进 innerHTML */
+        function esc(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        /* 个别商品可能缺字段，缺了就用 — 顶上，避免页面上出现 undefined */
+        function val(v, fallback) {
+            if (v === undefined || v === null || v === "") {
+                return fallback || "—";
+            }
+            return v;
+        }
+
+        /* 评分 → 星星 */
+        function stars(n) {
+            var full = Math.round(n);
+            var out = "";
+            for (var i = 0; i < 5; i++) {
+                out += i < full ? "★" : "☆";
+            }
+            return out;
+        }
+
+        function render(p, url, ms) {
+            document.title = p.title + " · 17-3 商品详情";
+
+            /* ---------- 左栏图片：主图 + 缩略图 ---------- */
+            var images = (p.images && p.images.length) ? p.images : [p.thumbnail];
+            mainImg.src = images[0];
+            mainImg.alt = p.title;
+
+            if (images.length > 1) {
+                var th = "";
+                for (var i = 0; i < images.length; i++) {
+                    th += '<img src="' + esc(images[i]) + '" alt="' + esc(p.title) + " 图 " + (i + 1) + '"' +
+                        (i === 0 ? ' class="on"' : "") + ">";
+                }
+                thumbs.innerHTML = th;
+
+                var els = thumbs.getElementsByTagName("img");
+                for (var k = 0; k < els.length; k++) {
+                    els[k].addEventListener("click", function () {
+                        mainImg.src = this.src;
+                        for (var m = 0; m < els.length; m++) {
+                            els[m].className = "";
+                        }
+                        this.className = "on";
+                    });
+                }
+            } else {
+                thumbs.style.display = "none";
+            }
+
+            /* ---------- 右栏信息 ---------- */
+            var tags = p.tags || [];
+            var tagHtml = "";
+            for (var t = 0; t < tags.length; t++) {
+                tagHtml += "<span>" + esc(tags[t]) + "</span>";
+            }
+
+            var reviews = p.reviews || [];
+            var reviewHtml = "";
+            if (reviews.length === 0) {
+                reviewHtml = '<p class="state">这件商品还没有评价。</p>';
+            }
+            for (var r = 0; r < reviews.length; r++) {
+                var rv = reviews[r];
+                reviewHtml += '<div class="review">' +
+                    '<span class="stars">' + stars(rv.rating) + "</span>" +
+                    '<div class="body">' +
+                    "<p>" + esc(rv.comment) + "</p>" +
+                    '<p class="who">' + esc(rv.reviewerName) + " · " + esc(String(rv.date).slice(0, 10)) + "</p>" +
+                    "</div></div>";
+            }
+
+            var d = p.dimensions || {};
+            // 折扣百分比是"降价幅度"，反推原价：原价 = 现价 ÷ (1 - 折扣/100)
+            var origin = p.price / (1 - p.discountPercentage / 100);
+
+            info.innerHTML =
+                '<span class="cat">' + esc(p.category) + "</span>" +
+                '<h2 class="title">' + esc(p.title) + "</h2>" +
+                '<p class="brand">' + esc(val(p.brand, "接口未提供品牌")) + " · SKU " + esc(val(p.sku)) + "</p>" +
+                '<div class="price-row">' +
+                '<span class="price">$' + p.price.toFixed(2) + "</span>" +
+                '<span class="off">-' + p.discountPercentage.toFixed(2) + "%</span>" +
+                '<span class="origin">原价约 $' + origin.toFixed(2) + "</span>" +
+                "</div>" +
+                '<p class="rate">' + stars(p.rating) + " <b>" + p.rating.toFixed(2) + "</b> · " +
+                reviews.length + " 条评价</p>" +
+                '<p class="stock">' + esc(val(p.availabilityStatus)) + " · 库存 " + val(p.stock) + " 件 · 起订 " +
+                val(p.minimumOrderQuantity) + " 件</p>" +
+                '<p class="desc">' + esc(p.description) + "</p>" +
+                '<div class="tags">' + tagHtml + "</div>" +
+                '<div class="specs">' +
+                "<div><span>商品 ID</span><b>" + p.id + "</b></div>" +
+                "<div><span>重量</span><b>" + val(p.weight) + "</b></div>" +
+                "<div><span>宽 × 高 × 深</span><b>" + val(d.width) + " × " + val(d.height) + " × " + val(d.depth) + "</b></div>" +
+                "<div><span>保修</span><b>" + esc(val(p.warrantyInformation)) + "</b></div>" +
+                "<div><span>发货</span><b>" + esc(val(p.shippingInformation)) + "</b></div>" +
+                "<div><span>退货</span><b>" + esc(val(p.returnPolicy)) + "</b></div>" +
+                "</div>" +
+                '<h3 class="part">用户评价</h3>' +
+                reviewHtml +
+                '<details class="raw"><summary>查看接口返回的原始 JSON（' + Object.keys(p).length + " 个字段）</summary>" +
+                '<pre id="raw"></pre></details>' +
+                '<p class="status">HTTP 200 · ' + ms + " ms · GET " + esc(url) + "</p>";
+
+            document.getElementById("raw").textContent = JSON.stringify(p, null, 2);
+
+            /* ---------- 上一篇 / 下一篇：列表页只给了前 8 件 ---------- */
+            var nav = '<a href="./17-3.html">← 返回列表</a>';
+            if (id > 1) {
+                nav += '<a href="./17-3-detail.html?id=' + (id - 1) + '">← 上一件</a>';
+            }
+            if (id < 8) {
+                nav += '<a href="./17-3-detail.html?id=' + (id + 1) + '">下一件 →</a>';
+            }
+            pager.innerHTML = nav;
+        }
+
+        function load() {
+            var url = API + id;
+            var start = Date.now();
+            info.innerHTML = '<p class="state">正在请求 ' + esc(url) + " …</p>";
+
+            fetch(url)
+                .then(function (res) {
+                    if (!res.ok) {
+                        throw new Error("HTTP " + res.status + "，id = " + id + " 的商品不存在");
+                    }
+                    return res.json();
+                })
+                .then(function (p) {
+                    render(p, url, Date.now() - start);
+                })
+                .catch(function (err) {
+                    pager.style.display = "none";
+                    detail.innerHTML = '<div class="state error" style="grid-column:1/-1">' +
+                        "加载失败：" + esc(err.message) +
+                        '<div class="pager" style="justify-content:center">' +
+                        '<a href="./17-3.html">← 返回商品列表</a></div></div>';
+                });
+        }
+
+        load();
+        console.log("24001010528 滕菲：商品详情页，请求 " + API + id);
+    </script>
+</body>
+
+</html>

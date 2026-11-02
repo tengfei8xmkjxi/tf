@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24001010528 滕菲 · 商品列表（fetch 接口）</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            color: #17202d;
+            background-color: #f6f3ec;
+        }
+
+        .head {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .eyebrow {
+            margin: 0 0 6px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .16em;
+            color: #b8483a;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 26px;
+            color: #13283d;
+        }
+
+        .sub {
+            max-width: 720px;
+            margin: 10px 0 0;
+            font-size: 13.5px;
+            color: #67717f;
+        }
+
+        code {
+            padding: 1px 6px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.5px;
+            color: #13283d;
+            background-color: #efeadd;
+            border-radius: 3px;
+            word-break: break-all;
+        }
+
+        button {
+            padding: 9px 22px;
+            font-family: inherit;
+            font-size: 14px;
+            color: #fff;
+            background-color: #b8483a;
+            border: 0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color .18s ease;
+        }
+
+        button:hover {
+            background-color: #9d3a2e;
+        }
+
+        button:disabled {
+            background-color: #c9c3b6;
+            cursor: default;
+        }
+
+        /* 状态条 */
+        .status {
+            margin: 22px 0 16px;
+            padding: 10px 14px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.5px;
+            color: #67717f;
+            background-color: #fffdf8;
+            border: 1px dashed #d9d5cb;
+            border-radius: 4px;
+        }
+
+        .status b {
+            color: #13283d;
+        }
+
+        /* 卡片网格 */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+            gap: 18px;
+        }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            color: inherit;
+            text-decoration: none;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-radius: 8px;
+            transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: #c9a227;
+            box-shadow: 0 14px 28px rgba(19, 40, 61, .1);
+        }
+
+        .thumb {
+            aspect-ratio: 1 / 1;
+            background-color: #fff;
+            border-bottom: 1px solid #eee9dd;
+        }
+
+        .thumb img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            padding: 10px;
+            object-fit: contain;
+        }
+
+        .body {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            gap: 8px;
+            padding: 14px 16px 16px;
+        }
+
+        .cat {
+            align-self: flex-start;
+            padding: 1px 9px;
+            font-size: 11px;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            color: #13283d;
+            background-color: #efeadd;
+            border-radius: 999px;
+        }
+
+        .title {
+            margin: 0;
+            min-height: 44px;
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.45;
+            color: #13283d;
+        }
+
+        .meta {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-top: auto;
+        }
+
+        .price {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 19px;
+            font-weight: 700;
+            color: #b8483a;
+        }
+
+        .rate {
+            font-size: 12.5px;
+            color: #8b6f2a;
+        }
+
+        .foot {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #8b95a3;
+        }
+
+        .more {
+            font-weight: 700;
+            color: #b8483a;
+        }
+
+        /* 加载骨架 */
+        .skeleton {
+            pointer-events: none;
+        }
+
+        .skeleton .thumb {
+            background-color: #ece7db;
+        }
+
+        .skeleton .line {
+            display: block;
+            height: 11px;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #ece7db 25%, #f6f2e9 50%, #ece7db 75%);
+            background-size: 200% 100%;
+            animation: shine 1.2s linear infinite;
+        }
+
+        .skeleton .line.w60 {
+            width: 60%;
+        }
+
+        .skeleton .line.w40 {
+            width: 40%;
+        }
+
+        @keyframes shine {
+            from {
+                background-position: 200% 0;
+            }
+
+            to {
+                background-position: -200% 0;
+            }
+        }
+
+        /* 出错时的提示 */
+        .error-box {
+            grid-column: 1 / -1;
+            padding: 32px;
+            text-align: center;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-left: 3px solid #b8483a;
+            border-radius: 6px;
+        }
+
+        .error-box p {
+            margin: 0 0 14px;
+            font-size: 14px;
+            color: #b8483a;
+        }
+
+        footer {
+            margin-top: 30px;
+            padding-top: 16px;
+            font-size: 12.5px;
+            color: #8b95a3;
+            border-top: 1px dashed #d9d5cb;
+        }
+
+        footer code {
+            background: none;
+            padding: 0;
+            color: #67717f;
+        }
+
+        @media (max-width: 560px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .title {
+                min-height: 0;
+                font-size: 13.5px;
+            }
+
+            .body {
+                padding: 10px 12px 12px;
+            }
+
+            .thumb img {
+                padding: 6px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="head">
+        <div>
+            <p class="eyebrow">17-3 / 列表页</p>
+            <h2>商品列表</h2>
+            <p class="sub">
+                数据来自 <code>https://dummyjson.com/products?limit=8</code>，
+                用 fetch 取回 JSON 后循环生成卡片；点任意一张卡片，带上 id 跳到
+                <code>17-3-detail.html</code> 显示详情。
+            </p>
+        </div>
+        <button id="reload" type="button">刷新列表</button>
+    </header>
+
+    <p class="status" id="status">正在请求接口…</p>
+
+    <div class="grid" id="grid"></div>
+
+    <footer>
+        接口：<code>GET https://dummyjson.com/products?limit=8</code>　·　缺少 <b>thumbnail</b> 时图片位置留白，
+        不影响其它字段显示。
+    </footer>
+
+    <script>
+        var API = "https://dummyjson.com/products?limit=8";
+
+        var grid = document.getElementById("grid");
+        var status = document.getElementById("status");
+        var reload = document.getElementById("reload");
+
+        /* 接口里的文字可能带引号或尖括号，拼进 innerHTML 前统一转义 */
+        function esc(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        /* 等接口的时候先铺 8 个骨架卡片，页面不会突然跳一下 */
+        function showSkeleton() {
+            var html = "";
+            for (var i = 0; i < 8; i++) {
+                html += '<div class="card skeleton">' +
+                    '<div class="thumb"></div>' +
+                    '<div class="body">' +
+                    '<span class="line w60"></span>' +
+                    '<span class="line"></span>' +
+                    '<span class="line w40"></span>' +
+                    "</div></div>";
+            }
+            grid.innerHTML = html;
+        }
+
+        /* 把接口返回的 products 数组渲染成卡片 */
+        function render(list) {
+            if (!list || list.length === 0) {
+                grid.innerHTML = '<div class="error-box"><p>接口返回了一个空列表。</p></div>';
+                return;
+            }
+
+            var html = "";
+            for (var i = 0; i < list.length; i++) {
+                var p = list[i];
+                html += '<a class="card" href="./17-3-detail.html?id=' + p.id + '">' +
+                    '<div class="thumb"><img src="' + esc(p.thumbnail) + '" alt="' + esc(p.title) + '" loading="lazy"></div>' +
+                    '<div class="body">' +
+                    '<span class="cat">' + esc(p.category) + "</span>" +
+                    '<h3 class="title">' + esc(p.title) + "</h3>" +
+                    '<div class="meta">' +
+                    '<span class="price">$' + p.price.toFixed(2) + "</span>" +
+                    '<span class="rate">★ ' + p.rating.toFixed(2) + "</span>" +
+                    "</div>" +
+                    '<div class="foot"><span>库存 ' + p.stock + '</span><span class="more">查看详情 →</span></div>' +
+                    "</div></a>";
+            }
+            grid.innerHTML = html;
+        }
+
+        function load() {
+            reload.disabled = true;
+            status.textContent = "GET " + API + " ……";
+            showSkeleton();
+
+            var start = Date.now();
+
+            fetch(API)
+                .then(function (res) {
+                    if (!res.ok) {
+                        throw new Error("HTTP " + res.status);
+                    }
+                    return res.json();
+                })
+                .then(function (data) {
+                    var ms = Date.now() - start;
+                    render(data.products);
+                    status.innerHTML = "HTTP <b>200</b> · 耗时 <b>" + ms + " ms</b> · 共 <b>" +
+                        data.total + "</b> 件商品，本页显示 <b>" + data.products.length + "</b> 件 · 点任意卡片进入详情页";
+                })
+                .catch(function (err) {
+                    status.textContent = "请求失败：" + err.message;
+                    grid.innerHTML = '<div class="error-box">' +
+                        "<p>接口请求失败：" + esc(err.message) + "。请检查网络，或稍后重试。</p>" +
+                        '<button type="button" id="retry">重新加载</button></div>';
+                    document.getElementById("retry").addEventListener("click", load);
+                })
+                .finally(function () {
+                    reload.disabled = false;
+                });
+        }
+
+        reload.addEventListener("click", load);
+        load();
+
+        console.log("24001010528 滕菲：商品列表页，接口 " + API);
+    </script>
+</body>
+
+</html>

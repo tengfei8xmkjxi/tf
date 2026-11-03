@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        img{
+            display: block;
+        }
+        ul,ol{ list-style: none;}
+        .tlist{
+            display: flex;
+            flex-wrap: wrap;
+            
+        }
+        .tlist li{
+            width: 30%;
+            margin: 3px;
+            flex-grow: 2;
+            overflow: hidden;
+            position: relative;
+        }
+        .tlist li img{
+            width: 100%;
+            transition: all 0.5s ease;
+        }
+        .text{
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            transition: transform 0.5s ease;
+            font-size: 12px;
+            height: 33px;
+        }
+        .text h3{
+            height: 33px;
+            line-height: 33px;
+            text-align: center;
+            margin: 0;
+        }
+        .text p{ 
+            height:40px;
+            padding: 5px;
+            line-height: 20px;
+            overflow: hidden;
+            text-indent: 2px;
+        }
+        .tlist li:nth-child(3n+1):hover img{
+            transform: scale(1.7);
+        }
+        .tlist li:nth-child(3n+2):hover .text{
+            height: 100%;
+        }
+        .tlist li:nth-child(3n):hover .text{
+            height: 83px;
+        }
+    </style>
+</head>
+<body>
+    <h2>transition过渡</h2>
+    <ul class="tlist">
+        <li>
+            <img src="./img/wangye1.jpg">
+            <div class="text">
+                <h3>滕菲的标题</h3>
+                <p>
+                    下面的文字是绝对定位，p元素默认隐藏，只有鼠标hover时才有动画效果。
+                </p>
+            </div>
+        </li>
+        <li>
+            <img src="./img/wangye2.jpg">
+            <div class="text">
+                <h3>滕菲的标题</h3>
+                <p>
+                    下面的文字是绝对定位，p元素默认隐藏，只有鼠标hover时才有动画效果。
+                </p>
+            </div>
+        </li>
+        <li>
+            <img src="./img/3098778571.jpg">
+            <div class="text">
+                <h3>滕菲的标题</h3>
+                <p>
+                    下面的文字是绝对定位，p元素默认隐藏，只有鼠标hover时才有动画效果。
+                </p>
+            </div>
+        </li>
+        <li>
+            <img src="./img/04.jpg">
+            <div class="text">
+                <h3>滕菲的标题</h3>
+                <p>
+                    下面的文字是绝对定位，p元素默认隐藏，只有鼠标hover时才有动画效果。
+                </p>
+            </div>
+        </li>
+        <li>
+            <img src="./img/05.jpg">
+            <div class="text">
+                <h3>滕菲的标题</h3>
+                <p>
+                    下面的文字是绝对定位，p元素默认隐藏，只有鼠标hover时才有动画效果。
+                </p>
+            </div>
+        </li>
+        <li>
+            <img src="./img/06.jpg">
+            <div class="text">
+                <h3>滕菲的标题</h3>
+                <p>
+                    下面的文字是绝对定位，p元素默认隐藏，只有鼠标hover时才有动画效果。
+                </p>
+            </div>
+        </li>
+        <li>
+            <img src="./img/07.jpg">
+            <div class="text">
+                <h3>滕菲的标题</h3>
+                <p>
+                    下面的文字是绝对定位，p元素默认隐藏，只有鼠标hover时才有动画效果。
+                </p>
+            </div>
+        </li>
+        <li>
+            <img src="./img/08.jpg">
+            <div class="text">
+                <h3>滕菲的标题</h3>
+                <p>
+                    下面的文字是绝对定位，p元素默认隐藏，只有鼠标hover时才有动画效果。
+                </p>
+            </div>
+        </li>
+        <li>
+            <img src="./img/09.jpg">
+            <div class="text">
+                <h3>滕菲的标题</h3>
+                <p>
+                    下面的文字是绝对定位，p元素默认隐藏，只有鼠标hover时才有动画效果。
+                </p>
+            </div>
+        </li>
+    </ul>
+</body>
+</html>

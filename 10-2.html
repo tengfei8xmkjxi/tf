@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSS动画幻灯片</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    }
+
+    .slider-wrap {
+      width: min(520px, 90vw);
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+    }
+
+    .slider {
+      position: relative;
+      width: 100%;
+      height: 520px;
+      overflow: hidden;
+      border-radius: 18px;
+      background: #000;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      animation: fade 9s infinite ease-in-out;
+    }
+
+    .slide:nth-child(1) { animation-delay: 0s; }
+    .slide:nth-child(2) { animation-delay: 3s; }
+    .slide:nth-child(3) { animation-delay: 6s; }
+
+    .image-box {
+      position: relative;
+      width: 100%;
+      height: 380px;
+      overflow: hidden;
+    }
+
+    .image-box img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      filter: saturate(1.1) contrast(1.05);
+      transform: scale(1.02);
+    }
+
+    .title-overlay {
+      position: absolute;
+      left: 18px;
+      bottom: 18px;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.35);
+      border-left: 4px solid rgba(255, 255, 255, 0.85);
+      padding: 10px 16px;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    }
+
+    .info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+      background: #000;
+      color: #fff;
+      padding: 18px 20px 22px;
+      min-height: 140px;
+    }
+
+    .info .tag {
+      font-size: 12px;
+      letter-spacing: 3px;
+      color: rgba(255, 255, 255, 0.7);
+      text-transform: uppercase;
+    }
+
+    .info h2 {
+      font-size: clamp(26px, 3vw, 34px);
+      font-weight: 700;
+      line-height: 1.2;
+      color: #fff;
+    }
+
+    .info p {
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    @keyframes fade {
+      0%, 20% {
+        opacity: 0;
+        transform: scale(0.96);
+      }
+      25%, 45% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      50%, 100% {
+        opacity: 0;
+        transform: scale(1.04);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slider-wrap">
+    <div class="slider">
+      <div class="slide">
+        <div class="image-box">
+          <img src="img/05.jpg" alt="图片1" />
+          <div class="title-overlay">熊喵喵</div>
+        </div>
+        <div class="info">
+          <div class="tag">travel note</div>
+          <h2>山海之间</h2>
+          <p>自然风景与城市光影交织，留住每一段旅途的静谧与热烈。</p>
+        </div>
+      </div>
+
+      <div class="slide">
+        <div class="image-box">
+          <img src="img/wangye1.jpg" alt="图片2" />
+          <div class="title-overlay">熊喵喵</div>
+        </div>
+        <div class="info">
+          <div class="tag">city view</div>
+          <h2>暮色夜行</h2>
+          <p>灯火通明的街巷里，温柔而清醒，每一秒都在讲述时间的故事。</p>
+        </div>
+      </div>
+
+      <div class="slide">
+        <div class="image-box">
+          <img src="img/04.jpg" alt="图片3" />
+          <div class="title-overlay">熊喵喵</div>
+        </div>
+        <div class="info">
+          <div class="tag">life style</div>
+          <h2>静心日常</h2>
+          <p>在简单的日常中发现温柔的秩序，让心绪慢下来，重新看见自己。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

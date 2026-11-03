@@ -1,0 +1,231 @@
+/* ============================================================
+   board.css - 数独盘面、工具条、数字键盘
+   ============================================================ */
+
+.play-area {
+    padding: 26px 0 42px;
+}
+
+/* 盘面在左，键盘在右 */
+.play-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 212px;
+    gap: 22px;
+    align-items: start;
+}
+
+.board-panel {
+    padding: 16px;
+    background-color: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+/* ---------- 9×9 盘面 ---------- */
+.board {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(9, 1fr);
+    aspect-ratio: 1 / 1;
+    border: 2px solid var(--line-strong);
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: var(--card);
+}
+
+.cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(15px, 2.4vw, 25px);
+    line-height: 1;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+
+/* 3×3 宫的分隔粗线 */
+.cell:nth-child(3n) {
+    border-right: 2px solid var(--line-strong);
+}
+
+.cell:nth-child(9n) {
+    border-right: 0;
+}
+
+.cell:nth-child(n + 19):nth-child(-n + 27),
+.cell:nth-child(n + 46):nth-child(-n + 54) {
+    border-bottom: 2px solid var(--line-strong);
+}
+
+.cell:nth-child(n + 73) {
+    border-bottom: 0;
+}
+
+/* 题目给定数字 */
+.cell.is-given {
+    color: var(--ink);
+    font-weight: 700;
+}
+
+/* 玩家填入的数字 */
+.cell.is-user {
+    color: var(--blue);
+    font-weight: 600;
+}
+
+/* 同行、同列、同宫的关联格 */
+.cell.is-related {
+    background-color: var(--blue-softer);
+}
+
+/* 当前选中的格子 */
+.cell.is-selected {
+    color: #fff;
+    background-color: var(--blue);
+    font-weight: 700;
+}
+
+/* ---------- 一左一右：工具条 ---------- */
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 14px;
+}
+
+.toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tool-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    width: 62px;
+    padding: 8px 0;
+    color: var(--ink-soft);
+    border-radius: 8px;
+}
+
+.tool-btn svg {
+    width: 22px;
+    height: 22px;
+}
+
+.tool-btn:hover {
+    color: var(--blue);
+    background-color: var(--blue-soft);
+}
+
+.tool-label {
+    font-size: 12px;
+}
+
+.timer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    background-color: #eef2f7;
+    border-radius: 8px;
+}
+
+.timer svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* ---------- 数字键盘 ---------- */
+.numpad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 14px;
+    background-color: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.key {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 12px 0;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+}
+
+.key:hover {
+    border-color: var(--blue);
+    background-color: var(--blue-softer);
+}
+
+.key-num {
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--blue);
+}
+
+.key-count {
+    font-size: 11px;
+    color: var(--ink-light);
+}
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 900px) {
+    .play-inner {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* 窄屏时键盘移到盘面下方，排成一行 9 个 */
+    .numpad {
+        grid-template-columns: repeat(9, 1fr);
+        gap: 8px;
+    }
+
+    .key {
+        padding: 8px 0;
+    }
+
+    .key-num {
+        font-size: 19px;
+    }
+}
+
+@media (max-width: 760px) {
+    .play-area {
+        padding: 16px 0 30px;
+    }
+
+    .board-panel {
+        padding: 10px;
+    }
+
+    .toolbar {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .tool-btn {
+        width: 54px;
+    }
+
+    .key-num {
+        font-size: 17px;
+    }
+
+    .key-count {
+        font-size: 10px;
+    }
+}

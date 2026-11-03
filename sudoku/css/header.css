@@ -1,0 +1,210 @@
+/* ============================================================
+   header.css - 顶部导航 + 难度 tab
+   ============================================================ */
+
+/* ---------- 顶部导航 ---------- */
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: var(--card);
+    border-bottom: 1px solid var(--line);
+    box-shadow: var(--shadow);
+}
+
+.header-inner {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    min-height: 64px;
+}
+
+/* 品牌 */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.brand-mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 6px;
+    color: #fff;
+    background-color: var(--blue);
+    border-radius: 8px;
+}
+
+.brand-mark svg {
+    width: 100%;
+    height: 100%;
+}
+
+.brand-text {
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: .2px;
+    color: var(--ink);
+}
+
+.brand-domain {
+    color: var(--blue);
+}
+
+/* 主导航 */
+.main-nav {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+}
+
+.nav-link {
+    position: relative;
+    padding: 20px 0;
+    font-size: 15px;
+    color: var(--ink-soft);
+}
+
+.nav-link:hover {
+    color: var(--blue);
+}
+
+.nav-link.is-active {
+    color: var(--ink);
+    font-weight: 700;
+}
+
+.nav-link.is-active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 12px;
+    width: 100%;
+    height: 3px;
+    background-color: var(--blue);
+    border-radius: 2px;
+}
+
+/* 语言切换 */
+.lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    padding: 7px 14px;
+    font-size: 14px;
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+}
+
+.lang-btn:hover {
+    color: var(--blue);
+    border-color: var(--blue);
+}
+
+.lang-btn svg {
+    width: 15px;
+    height: 15px;
+}
+
+/* ---------- 难度 tab ---------- */
+.level-bar {
+    background-color: var(--card);
+    border-bottom: 1px solid var(--line);
+}
+
+.level-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 14px 0;
+}
+
+.level-tabs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px;
+    background-color: #eef2f7;
+    border-radius: 10px;
+}
+
+.level-tab {
+    padding: 8px 18px;
+    font-size: 14px;
+    color: var(--ink-soft);
+    border-radius: 7px;
+}
+
+.level-tab:hover {
+    color: var(--blue);
+}
+
+.level-tab.is-active {
+    color: #fff;
+    background-color: var(--blue);
+    font-weight: 700;
+}
+
+.level-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 900px) {
+    .header-inner {
+        gap: 18px;
+    }
+
+    .main-nav {
+        gap: 18px;
+    }
+
+    .level-inner {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 760px) {
+    .header-inner {
+        min-height: 58px;
+    }
+
+    .brand-text {
+        font-size: 17px;
+    }
+
+    /* 小屏隐藏中间导航，只保留品牌与语言 */
+    .main-nav {
+        display: none;
+    }
+
+    .level-tabs {
+        width: 100%;
+        justify-content: space-between;
+        overflow-x: auto;
+    }
+
+    .level-tab {
+        padding: 7px 12px;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+    .level-actions {
+        width: 100%;
+    }
+
+    .level-actions .btn {
+        flex-grow: 1;
+    }
+}

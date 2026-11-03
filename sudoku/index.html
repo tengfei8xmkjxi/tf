@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="在线数独游戏：免费数独谜题，无需注册，支持简单、中等、较难、专家、大师五种难度。">
+    <title>数独 - 免费数独谜题游戏、数独在线</title>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/board.css">
+    <link rel="stylesheet" href="css/content.css">
+</head>
+<body>
+    <h1 class="sr-only">数独 - 免费数独谜题游戏</h1>
+
+    <header class="site-header">
+        <div class="wrap header-inner">
+            <a class="brand" href="./index.html">
+                <span class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                        <path d="M9 3v18M15 3v18M3 9h18M3 15h18"></path>
+                    </svg>
+                </span>
+                <span class="brand-text">TheSudoku<span class="brand-domain">.com</span></span>
+            </a>
+
+            <nav class="main-nav" aria-label="主导航">
+                <a class="nav-link is-active" href="#board">每日挑战</a>
+                <a class="nav-link" href="#board">新游戏</a>
+                <a class="nav-link" href="#games">更多游戏</a>
+            </nav>
+
+            <button class="lang-btn" type="button">
+                简体中文
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="m6 9 6 6 6-6"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <!-- tab：难度切换 -->
+        <section class="level-bar" aria-label="难度选择">
+            <div class="wrap level-inner">
+                <div class="level-tabs" role="tablist" aria-label="难度">
+                    <button class="level-tab is-active" type="button" role="tab" aria-selected="true">简单</button>
+                    <button class="level-tab" type="button" role="tab" aria-selected="false">中等</button>
+                    <button class="level-tab" type="button" role="tab" aria-selected="false">较难</button>
+                    <button class="level-tab" type="button" role="tab" aria-selected="false">专家</button>
+                    <button class="level-tab" type="button" role="tab" aria-selected="false">大师</button>
+                </div>
+                <div class="level-actions">
+                    <button class="btn btn-ghost" type="button">重新开始</button>
+                    <button class="btn btn-primary" type="button">新游戏</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 列表（网格）：盘面 + 数字键盘 -->
+        <section class="play-area" id="board">
+            <div class="wrap play-inner">
+                <div class="board-panel">
+                    <div class="board" role="grid" aria-label="数独盘面">
+                        <div class="cell is-given">5</div>
+                        <div class="cell is-given">3</div>
+                        <div class="cell is-user">4</div>
+                        <div class="cell is-user">6</div>
+                        <div class="cell is-given is-related">7</div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+
+                        <div class="cell is-given">6</div>
+                        <div class="cell is-user">7</div>
+                        <div class="cell is-user">2</div>
+                        <div class="cell is-given">1</div>
+                        <div class="cell is-given is-related">9</div>
+                        <div class="cell is-given">5</div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+
+                        <div class="cell"></div>
+                        <div class="cell is-given">9</div>
+                        <div class="cell is-given">8</div>
+                        <div class="cell"></div>
+                        <div class="cell is-related"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell is-given">6</div>
+                        <div class="cell"></div>
+
+                        <div class="cell is-given">8</div>
+                        <div class="cell is-user">5</div>
+                        <div class="cell"></div>
+                        <div class="cell is-related"></div>
+                        <div class="cell is-given is-related">6</div>
+                        <div class="cell is-related"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell is-given">3</div>
+
+                        <div class="cell is-given is-related">4</div>
+                        <div class="cell is-related"></div>
+                        <div class="cell is-related"></div>
+                        <div class="cell is-given is-related">8</div>
+                        <div class="cell is-user is-selected">5</div>
+                        <div class="cell is-given is-related">3</div>
+                        <div class="cell is-related"></div>
+                        <div class="cell is-related"></div>
+                        <div class="cell is-given is-related">1</div>
+
+                        <div class="cell is-given">7</div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell is-user is-related">9</div>
+                        <div class="cell is-given is-related">2</div>
+                        <div class="cell is-user is-related">4</div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell is-given">6</div>
+
+                        <div class="cell is-user">9</div>
+                        <div class="cell is-given">6</div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell is-related"></div>
+                        <div class="cell"></div>
+                        <div class="cell is-given">2</div>
+                        <div class="cell is-given">8</div>
+                        <div class="cell"></div>
+
+                        <div class="cell is-user">2</div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell is-given">4</div>
+                        <div class="cell is-given is-related">1</div>
+                        <div class="cell is-given">9</div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell is-given">5</div>
+
+                        <div class="cell is-user">3</div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell is-given is-related">8</div>
+                        <div class="cell"></div>
+                        <div class="cell"></div>
+                        <div class="cell is-given">7</div>
+                        <div class="cell is-given">9</div>
+                    </div>
+
+                    <!-- 一左一右：左侧编辑工具，右侧设置与计时 -->
+                    <div class="toolbar">
+                        <div class="toolbar-group">
+                            <button class="tool-btn" type="button">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                    <path d="M8 4 3 9l5 5"></path>
+                                    <path d="M3 9h10a6 6 0 0 1 0 12H8"></path>
+                                </svg>
+                                <span class="tool-label">撤销</span>
+                            </button>
+                            <button class="tool-btn" type="button">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                    <path d="M9 6h12v12H9L3 12z"></path>
+                                    <path d="M13 9.5l4 5M17 9.5l-4 5"></path>
+                                </svg>
+                                <span class="tool-label">删除</span>
+                            </button>
+                            <button class="tool-btn" type="button">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                    <path d="M4 20l4-1 11-11-3-3L5 16z"></path>
+                                    <path d="M14 6l3 3"></path>
+                                </svg>
+                                <span class="tool-label">标记</span>
+                            </button>
+                            <button class="tool-btn" type="button">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                    <path d="M9 18h6M10 21h4"></path>
+                                    <path d="M12 3a6 6 0 0 0-3 11v1h6v-1a6 6 0 0 0-3-11z"></path>
+                                </svg>
+                                <span class="tool-label">提示</span>
+                            </button>
+                        </div>
+
+                        <div class="toolbar-group">
+                            <span class="timer">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="9"></circle>
+                                    <path d="M12 7v5l3 2"></path>
+                                </svg>
+                                06:24
+                            </span>
+                            <button class="tool-btn" type="button">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="3.2"></circle>
+                                    <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"></path>
+                                </svg>
+                                <span class="tool-label">设置</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="numpad" aria-label="数字键盘">
+                    <button class="key" type="button"><span class="key-num">1</span><span class="key-count">6</span></button>
+                    <button class="key" type="button"><span class="key-num">2</span><span class="key-count">5</span></button>
+                    <button class="key" type="button"><span class="key-num">3</span><span class="key-count">5</span></button>
+                    <button class="key" type="button"><span class="key-num">4</span><span class="key-count">5</span></button>
+                    <button class="key" type="button"><span class="key-num">5</span><span class="key-count">4</span></button>
+                    <button class="key" type="button"><span class="key-num">6</span><span class="key-count">3</span></button>
+                    <button class="key" type="button"><span class="key-num">7</span><span class="key-count">5</span></button>
+                    <button class="key" type="button"><span class="key-num">8</span><span class="key-count">4</span></button>
+                    <button class="key" type="button"><span class="key-num">9</span><span class="key-count">3</span></button>
+                </aside>
+            </div>
+        </section>
+
+        <!-- 左图右文：活动横幅 -->
+        <section class="promo">
+            <div class="wrap promo-inner">
+                <figure class="promo-media">
+                    <img src="img/promo.jpg" alt="万圣节活动主视觉">
+                </figure>
+                <div class="promo-body">
+                    <p class="promo-eyebrow">万圣节</p>
+                    <h2 class="promo-title">参加「万圣节」活动，赢取专属奖励。</h2>
+                    <p class="promo-text">完成十局限定谜题即可收集南瓜徽章，活动期间每天刷新一题。</p>
+                    <a class="btn btn-primary" href="#board">立即开始</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 上图下文：更多游戏卡片 -->
+        <section class="games" id="games">
+            <div class="wrap">
+                <h2 class="section-title">探索更多游戏和益智游戏</h2>
+                <ul class="game-list">
+                    <li class="game-card">
+                        <figure class="game-media">
+                            <img src="img/game-1.jpg" alt="在线拼图游戏">
+                        </figure>
+                        <div class="game-body">
+                            <h3 class="game-title">TheJigsawPuzzles</h3>
+                            <p class="game-text">在线拼图游戏</p>
+                        </div>
+                    </li>
+                    <li class="game-card">
+                        <figure class="game-media">
+                            <img src="img/game-2.jpg" alt="纸牌接龙游戏">
+                        </figure>
+                        <div class="game-body">
+                            <h3 class="game-title">TheSolitaire</h3>
+                            <p class="game-text">纸牌接龙和卡牌游戏</p>
+                        </div>
+                    </li>
+                    <li class="game-card">
+                        <figure class="game-media">
+                            <img src="img/game-3.jpg" alt="麻将接龙游戏">
+                        </figure>
+                        <div class="game-body">
+                            <h3 class="game-title">TheMahjong</h3>
+                            <p class="game-text">麻将接龙和 Mahjong Connect 游戏</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 长文内容 -->
+        <section class="article">
+            <div class="wrap article-inner">
+                <h2 class="section-title">在线数独免费且无需注册！</h2>
+
+                <h3 class="article-sub">如何玩数独</h3>
+                <p class="article-text">
+                    在每个数独谜题中，你会看到一个 9×9 的网格，分为九个 3×3 的方块。因此，每行、每列或每个方块都包含九个单元格。数独谜题从一些已填充数字的单元格开始，这些数字不能更改。填充的单元格越多，谜题就越容易。
+                </p>
+                <p class="article-text">
+                    现在你只需将剩余的单元格填上 1 到 9 之间的数字，并遵循唯一的规则：每行、每列或每个方块不得包含重复的数字。也就是说，每个数字 1 到 9 在每行、每列和每个方块中只出现一次。
+                </p>
+
+                <h3 class="article-sub">提示和功能</h3>
+                <p class="article-text">
+                    从简单级别开始数独谜题，以快速学习所有技巧。你一定会看到一个只缺少一两个数字的方块。例如，如果一个 3×3 方块中只缺少 5 和 9，那么我们只有两个选项来放置这两个剩余的数字。
+                </p>
+                <p class="article-text">
+                    无论你使用什么技巧，解决数独最有用的工具是「标记」候选数字。只需点击「标记」图标，你输入到单元格中的每个数字都会作为小标记显示在其他候选数字旁边。再次点击图标即可切换到「大号」的最终决定。
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="wrap footer-inner">
+            <ul class="footer-links">
+                <li><a href="#board">添加到书签</a></li>
+                <li><a href="#board">分享游戏</a></li>
+                <li><a href="#article">数独常见问题</a></li>
+                <li><a href="#article">数独策略</a></li>
+                <li><a href="#board">打印数独</a></li>
+                <li><a href="#games">更多游戏</a></li>
+            </ul>
+            <p class="footer-copy">© 2025 TheSudoku · 高级网页设计I · 课堂练习作品</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>纯CSS动画</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f4f4f4;
+      font-family: "Microsoft YaHei", sans-serif;
+    }
+
+    .box {
+      width: 240px;
+      height: 240px;
+      border-radius: 24px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+      position: relative;
+      animation: colorChange 8s ease-in-out infinite, float 3s ease-in-out infinite, rotateBox 8s linear infinite;
+    }
+
+    .box::before {
+      content: "";
+      position: absolute;
+      inset: -14px;
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.18);
+      filter: blur(18px);
+      z-index: -1;
+      animation: glow 8s ease-in-out infinite;
+    }
+
+    @keyframes colorChange {
+      0% {
+        background: #ff6b6b;
+      }
+      25% {
+        background: #4dabf7;
+      }
+      50% {
+        background: #51cf66;
+      }
+      75% {
+        background: #ffd43b;
+      }
+      100% {
+        background: #ff6b6b;
+      }
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-18px);
+      }
+    }
+
+    @keyframes rotateBox {
+      0% {
+        transform: rotate(0deg) scale(1);
+      }
+      50% {
+        transform: rotate(180deg) scale(1.08);
+      }
+      100% {
+        transform: rotate(360deg) scale(1);
+      }
+    }
+
+    @keyframes glow {
+      0%, 100% {
+        opacity: 0.3;
+        transform: scale(0.9);
+      }
+      50% {
+        opacity: 0.9;
+        transform: scale(1.1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="box"></div>
+</body>
+</html>

@@ -27,13 +27,9 @@
             text-align: center;
             font-size: 14px;
             line-height: 24px;
-            /* 绝对定位 */
-            position:absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: rgba(0,0,0,0.5);
-            color: #fff;
+            /* 图片下方配文字：不用定位，跟在图片后面按文档流排 */
+            color: #333;
+            margin-top: 6px;
             /* 加粗 */
             font-weight: bold;
       }
@@ -42,18 +38,18 @@
 <body>
     <ul class="slist">
         <li>
-            <img src="./img/0a61ea8caeedc5f9806c1c2f143f0152.jpg">
-            <p>滕菲的标题1</p>
+            <img src="./img/0a61ea8caeedc5f9806c1c2f143f0152.jpg" alt="示例图片1">
+            <p>滕菲的标题</p>
         </li>
 
         <li>
-            <img src="./img/0a61ea8caeedc5f9806c1c2f143f0152.jpg">
-            <p>滕菲的标题1</p>
+            <img src="./img/0a61ea8caeedc5f9806c1c2f143f0152.jpg" alt="示例图片2">
+            <p>滕菲的标题</p>
         </li>
 
         <li>
-            <img src="./img/0a61ea8caeedc5f9806c1c2f143f0152.jpg">
-            <p>滕菲的标题1</p>
+            <img src="./img/0a61ea8caeedc5f9806c1c2f143f0152.jpg" alt="示例图片3">
+            <p>滕菲的标题</p>
         </li>
     </ul>
 </body>

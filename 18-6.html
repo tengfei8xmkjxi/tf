@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24001010528 滕菲 · Mermaid 流程图与 ER 图</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            font-size: 15px;
+            line-height: 1.75;
+            color: #17202d;
+            background-color: #f6f3ec;
+        }
+
+        h2 {
+            margin: 0 0 8px;
+            font-size: 24px;
+            color: #13283d;
+        }
+
+        h3 {
+            margin: 34px 0 14px;
+            padding-bottom: 8px;
+            font-size: 17px;
+            color: #13283d;
+            border-bottom: 1px solid #d9d5cb;
+        }
+
+        .tip {
+            max-width: 900px;
+            margin: 0 0 22px;
+            padding-left: 14px;
+            font-size: 14px;
+            color: #67717f;
+            border-left: 3px solid #c9a227;
+        }
+
+        code {
+            padding: 1px 6px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            color: #13283d;
+            background-color: #efeadd;
+            border-radius: 3px;
+            word-break: break-all;
+        }
+
+        /* 图表面板 */
+        .stage {
+            padding: 14px 12px;
+            background-color: #0b1723;
+            border-radius: 10px;
+            box-shadow: 0 18px 34px rgba(19, 40, 61, .18);
+            overflow-x: auto;
+        }
+
+        /* mermaid 生成出来的 svg 会替换掉 pre 里的文本 */
+        .mermaid {
+            min-width: 620px;
+            margin: 0;
+            text-align: center;
+            /* 渲染前先把源码藏起来，避免闪过一大段 DSL */
+            visibility: hidden;
+        }
+
+        .mermaid[data-processed] {
+            visibility: visible;
+        }
+
+        .caption {
+            margin: 10px 0 0;
+            font-size: 13px;
+            color: #8b95a3;
+        }
+
+        .caption b {
+            color: #b8483a;
+        }
+
+        /* 加载失败兜底 */
+        .fallback {
+            display: none;
+            margin: 10px 0;
+            padding: 14px 16px;
+            font-size: 13.5px;
+            color: #b8483a;
+            background-color: #fdf1ef;
+            border: 1px solid #e8c4bd;
+            border-radius: 8px;
+        }
+
+        .fallback code {
+            background-color: #f6e3df;
+        }
+
+        /* 说明卡片 */
+        .notes {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .notes div {
+            padding: 14px 16px;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #67717f;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-top: 3px solid #c9a227;
+        }
+
+        .notes b {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 13.5px;
+            color: #b8483a;
+        }
+
+        /* 源 DSL 折叠面板 */
+        details {
+            margin-top: 14px;
+            padding: 12px 16px;
+            font-size: 13px;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-radius: 8px;
+        }
+
+        summary {
+            font-size: 13.5px;
+            color: #b8483a;
+            cursor: pointer;
+        }
+
+        details pre {
+            margin: 10px 0 0;
+            padding: 12px 14px;
+            overflow-x: auto;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            line-height: 1.65;
+            color: #e7e1d5;
+            background-color: #0b1723;
+            border-radius: 6px;
+        }
+
+        @media (max-width: 760px) {
+            .notes {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h2>24001010528 滕菲：Mermaid 流程图与 ER 图</h2>
+    <p class="tip">
+        这两张图一行 <code>canvas</code> 都没有：左边写的是纯文本 DSL，mermaid 在浏览器里把这段文本
+        <b>解析成 SVG</b> 画出来。所以改流程图等于改几行文字，不用拖动任何框——
+        这也是它比手画图省事的地方。库从 <code>cdn/mermaid/mermaid.min.js</code> 本地引入，
+        断网、直接双击 <code>file://</code> 打开都能渲染。
+    </p>
+
+    <div class="fallback" id="fallback">
+        没找到 <code>cdn/mermaid/mermaid.min.js</code>，图无法渲染。请确认该文件在
+        <code>cdn/mermaid/</code> 目录下（本页不依赖任何在线 CDN）。
+    </div>
+
+    <h3>一、智能客服主流程（flowchart）</h3>
+    <div class="stage">
+        <pre class="mermaid" id="flow">
+flowchart TD
+    A(["用户发起咨询"]) --> B["渠道接入：网页 / App / 微信服务号"]
+    B --> C["建立会话并落库"]
+    C --> D{"意图识别"}
+    D -->|订单物流| E["调用订单查询接口"]
+    D -->|退换货| F["走售后工单流程"]
+    D -->|产品咨询| G["检索知识库"]
+    D -->|置信度低| H["反问澄清"]
+    H --> C
+    E --> I["组装结构化答案"]
+    G --> J["混合召回 + 精排取 Top-K"]
+    J --> K["大模型生成答案并附引用"]
+    I --> L{"答案置信度达标"}
+    K --> L
+    F --> L
+    L -->|达标| M(["返回答案给用户"])
+    L -->|不达标或负向情绪| N["转人工坐席"]
+    N --> O["结束会话并生成工单"]
+    O --> P["人工结论回补知识库"]
+    P --> G
+    M --> Q(["记录埋点与用户评价"])
+    Q --> R["样本进评测集"]
+        </pre>
+    </div>
+    <p class="caption">
+        <b>读法：</b>从顶部用户发起咨询往下走，菱形是判断节点。注意两条往回的箭头——
+        一条是「反问澄清」回到会话继续识别，另一条是「人工结论回补知识库」回到检索，
+        这两条环让系统能越用越准，也是流程图比截图更能说清逻辑的地方。
+    </p>
+
+    <h3>二、会话与知识库的实体关系（erDiagram）</h3>
+    <div class="stage">
+        <pre class="mermaid" id="er">
+erDiagram
+    USER ||--o{ SESSION : "发起"
+    SESSION ||--|{ MESSAGE : "包含"
+    SESSION ||--o| TICKET : "生成"
+    AGENT ||--o{ SESSION : "接管"
+    AGENT ||--o{ TICKET : "处理"
+    INTENT ||--o{ MESSAGE : "归类"
+    DOCUMENT ||--|{ CHUNK : "切分为"
+    CHUNK ||--o{ CITATION : "被引用"
+    MESSAGE ||--o{ CITATION : "附带"
+    TICKET }o--o{ DOCUMENT : "沉淀"
+
+    USER {
+        bigint id PK "主键"
+        varchar nickname "昵称"
+        varchar channel "来源渠道"
+        datetime created_at "注册时间"
+    }
+
+    SESSION {
+        bigint id PK "主键"
+        bigint user_id FK "所属用户"
+        bigint agent_id FK "接管坐席"
+        tinyint status "0会话中 1已结束"
+        datetime started_at "开始时间"
+    }
+
+    MESSAGE {
+        bigint id PK "主键"
+        bigint session_id FK "所属会话"
+        bigint intent_id FK "识别出的意图"
+        varchar role "user 或 bot"
+        text content "消息正文"
+        float confidence "置信度"
+    }
+
+    INTENT {
+        bigint id PK "主键"
+        varchar name "意图名称"
+        varchar route "命中后走的流程"
+    }
+
+    DOCUMENT {
+        bigint id PK "主键"
+        varchar title "文档标题"
+        varchar source "来源系统"
+        datetime updated_at "最后更新时间"
+    }
+
+    CHUNK {
+        bigint id PK "主键"
+        bigint document_id FK "所属文档"
+        text content "片段正文"
+        int tokens "token 数"
+        int version "版本号"
+    }
+
+    CITATION {
+        bigint id PK "主键"
+        bigint message_id FK "哪条回答"
+        bigint chunk_id FK "引用的片段"
+        float score "相关度得分"
+    }
+
+    AGENT {
+        bigint id PK "主键"
+        varchar name "坐席姓名"
+        varchar team "所属组"
+        tinyint online "是否在线"
+    }
+
+    TICKET {
+        bigint id PK "主键"
+        bigint session_id FK "来源会话"
+        bigint agent_id FK "处理坐席"
+        tinyint status "工单状态"
+        text conclusion "处理结论"
+    }
+        </pre>
+    </div>
+    <p class="caption">
+        <b>读法：</b><code>||--o{</code> 读作「一 对 零或多」，<code>||--|{</code> 是「一 对 一或多」，
+        <code>}o--o{</code> 是「多 对 多」。所以 USER 到 SESSION 是一对多，
+        而 TICKET 与 DOCUMENT 因为一个工单可能涉及多篇文档、一篇文档也可能被多个工单引用，所以是多对多。
+        外键靠 FK 标注，主键靠 PK，这就是画 ER 图时最该先定的两件事。
+    </p>
+
+    <h3>mermaid 是怎么把文字变成图的</h3>
+    <div class="notes">
+        <div>
+            <b>1. 写在 pre 里，不是写在图里</b>
+            <code>&lt;pre class="mermaid"&gt;</code> 里面就是纯文本 DSL。
+            mermaid 找到这个元素，读走里面的文本，解析成语法树，再往页面里插一段 SVG。
+            所以图里的每一个框，本质上都是一个 <code>&lt;text&gt;</code> 加几个矩形。
+        </div>
+        <div>
+            <b>2. 三种图对应三种 DSL 开头</b>
+            第一行的关键字决定图型：<code>flowchart TD</code> 是自上而下的流程图，
+            <code>erDiagram</code> 是实体关系图，还有 <code>sequenceDiagram</code>、
+            <code>gantt</code>、<code>classDiagram</code> 等等，写法互不相同。
+        </div>
+        <div>
+            <b>3. 布局是自动算的，这点和手画相反</b>
+            不用管坐标，只表达「谁连谁」，节点位置交给它的布局算法。
+            代价是不能像素级微调，好处是流程改一条线，整张图自己重排，不会像截图那样对不上。
+        </div>
+        <div>
+            <b>为什么必须用本地 cdn</b>
+            mermaid 官方推荐的是 <code>&lt;script type="module"&gt;</code> 引 CDN，
+            但模块脚本在 <code>file://</code> 下会被 CORS 拦掉。
+            这里下载的是 UMD 版 <code>mermaid.min.js</code>，用普通
+            <code>&lt;script&gt;</code> 引入，双击打开就能用。
+        </div>
+    </div>
+
+    <details>
+        <summary>展开看这两张图的源 DSL（15 秒就能改完后重新生成）</summary>
+        <pre>改写流程节点：直接动 flowchart 里那一行，例如把 E["调用订单查询接口"] 改成 E["调用履约接口"]。
+新增分支：在菱形后面加一行 D --&gt;|新意图| X["新节点"]。
+
+改写 ER 关系：||--o{ 表示一对多，||--|{ 表示一对一或多，}o--o{ 表示多对多。
+给实体加字段：在实体的大括号里按「类型 字段名 键 "注释"」写一行即可。</pre>
+    </details>
+
+    <!-- 本地引入。这是 UMD 构建，会挂到 window.mermaid 上，不是 ES 模块 -->
+    <script src="cdn/mermaid/mermaid.min.js"></script>
+    <script>
+        (function () {
+            var fallback = document.getElementById("fallback");
+
+            if (typeof mermaid === "undefined") {
+                fallback.style.display = "block";
+                return;
+            }
+
+            if (typeof mermaid.initialize === "function") {
+                mermaid.initialize({
+                    startOnLoad: false,
+                    theme: "dark",
+                    fontFamily: '"Microsoft YaHei","PingFang SC",sans-serif',
+                    securityLevel: "loose",
+                    themeVariables: {
+                        background: "#0b1723",
+                        primaryColor: "#17324a",
+                        primaryBorderColor: "#6fb3d2",
+                        primaryTextColor: "#f3efe6",
+                        lineColor: "#c9a227",
+                        textColor: "#e7e1d5",
+                        secondaryColor: "#1e3b2e",
+                        tertiaryColor: "#2b2540",
+                        fontSize: "14px"
+                    },
+                    flowchart: { curve: "basis", useMaxWidth: true, padding: 14 },
+                    er: { useMaxWidth: true, entityPadding: 14, minEntityWidth: 110 }
+                });
+            }
+
+            /* run() 返回 Promise；某一张图语法写错时只影响它自己，不会连累另一张 */
+            var blocks = Array.prototype.slice.call(document.querySelectorAll(".mermaid"));
+            blocks.forEach(function (el) {
+                Promise.resolve(mermaid.run({ nodes: [el] })).catch(function (err) {
+                    el.setAttribute("data-processed", "1");
+                    el.textContent = "这张图渲染失败：" + (err && err.message ? err.message : err);
+                    el.style.color = "#e07b5f";
+                    el.style.textAlign = "left";
+                    console.error("mermaid 渲染失败", err);
+                });
+            });
+
+            console.log("24001010528 滕菲：Mermaid 流程图 + ER 图，待渲染区块 " + blocks.length + " 个");
+        })();
+    </script>
+</body>
+
+</html>

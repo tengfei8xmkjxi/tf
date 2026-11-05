@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24001010528 滕菲 · canvas 电商全站系统架构图</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            font-size: 15px;
+            line-height: 1.75;
+            color: #17202d;
+            background-color: #f6f3ec;
+        }
+
+        h2 {
+            margin: 0 0 8px;
+            font-size: 24px;
+            color: #13283d;
+        }
+
+        h3 {
+            margin: 34px 0 14px;
+            padding-bottom: 8px;
+            font-size: 17px;
+            color: #13283d;
+            border-bottom: 1px solid #d9d5cb;
+        }
+
+        .tip {
+            max-width: 900px;
+            margin: 0 0 22px;
+            padding-left: 14px;
+            font-size: 14px;
+            color: #67717f;
+            border-left: 3px solid #c9a227;
+        }
+
+        code {
+            padding: 1px 6px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            color: #13283d;
+            background-color: #efeadd;
+            border-radius: 3px;
+            word-break: break-all;
+        }
+
+        /* 画布 */
+        .stage {
+            position: relative;
+            border-radius: 10px;
+            box-shadow: 0 18px 34px rgba(19, 40, 61, .18);
+        }
+
+        #cv {
+            display: block;
+            width: 100%;
+            background-color: #0b1723;
+            border-radius: 10px;
+        }
+
+        /* 悬停提示框 */
+        .tipbox {
+            position: absolute;
+            left: 0;
+            top: 0;
+            max-width: 260px;
+            padding: 9px 13px;
+            font-size: 13px;
+            line-height: 1.55;
+            color: #13283d;
+            background-color: rgba(243, 239, 230, .96);
+            border-radius: 6px;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, .38);
+            opacity: 0;
+            transition: opacity .15s ease;
+            pointer-events: none;
+        }
+
+        .tipbox b {
+            display: block;
+            font-size: 13.5px;
+            color: #b8483a;
+        }
+
+        .tipbox span {
+            color: #67717f;
+        }
+
+        /* 说明 */
+        .notes {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-top: 18px;
+        }
+
+        .notes div {
+            padding: 14px 16px;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #67717f;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-top: 3px solid #c9a227;
+        }
+
+        .notes b {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 13.5px;
+            color: #b8483a;
+        }
+
+        @media (max-width: 760px) {
+            .notes {
+                grid-template-columns: 1fr;
+            }
+
+            .tipbox {
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h2>24001010528 滕菲：电商全站系统架构图（canvas 绘制）</h2>
+    <p class="tip">
+        这张图不用图片、不用 SVG，全部由 canvas 2D 的路径画出来：圆角矩形当模块、虚线的层框当分层、
+        三角箭头表示调用方向。整张图先在一个 1180 × 950 的虚拟坐标系里排好，
+        再按画布实际宽度整体缩放，所以换屏幕尺寸排版不会乱。鼠标悬停任意模块会高亮并显示它的职责。
+    </p>
+
+    <div class="stage">
+        <canvas id="cv"></canvas>
+        <div class="tipbox" id="tip"></div>
+    </div>
+
+    <h3>分层各自负责什么</h3>
+    <div class="notes">
+        <div>
+            <b>接入层：把请求挡住、分出去</b>
+            浏览器到 Nginx 之前先过 CDN，静态资源就近返回；动态请求再交给 API 网关统一鉴权、限流和路由，
+            应用层就不必各自处理登录态。
+        </div>
+        <div>
+            <b>应用层：按业务拆服务</b>
+            商品、订单、支付、库存各自独立部署，之间用 RPC 或消息队列通信。
+            下单要先预占库存，支付回调再扣减，所以订单与库存是通过消息最终一致的。
+        </div>
+        <div>
+            <b>支撑层与数据层：快慢分开</b>
+            热点数据放 Redis 挡住读流量，写请求落 MySQL 主从；
+            Elasticsearch 负责搜索与日志，数据仓库只跑离线报表，不和线上抢资源。
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var cv = document.getElementById("cv");
+            var ctx = cv.getContext("2d");
+            var tip = document.getElementById("tip");
+
+            var dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+            /* 设计坐标系，实际显示按画布宽度整体缩放 */
+            var VW = 1180;
+            var VH = 950;
+            var scale = 1;
+
+            var BX = 142;          // 层框左边界（左边留出来放竖排层名）
+            var BW = 960;          // 层框宽度
+
+            var hotKey = null;
+            var nodes = [];
+
+            var C = {
+                bg: "#0b1723",
+                line: "rgba(214,208,196,.38)",
+                user: "#e3b866",
+                edge: "#6fb3d2",
+                app: "#e07b5f",
+                mid: "#a294e0",
+                data: "#5fb894",
+                ext: "#c9a227"
+            };
+
+            /* ---------------- 各层模块：标题 / 职责说明 ---------------- */
+            var USER = [
+                ["PC 浏览器", "商品浏览 · 下单"],
+                ["手机 App", "iOS / Android"],
+                ["微信小程序", "分享 · 拉新入口"],
+                ["H5 活动页", "秒杀 · 大促"]
+            ];
+
+            var EDGE = [
+                ["CDN 分发", "静态资源 · 图片"],
+                ["Nginx", "反向代理 · 限流"],
+                ["API 网关", "路由 · 鉴权 · 熔断"],
+                ["统一鉴权", "登录态 · 权限"]
+            ];
+
+            var APP = [
+                ["商品服务", "类目 · 详情 · 上下架"],
+                ["搜索服务", "关键词 · 排序"],
+                ["购物车服务", "加购 · 算价"],
+                ["订单服务", "下单 · 状态机"],
+                ["支付服务", "支付回调 · 对账"],
+                ["库存服务", "扣减 · 预占"],
+                ["会员服务", "账号 · 积分"],
+                ["消息服务", "站内信 · 推送"]
+            ];
+
+            var MID = [
+                ["Redis 缓存", "热点数据 · 分布式锁"],
+                ["消息队列", "Kafka · 异步解耦"],
+                ["Elasticsearch", "商品与日志检索"],
+                ["任务调度", "定时对账 · 补偿"],
+                ["配置中心", "灰度 · 开关"]
+            ];
+
+            var DATA = [
+                ["MySQL 集群", "主从复制 · 分库分表"],
+                ["对象存储 OSS", "图片 · 附件"],
+                ["数据仓库", "埋点 · 报表"],
+                ["备份与容灾", "冷备 · 快照"]
+            ];
+
+            var EXT = [
+                ["微信支付", "支付渠道"],
+                ["支付宝", "支付渠道"],
+                ["短信 / 邮件", "通知触达"],
+                ["第三方物流", "运单 · 轨迹"]
+            ];
+
+            /* ---------------- 绘图小工具 ---------------- */
+            function hexA(hex, a) {
+                var n = parseInt(hex.slice(1), 16);
+                return "rgba(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a + ")";
+            }
+
+            function roundRect(x, y, w, h, r) {
+                ctx.beginPath();
+                ctx.moveTo(x + r, y);
+                ctx.lineTo(x + w - r, y);
+                ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+                ctx.lineTo(x + w, y + h - r);
+                ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+                ctx.lineTo(x + r, y + h);
+                ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+                ctx.lineTo(x, y + r);
+                ctx.quadraticCurveTo(x, y, x + r, y);
+                ctx.closePath();
+            }
+
+            /* 一层：虚线底框 + 左侧竖排层名 */
+            function band(x, y, w, h, color, label) {
+                roundRect(x, y, w, h, 10);
+                ctx.fillStyle = hexA(color, 0.06);
+                ctx.fill();
+                ctx.strokeStyle = hexA(color, 0.34);
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                /* 层名前面一条短竖线，视觉上把标签和框绑在一起 */
+                ctx.strokeStyle = hexA(color, 0.45);
+                ctx.beginPath();
+                ctx.moveTo(x - 62, y + 10);
+                ctx.lineTo(x - 62, y + h - 10);
+                ctx.stroke();
+
+                ctx.fillStyle = color;
+                ctx.font = '600 13px "Microsoft YaHei", sans-serif';
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                var chars = label.split("");
+                var step = 16;
+                var startY = y + h / 2 - (chars.length - 1) * step / 2;
+                for (var i = 0; i < chars.length; i++) {
+                    ctx.fillText(chars[i], x - 42, startY + i * step);
+                }
+            }
+
+            /* 一个模块 */
+            function node(x, y, w, h, title, sub, color, key) {
+                var isHot = hotKey === key;
+
+                roundRect(x, y, w, h, 8);
+                ctx.fillStyle = isHot ? hexA(color, 0.24) : hexA(color, 0.10);
+                if (isHot) {
+                    ctx.shadowColor = hexA(color, 0.7);
+                    ctx.shadowBlur = 16;
+                }
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                ctx.strokeStyle = isHot ? color : hexA(color, 0.5);
+                ctx.lineWidth = isHot ? 1.8 : 1;
+                ctx.stroke();
+
+                /* 左侧色条 */
+                ctx.fillStyle = color;
+                ctx.fillRect(x + 1, y + 10, 3, h - 20);
+
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillStyle = "#f3efe6";
+                ctx.font = '700 15px "Microsoft YaHei", sans-serif';
+                ctx.fillText(title, x + w / 2, y + h / 2 - 9);
+
+                ctx.fillStyle = "rgba(238,231,216,.55)";
+                ctx.font = '400 11.5px "Microsoft YaHei", sans-serif';
+                ctx.fillText(sub, x + w / 2, y + h / 2 + 12);
+
+                nodes.push({ key: key, x: x, y: y, w: w, h: h, title: title, sub: sub });
+            }
+
+            /* 向下的箭头 */
+            function downArrow(x, y1, y2) {
+                ctx.strokeStyle = C.line;
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.moveTo(x, y1 + 2);
+                ctx.lineTo(x, y2 - 7);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(x - 4.5, y2 - 7);
+                ctx.lineTo(x + 4.5, y2 - 7);
+                ctx.lineTo(x, y2);
+                ctx.closePath();
+                ctx.fillStyle = C.line;
+                ctx.fill();
+            }
+
+            function gapLabel(text, x, y) {
+                ctx.textAlign = "left";
+                ctx.textBaseline = "middle";
+                ctx.fillStyle = "rgba(238,231,216,.38)";
+                ctx.font = '400 10.5px Consolas, "Courier New", monospace';
+                ctx.fillText(text, x, y);
+            }
+
+            /* 一行里每个模块的宽度和步长 */
+            function row(bandW, count, gap) {
+                var w = (bandW - gap * (count - 1)) / count;
+                return { w: w, step: w + gap };
+            }
+
+            /* ---------------- 画整张图 ---------------- */
+            function draw() {
+                nodes = [];
+                ctx.setTransform(dpr * scale, 0, 0, dpr * scale, 0, 0);
+                ctx.fillStyle = C.bg;
+                ctx.fillRect(0, 0, VW, VH);
+
+                /* 顶部两行小字 */
+                ctx.textAlign = "left";
+                ctx.textBaseline = "alphabetic";
+                ctx.fillStyle = C.ext;
+                ctx.font = '600 13px Consolas, "Courier New", monospace';
+                ctx.fillText("E-COMMERCE  ARCHITECTURE", BX, 30);
+
+                ctx.textAlign = "right";
+                ctx.fillStyle = "rgba(238,231,216,.42)";
+                ctx.font = '400 12px "Microsoft YaHei", sans-serif';
+                ctx.fillText("24001010528 滕菲 · canvas 2D 绘制", BX + BW, 30);
+
+                /* 六层底框 */
+                band(BX, 44, BW, 106, C.user, "用户层");
+                band(BX, 178, BW, 106, C.edge, "接入层");
+                band(BX, 312, BW, 190, C.app, "应用层");
+                band(BX, 528, BW, 106, C.mid, "支撑层");
+                band(BX, 660, BW, 106, C.data, "数据层");
+                band(BX, 792, BW - 40, 106, C.ext, "外部服务");
+
+                var i, x, r, y;
+
+                /* 用户层：4 个 */
+                r = row(BW, 4, 18);
+                y = 68;
+                for (i = 0; i < 4; i++) {
+                    node(BX + i * r.step, y, r.w, 58, USER[i][0], USER[i][1], C.user, "u" + i);
+                }
+
+                /* 接入层：4 个 */
+                y = 202;
+                for (i = 0; i < 4; i++) {
+                    node(BX + i * r.step, y, r.w, 58, EDGE[i][0], EDGE[i][1], C.edge, "e" + i);
+                }
+
+                /* 应用层：8 个，两行 */
+                y = 324;
+                for (i = 0; i < 8; i++) {
+                    x = BX + (i % 4) * r.step;
+                    var ay = y + Math.floor(i / 4) * 90;
+                    node(x, ay, r.w, 76, APP[i][0], APP[i][1], C.app, "a" + i);
+                }
+
+                /* 支撑层：5 个 */
+                r = row(BW, 5, 16);
+                y = 552;
+                for (i = 0; i < 5; i++) {
+                    node(BX + i * r.step, y, r.w, 58, MID[i][0], MID[i][1], C.mid, "m" + i);
+                }
+
+                /* 数据层：4 个 */
+                r = row(BW, 4, 18);
+                y = 684;
+                for (i = 0; i < 4; i++) {
+                    node(BX + i * r.step, y, r.w, 58, DATA[i][0], DATA[i][1], C.data, "d" + i);
+                }
+
+                /* 外部服务：4 个（这层窄 40px，给右侧绕行的连线留路） */
+                r = row(BW - 40, 4, 18);
+                y = 816;
+                for (i = 0; i < 4; i++) {
+                    node(BX + i * r.step, y, r.w, 58, EXT[i][0], EXT[i][1], C.ext, "x" + i);
+                }
+
+                /* 层与层之间的箭头 */
+                var xs = [BX + BW * 0.25, BX + BW * 0.5, BX + BW * 0.75];
+                var k;
+                for (k = 0; k < xs.length; k++) {
+                    downArrow(xs[k], 150, 178);   // 用户 → 接入
+                    downArrow(xs[k], 284, 312);   // 接入 → 应用
+                    downArrow(xs[k], 502, 528);   // 应用 → 支撑
+                }
+                downArrow(xs[0], 634, 660);        // 支撑 → 数据
+                downArrow(xs[2], 634, 660);
+
+                gapLabel("HTTPS / WebSocket", BX + 4, 164);
+                gapLabel("HTTP · RPC", BX + 4, 298);
+                gapLabel("缓存 · 消息 · 检索", BX + 4, 515);
+                gapLabel("读写 · 持久化", BX + 4, 647);
+
+                /* 应用层 → 外部服务：沿右侧绕一圈 */
+                var ax = BX + BW;
+                var ay = 312 + 95;
+                var ex = BX + BW - 40;
+                var ey = 792 + 53;
+                ctx.strokeStyle = hexA(C.ext, 0.45);
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.moveTo(ax, ay);
+                ctx.lineTo(ax + 46, ay);
+                ctx.lineTo(ax + 46, ey);
+                ctx.lineTo(ex + 8, ey);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(ex + 8, ey - 4.5);
+                ctx.lineTo(ex + 8, ey + 4.5);
+                ctx.lineTo(ex, ey);
+                ctx.closePath();
+                ctx.fillStyle = hexA(C.ext, 0.8);
+                ctx.fill();
+
+                /* 绕行线的竖排说明 */
+                ctx.save();
+                ctx.translate(ax + 60, (ay + ey) / 2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillStyle = "rgba(201,162,39,.62)";
+                ctx.font = '400 11px "Microsoft YaHei", sans-serif';
+                ctx.fillText("支付 / 物流 / 短信 · 第三方接口调用", 0, 0);
+                ctx.restore();
+
+                /* 底部注脚 */
+                ctx.textAlign = "left";
+                ctx.textBaseline = "alphabetic";
+                ctx.fillStyle = "rgba(238,231,216,.3)";
+                ctx.font = '400 11px "Microsoft YaHei", sans-serif';
+                ctx.fillText("悬停任意模块查看职责说明 · 图形由 canvas 逐层绘制，非图片", BX, 932);
+            }
+
+            /* ---------------- 尺寸自适应 ---------------- */
+            function resize() {
+                var rect = cv.getBoundingClientRect();
+                var cssW = Math.round(rect.width) || 1000;
+                scale = cssW / VW;
+
+                var cssH = Math.round(VH * scale);
+                cv.style.height = cssH + "px";
+                cv.width = Math.round(cssW * dpr);
+                cv.height = Math.round(cssH * dpr);
+
+                draw();
+            }
+
+            /* ---------------- 悬停命中 ---------------- */
+            function hit(vx, vy) {
+                for (var i = 0; i < nodes.length; i++) {
+                    var n = nodes[i];
+                    if (vx >= n.x && vx <= n.x + n.w && vy >= n.y && vy <= n.y + n.h) {
+                        return n;
+                    }
+                }
+                return null;
+            }
+
+            cv.addEventListener("mousemove", function (e) {
+                var rect = cv.getBoundingClientRect();
+                var vx = (e.clientX - rect.left) / scale;
+                var vy = (e.clientY - rect.top) / scale;
+                var n = hit(vx, vy);
+                var key = n ? n.key : null;
+
+                if (key !== hotKey) {
+                    hotKey = key;
+                    draw();
+                    cv.style.cursor = n ? "pointer" : "default";
+                }
+
+                if (n) {
+                    tip.innerHTML = "<b>" + n.title + "</b><span>" + n.sub + "</span>";
+                    tip.style.opacity = "1";
+
+                    var tx = e.clientX - rect.left + 16;
+                    var ty = e.clientY - rect.top + 18;
+                    if (tx + tip.offsetWidth > rect.width - 8) {
+                        tx = e.clientX - rect.left - tip.offsetWidth - 16;
+                    }
+                    if (ty + tip.offsetHeight > rect.height - 8) {
+                        ty = e.clientY - rect.top - tip.offsetHeight - 18;
+                    }
+                    tip.style.left = tx + "px";
+                    tip.style.top = ty + "px";
+                } else {
+                    tip.style.opacity = "0";
+                }
+            });
+
+            cv.addEventListener("mouseleave", function () {
+                hotKey = null;
+                tip.style.opacity = "0";
+                draw();
+            });
+
+            var resizeTimer = 0;
+            window.addEventListener("resize", function () {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(resize, 150);
+            });
+
+            resize();
+            console.log("24001010528 滕菲：canvas 电商系统架构图，模块数 " + nodes.length);
+        })();
+    </script>
+</body>
+
+</html>

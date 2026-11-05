@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24001010528 滕菲 · 知识库智能客服系统架构图（SVG）</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            font-size: 15px;
+            line-height: 1.75;
+            color: #17202d;
+            background-color: #f6f3ec;
+        }
+
+        h2 {
+            margin: 0 0 8px;
+            font-size: 24px;
+            color: #13283d;
+        }
+
+        h3 {
+            margin: 34px 0 14px;
+            padding-bottom: 8px;
+            font-size: 17px;
+            color: #13283d;
+            border-bottom: 1px solid #d9d5cb;
+        }
+
+        .tip {
+            max-width: 960px;
+            margin: 0 0 22px;
+            padding-left: 14px;
+            font-size: 14px;
+            color: #67717f;
+            border-left: 3px solid #c9a227;
+        }
+
+        code {
+            padding: 1px 6px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            color: #13283d;
+            background-color: #efeadd;
+            border-radius: 3px;
+            word-break: break-all;
+        }
+
+        /* 画布 */
+        .stage {
+            position: relative;
+            padding: 10px;
+            background-color: #0b1723;
+            border-radius: 10px;
+            box-shadow: 0 18px 34px rgba(19, 40, 61, .18);
+            overflow-x: auto;
+        }
+
+        #arch {
+            display: block;
+            width: 100%;
+            min-width: 980px;
+            height: auto;
+        }
+
+        #arch text {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+
+        #arch .head {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: .5px;
+        }
+
+        #arch .head-right {
+            font-size: 12px;
+        }
+
+        #arch .band-label {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        #arch .node-title {
+            font-size: 14px;
+            font-weight: 700;
+            fill: #f3efe6;
+        }
+
+        #arch .node-sub {
+            font-size: 10.5px;
+            fill: rgba(238, 231, 216, .58);
+        }
+
+        #arch .tag text {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 8.5px;
+            font-weight: 700;
+            fill: #0b1723;
+        }
+
+        #arch .gap-note {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 10.5px;
+            fill: rgba(238, 231, 216, .38);
+        }
+
+        #arch .lane-label {
+            font-size: 11px;
+            fill: rgba(238, 231, 216, .5);
+        }
+
+        #arch .foot {
+            font-size: 11px;
+            fill: rgba(238, 231, 216, .3);
+        }
+
+        #arch .flow {
+            fill: none;
+            stroke: rgba(214, 208, 196, .42);
+            stroke-width: 1.2;
+        }
+
+        #arch .flow.dash {
+            stroke-dasharray: 4 4;
+        }
+
+        /* 悬停高亮：只改描边和投影，不重排，代价很小 */
+        #arch .node {
+            cursor: pointer;
+        }
+
+        #arch .node .node-bg {
+            transition: fill-opacity .15s ease, stroke-opacity .15s ease;
+        }
+
+        #arch .node:hover .node-bg,
+        #arch .node:focus .node-bg {
+            fill-opacity: .26;
+            stroke-opacity: 1;
+        }
+
+        #arch .node:focus {
+            outline: none;
+        }
+
+        /* 悬停提示框 */
+        .tipbox {
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 10;
+            max-width: 280px;
+            padding: 9px 13px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #13283d;
+            background-color: rgba(243, 239, 230, .97);
+            border-radius: 6px;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, .4);
+            opacity: 0;
+            transition: opacity .15s ease;
+            pointer-events: none;
+        }
+
+        .tipbox b {
+            display: block;
+            margin-bottom: 2px;
+            font-size: 13.5px;
+            color: #b8483a;
+        }
+
+        .tipbox i {
+            display: block;
+            margin-bottom: 4px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 11px;
+            font-style: normal;
+            color: #8b95a3;
+        }
+
+        /* 说明卡片 */
+        .notes {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .notes div {
+            padding: 14px 16px;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #67717f;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-top: 3px solid #c9a227;
+        }
+
+        .notes b {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 13.5px;
+            color: #b8483a;
+        }
+
+        .notes em {
+            font-family: Consolas, "Courier New", monospace;
+            font-style: normal;
+            font-weight: 700;
+            color: #c9a227;
+        }
+
+        @media (max-width: 760px) {
+            .notes {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h2>24001010528 滕菲：知识库智能客服系统架构图（SVG）</h2>
+    <p class="tip">
+        这张图是一张 <code>&lt;svg&gt;</code>，不是图片也不是 canvas：每个模块是一个
+        <code>&lt;rect&gt;</code> 加两个 <code>&lt;text&gt;</code>，分层框是虚线描边的
+        <code>&lt;rect&gt;</code>，箭头是 <code>&lt;line&gt;</code> 加
+        <code>&lt;polygon&gt;</code>。整图用一个 <code>viewBox="0 0 1260 900"</code>
+        定义虚拟坐标系，按容器宽度整体缩放，所以放大到 4K 或缩到手机屏都不会糊。
+        悬停任意模块会高亮并显示它的职责。
+    </p>
+
+    <div class="stage">
+        <svg id="arch" viewBox="0 0 1260 900" role="img" aria-label="知识库智能客服系统架构图，共 32 个模块">
+<rect x="0" y="0" width="1260" height="900" fill="#0b1723"/><text class="head" x="128" y="30" fill="#c9a227">KNOWLEDGE-BASE  INTELLIGENT  CUSTOMER  SERVICE</text><text class="head-right" x="1138" y="30" text-anchor="end" fill="rgba(238,231,216,.42)">24001010528 滕菲 · 纯 SVG 矢量绘制</text><g class="band"><rect x="128" y="48" width="1010" height="96" rx="10" fill="#e3b866" fill-opacity="0.06" stroke="#e3b866" stroke-opacity="0.34" stroke-dasharray="5 5"/><line x1="62" y1="58" x2="62" y2="134" stroke="#e3b866" stroke-opacity="0.45"/><text class="band-label" x="62" y="65" text-anchor="middle" fill="#e3b866">用</text><text class="band-label" x="62" y="83" text-anchor="middle" fill="#e3b866">户</text><text class="band-label" x="62" y="101" text-anchor="middle" fill="#e3b866">接</text><text class="band-label" x="62" y="119" text-anchor="middle" fill="#e3b866">入</text><text class="band-label" x="62" y="137" text-anchor="middle" fill="#e3b866">层</text></g><g class="band"><rect x="128" y="166" width="1010" height="96" rx="10" fill="#6fb3d2" fill-opacity="0.06" stroke="#6fb3d2" stroke-opacity="0.34" stroke-dasharray="5 5"/><line x1="62" y1="176" x2="62" y2="252" stroke="#6fb3d2" stroke-opacity="0.45"/><text class="band-label" x="62" y="183" text-anchor="middle" fill="#6fb3d2">对</text><text class="band-label" x="62" y="201" text-anchor="middle" fill="#6fb3d2">话</text><text class="band-label" x="62" y="219" text-anchor="middle" fill="#6fb3d2">理</text><text class="band-label" x="62" y="237" text-anchor="middle" fill="#6fb3d2">解</text><text class="band-label" x="62" y="255" text-anchor="middle" fill="#6fb3d2">层</text></g><g class="band"><rect x="128" y="284" width="1010" height="96" rx="10" fill="#a294e0" fill-opacity="0.06" stroke="#a294e0" stroke-opacity="0.34" stroke-dasharray="5 5"/><line x1="62" y1="294" x2="62" y2="370" stroke="#a294e0" stroke-opacity="0.45"/><text class="band-label" x="62" y="301" text-anchor="middle" fill="#a294e0">检</text><text class="band-label" x="62" y="319" text-anchor="middle" fill="#a294e0">索</text><text class="band-label" x="62" y="337" text-anchor="middle" fill="#a294e0">增</text><text class="band-label" x="62" y="355" text-anchor="middle" fill="#a294e0">强</text><text class="band-label" x="62" y="373" text-anchor="middle" fill="#a294e0">层</text></g><g class="band"><rect x="128" y="402" width="1010" height="96" rx="10" fill="#e07b5f" fill-opacity="0.06" stroke="#e07b5f" stroke-opacity="0.34" stroke-dasharray="5 5"/><line x1="62" y1="412" x2="62" y2="488" stroke="#e07b5f" stroke-opacity="0.45"/><text class="band-label" x="62" y="419" text-anchor="middle" fill="#e07b5f">深</text><text class="band-label" x="62" y="437" text-anchor="middle" fill="#e07b5f">度</text><text class="band-label" x="62" y="455" text-anchor="middle" fill="#e07b5f">生</text><text class="band-label" x="62" y="473" text-anchor="middle" fill="#e07b5f">成</text><text class="band-label" x="62" y="491" text-anchor="middle" fill="#e07b5f">层</text></g><g class="band"><rect x="128" y="520" width="1010" height="96" rx="10" fill="#5fb894" fill-opacity="0.06" stroke="#5fb894" stroke-opacity="0.34" stroke-dasharray="5 5"/><line x1="62" y1="530" x2="62" y2="606" stroke="#5fb894" stroke-opacity="0.45"/><text class="band-label" x="62" y="537" text-anchor="middle" fill="#5fb894">业</text><text class="band-label" x="62" y="555" text-anchor="middle" fill="#5fb894">务</text><text class="band-label" x="62" y="573" text-anchor="middle" fill="#5fb894">应</text><text class="band-label" x="62" y="591" text-anchor="middle" fill="#5fb894">用</text><text class="band-label" x="62" y="609" text-anchor="middle" fill="#5fb894">层</text></g><g class="band"><rect x="128" y="638" width="1010" height="96" rx="10" fill="#c9a227" fill-opacity="0.06" stroke="#c9a227" stroke-opacity="0.34" stroke-dasharray="5 5"/><line x1="62" y1="648" x2="62" y2="724" stroke="#c9a227" stroke-opacity="0.45"/><text class="band-label" x="62" y="655" text-anchor="middle" fill="#c9a227">知</text><text class="band-label" x="62" y="673" text-anchor="middle" fill="#c9a227">识</text><text class="band-label" x="62" y="691" text-anchor="middle" fill="#c9a227">底</text><text class="band-label" x="62" y="709" text-anchor="middle" fill="#c9a227">座</text><text class="band-label" x="62" y="727" text-anchor="middle" fill="#c9a227">层</text></g><g class="band"><rect x="128" y="756" width="1010" height="96" rx="10" fill="#d98cb3" fill-opacity="0.06" stroke="#d98cb3" stroke-opacity="0.34" stroke-dasharray="5 5"/><line x1="62" y1="766" x2="62" y2="842" stroke="#d98cb3" stroke-opacity="0.45"/><text class="band-label" x="62" y="764" text-anchor="middle" fill="#d98cb3">评</text><text class="band-label" x="62" y="782" text-anchor="middle" fill="#d98cb3">测</text><text class="band-label" x="62" y="800" text-anchor="middle" fill="#d98cb3">与</text><text class="band-label" x="62" y="818" text-anchor="middle" fill="#d98cb3">运</text><text class="band-label" x="62" y="836" text-anchor="middle" fill="#d98cb3">维</text><text class="band-label" x="62" y="854" text-anchor="middle" fill="#d98cb3">层</text></g><g class="node" data-title="网页客服窗" data-sub="H5 悬浮球" data-desc="官网与 H5 页面右下角的悬浮入口，打开时先建 WebSocket 长连接" tabindex="0"><title>网页客服窗 — 官网与 H5 页面右下角的悬浮入口，打开时先建 WebSocket 长连接</title><rect class="node-bg" x="144.0" y="68" width="234.0" height="56" rx="8" fill="#e3b866" fill-opacity="0.10" stroke="#e3b866" stroke-opacity="0.5"/><rect x="145.0" y="78" width="3" height="36" rx="1.5" fill="#e3b866"/><text class="node-title" x="261.0" y="93" text-anchor="middle">网页客服窗</text><text class="node-sub" x="261.0" y="110" text-anchor="middle">H5 悬浮球</text></g><g class="node" data-title="App / 小程序" data-sub="iOS · Android" data-desc="移动端内嵌的客服页，复用同一套会话接口" tabindex="0"><title>App / 小程序 — 移动端内嵌的客服页，复用同一套会话接口</title><rect class="node-bg" x="392.0" y="68" width="234.0" height="56" rx="8" fill="#e3b866" fill-opacity="0.10" stroke="#e3b866" stroke-opacity="0.5"/><rect x="393.0" y="78" width="3" height="36" rx="1.5" fill="#e3b866"/><text class="node-title" x="509.0" y="93" text-anchor="middle">App / 小程序</text><text class="node-sub" x="509.0" y="110" text-anchor="middle">iOS · Android</text></g><g class="node" data-title="微信服务号" data-sub="公众号 · 企业微信" data-desc="用户在微信里直接发消息，经公众号回调转发给对话服务" tabindex="0"><title>微信服务号 — 用户在微信里直接发消息，经公众号回调转发给对话服务</title><rect class="node-bg" x="640.0" y="68" width="234.0" height="56" rx="8" fill="#e3b866" fill-opacity="0.10" stroke="#e3b866" stroke-opacity="0.5"/><rect x="641.0" y="78" width="3" height="36" rx="1.5" fill="#e3b866"/><text class="node-title" x="757.0" y="93" text-anchor="middle">微信服务号</text><text class="node-sub" x="757.0" y="110" text-anchor="middle">公众号 · 企业微信</text></g><g class="node" data-title="电话语音" data-sub="IVR · ASR" data-desc="呼叫中心来电先做语音转写，再送进同一条理解流程" tabindex="0"><title>电话语音 — 呼叫中心来电先做语音转写，再送进同一条理解流程</title><rect class="node-bg" x="888.0" y="68" width="234.0" height="56" rx="8" fill="#e3b866" fill-opacity="0.10" stroke="#e3b866" stroke-opacity="0.5"/><rect x="889.0" y="78" width="3" height="36" rx="1.5" fill="#e3b866"/><text class="node-title" x="1005.0" y="93" text-anchor="middle">电话语音</text><text class="node-sub" x="1005.0" y="110" text-anchor="middle">IVR · ASR</text></g><g class="node" data-title="意图识别" data-sub="分类 · 多标签" data-desc="判断这句话想问什么：查订单、退款还是产品咨询，决定后续走哪条流程" tabindex="0"><title>意图识别 — 判断这句话想问什么：查订单、退款还是产品咨询，决定后续走哪条流程</title><rect class="node-bg" x="144.0" y="186" width="184.4" height="56" rx="8" fill="#6fb3d2" fill-opacity="0.10" stroke="#6fb3d2" stroke-opacity="0.5"/><rect x="145.0" y="196" width="3" height="36" rx="1.5" fill="#6fb3d2"/><text class="node-title" x="236.2" y="211" text-anchor="middle">意图识别</text><text class="node-sub" x="236.2" y="228" text-anchor="middle">分类 · 多标签</text></g><g class="node" data-title="实体抽取" data-sub="NER · 关键字段" data-desc="从问句里抽出订单号、商品名、金额等结构化字段" tabindex="0"><title>实体抽取 — 从问句里抽出订单号、商品名、金额等结构化字段</title><rect class="node-bg" x="342.4" y="186" width="184.4" height="56" rx="8" fill="#6fb3d2" fill-opacity="0.10" stroke="#6fb3d2" stroke-opacity="0.5"/><rect x="343.4" y="196" width="3" height="36" rx="1.5" fill="#6fb3d2"/><text class="node-title" x="434.6" y="211" text-anchor="middle">实体抽取</text><text class="node-sub" x="434.6" y="228" text-anchor="middle">NER · 关键字段</text></g><g class="node" data-title="槽位填充" data-sub="多轮补全" data-desc="意图需要的字段不全时反问补齐，比如缺订单号就追问单号" tabindex="0"><title>槽位填充 — 意图需要的字段不全时反问补齐，比如缺订单号就追问单号</title><rect class="node-bg" x="540.8" y="186" width="184.4" height="56" rx="8" fill="#6fb3d2" fill-opacity="0.10" stroke="#6fb3d2" stroke-opacity="0.5"/><rect x="541.8" y="196" width="3" height="36" rx="1.5" fill="#6fb3d2"/><text class="node-title" x="633.0" y="211" text-anchor="middle">槽位填充</text><text class="node-sub" x="633.0" y="228" text-anchor="middle">多轮补全</text></g><g class="node" data-title="情绪识别" data-sub="负向预警" data-desc="检测愤怒、焦急等负向情绪，触发优先转人工" tabindex="0"><title>情绪识别 — 检测愤怒、焦急等负向情绪，触发优先转人工</title><rect class="node-bg" x="739.2" y="186" width="184.4" height="56" rx="8" fill="#6fb3d2" fill-opacity="0.10" stroke="#6fb3d2" stroke-opacity="0.5"/><rect x="740.2" y="196" width="3" height="36" rx="1.5" fill="#6fb3d2"/><text class="node-title" x="831.4" y="211" text-anchor="middle">情绪识别</text><text class="node-sub" x="831.4" y="228" text-anchor="middle">负向预警</text></g><g class="node" data-title="会话状态" data-sub="上下文窗口" data-desc="维护多轮对话的槽位与历史，控制送进模型的上下文长度" tabindex="0"><title>会话状态 — 维护多轮对话的槽位与历史，控制送进模型的上下文长度</title><rect class="node-bg" x="937.6" y="186" width="184.4" height="56" rx="8" fill="#6fb3d2" fill-opacity="0.10" stroke="#6fb3d2" stroke-opacity="0.5"/><rect x="938.6" y="196" width="3" height="36" rx="1.5" fill="#6fb3d2"/><text class="node-title" x="1029.8" y="211" text-anchor="middle">会话状态</text><text class="node-sub" x="1029.8" y="228" text-anchor="middle">上下文窗口</text></g><g class="node" data-title="查询改写" data-sub="指代消解 · 扩展" data-desc="把「这个能退吗」补全成完整问句，消掉指代、补上上下文" tabindex="0"><title>查询改写 — 把「这个能退吗」补全成完整问句，消掉指代、补上上下文</title><rect class="node-bg" x="144.0" y="304" width="234.0" height="56" rx="8" fill="#a294e0" fill-opacity="0.10" stroke="#a294e0" stroke-opacity="0.5"/><rect x="145.0" y="314" width="3" height="36" rx="1.5" fill="#a294e0"/><text class="node-title" x="261.0" y="329" text-anchor="middle">查询改写</text><text class="node-sub" x="261.0" y="346" text-anchor="middle">指代消解 · 扩展</text></g><g class="node" data-title="混合召回" data-sub="向量 + BM25" data-desc="语义向量检索与关键词检索各召回一批候选，再按分数融合" tabindex="0"><title>混合召回 — 语义向量检索与关键词检索各召回一批候选，再按分数融合</title><rect class="node-bg" x="392.0" y="304" width="234.0" height="56" rx="8" fill="#a294e0" fill-opacity="0.10" stroke="#a294e0" stroke-opacity="0.5"/><rect x="393.0" y="314" width="3" height="36" rx="1.5" fill="#a294e0"/><text class="node-title" x="509.0" y="329" text-anchor="middle">混合召回</text><text class="node-sub" x="509.0" y="346" text-anchor="middle">向量 + BM25</text><g class="tag"><rect x="596.0" y="309" width="24" height="14" rx="7" fill="#a294e0" fill-opacity="0.85"/><text x="608.0" y="319.5" text-anchor="middle">R1</text></g></g><g class="node" data-title="精排 Rerank" data-sub="Cross-Encoder" data-desc="对召回的候选片段做交叉编码精排，取分数最高的 Top-K" tabindex="0"><title>精排 Rerank — 对召回的候选片段做交叉编码精排，取分数最高的 Top-K</title><rect class="node-bg" x="640.0" y="304" width="234.0" height="56" rx="8" fill="#a294e0" fill-opacity="0.10" stroke="#a294e0" stroke-opacity="0.5"/><rect x="641.0" y="314" width="3" height="36" rx="1.5" fill="#a294e0"/><text class="node-title" x="757.0" y="329" text-anchor="middle">精排 Rerank</text><text class="node-sub" x="757.0" y="346" text-anchor="middle">Cross-Encoder</text></g><g class="node" data-title="上下文组装" data-sub="截断 · 拼接" data-desc="把选中的知识片段按模板拼进提示词，并控制总长度不超限" tabindex="0"><title>上下文组装 — 把选中的知识片段按模板拼进提示词，并控制总长度不超限</title><rect class="node-bg" x="888.0" y="304" width="234.0" height="56" rx="8" fill="#a294e0" fill-opacity="0.10" stroke="#a294e0" stroke-opacity="0.5"/><rect x="889.0" y="314" width="3" height="36" rx="1.5" fill="#a294e0"/><text class="node-title" x="1005.0" y="329" text-anchor="middle">上下文组装</text><text class="node-sub" x="1005.0" y="346" text-anchor="middle">截断 · 拼接</text></g><g class="node" data-title="领域微调 LLM" data-sub="SFT · LoRA" data-desc="通用大模型用客服问答语料做指令微调，学语气与话术" tabindex="0"><title>领域微调 LLM — 通用大模型用客服问答语料做指令微调，学语气与话术</title><rect class="node-bg" x="144.0" y="422" width="234.0" height="56" rx="8" fill="#e07b5f" fill-opacity="0.10" stroke="#e07b5f" stroke-opacity="0.5"/><rect x="145.0" y="432" width="3" height="36" rx="1.5" fill="#e07b5f"/><text class="node-title" x="261.0" y="447" text-anchor="middle">领域微调 LLM</text><text class="node-sub" x="261.0" y="464" text-anchor="middle">SFT · LoRA</text></g><g class="node" data-title="提示词模板" data-sub="角色 · 约束" data-desc="固定系统提示词：身份、不能承诺的事、输出格式" tabindex="0"><title>提示词模板 — 固定系统提示词：身份、不能承诺的事、输出格式</title><rect class="node-bg" x="392.0" y="422" width="234.0" height="56" rx="8" fill="#e07b5f" fill-opacity="0.10" stroke="#e07b5f" stroke-opacity="0.5"/><rect x="393.0" y="432" width="3" height="36" rx="1.5" fill="#e07b5f"/><text class="node-title" x="509.0" y="447" text-anchor="middle">提示词模板</text><text class="node-sub" x="509.0" y="464" text-anchor="middle">角色 · 约束</text></g><g class="node" data-title="幻觉抑制" data-sub="事实校验" data-desc="生成后拿答案回查知识片段，没有依据的句子丢掉或改写" tabindex="0"><title>幻觉抑制 — 生成后拿答案回查知识片段，没有依据的句子丢掉或改写</title><rect class="node-bg" x="640.0" y="422" width="234.0" height="56" rx="8" fill="#e07b5f" fill-opacity="0.10" stroke="#e07b5f" stroke-opacity="0.5"/><rect x="641.0" y="432" width="3" height="36" rx="1.5" fill="#e07b5f"/><text class="node-title" x="757.0" y="447" text-anchor="middle">幻觉抑制</text><text class="node-sub" x="757.0" y="464" text-anchor="middle">事实校验</text><g class="tag"><rect x="844.0" y="427" width="24" height="14" rx="7" fill="#e07b5f" fill-opacity="0.85"/><text x="856.0" y="437.5" text-anchor="middle">R2</text></g></g><g class="node" data-title="引用溯源" data-sub="答案附出处" data-desc="每条答案标注来源文档与段落，方便坐席和用户核对" tabindex="0"><title>引用溯源 — 每条答案标注来源文档与段落，方便坐席和用户核对</title><rect class="node-bg" x="888.0" y="422" width="234.0" height="56" rx="8" fill="#e07b5f" fill-opacity="0.10" stroke="#e07b5f" stroke-opacity="0.5"/><rect x="889.0" y="432" width="3" height="36" rx="1.5" fill="#e07b5f"/><text class="node-title" x="1005.0" y="447" text-anchor="middle">引用溯源</text><text class="node-sub" x="1005.0" y="464" text-anchor="middle">答案附出处</text></g><g class="node" data-title="智能问答" data-sub="7×24 自助" data-desc="机器人直接回答可自助的问题，解决率是核心指标" tabindex="0"><title>智能问答 — 机器人直接回答可自助的问题，解决率是核心指标</title><rect class="node-bg" x="144.0" y="540" width="234.0" height="56" rx="8" fill="#5fb894" fill-opacity="0.10" stroke="#5fb894" stroke-opacity="0.5"/><rect x="145.0" y="550" width="3" height="36" rx="1.5" fill="#5fb894"/><text class="node-title" x="261.0" y="565" text-anchor="middle">智能问答</text><text class="node-sub" x="261.0" y="582" text-anchor="middle">7×24 自助</text></g><g class="node" data-title="坐席辅助" data-sub="话术推荐" data-desc="人工客服通话时实时推荐知识片段与回复话术" tabindex="0"><title>坐席辅助 — 人工客服通话时实时推荐知识片段与回复话术</title><rect class="node-bg" x="392.0" y="540" width="234.0" height="56" rx="8" fill="#5fb894" fill-opacity="0.10" stroke="#5fb894" stroke-opacity="0.5"/><rect x="393.0" y="550" width="3" height="36" rx="1.5" fill="#5fb894"/><text class="node-title" x="509.0" y="565" text-anchor="middle">坐席辅助</text><text class="node-sub" x="509.0" y="582" text-anchor="middle">话术推荐</text></g><g class="node" data-title="人工转接" data-sub="无缝接管" data-desc="超出能力或负向情绪时转人工，把完整上下文一并带过去" tabindex="0"><title>人工转接 — 超出能力或负向情绪时转人工，把完整上下文一并带过去</title><rect class="node-bg" x="640.0" y="540" width="234.0" height="56" rx="8" fill="#5fb894" fill-opacity="0.10" stroke="#5fb894" stroke-opacity="0.5"/><rect x="641.0" y="550" width="3" height="36" rx="1.5" fill="#5fb894"/><text class="node-title" x="757.0" y="565" text-anchor="middle">人工转接</text><text class="node-sub" x="757.0" y="582" text-anchor="middle">无缝接管</text></g><g class="node" data-title="工单沉淀" data-sub="新知识回流" data-desc="没解决的问题落成工单，处理完的结论回补进知识库" tabindex="0"><title>工单沉淀 — 没解决的问题落成工单，处理完的结论回补进知识库</title><rect class="node-bg" x="888.0" y="540" width="234.0" height="56" rx="8" fill="#5fb894" fill-opacity="0.10" stroke="#5fb894" stroke-opacity="0.5"/><rect x="889.0" y="550" width="3" height="36" rx="1.5" fill="#5fb894"/><text class="node-title" x="1005.0" y="565" text-anchor="middle">工单沉淀</text><text class="node-sub" x="1005.0" y="582" text-anchor="middle">新知识回流</text></g><g class="node" data-title="文档解析" data-sub="PDF · Word · HTML" data-desc="把各种格式的帮助文档解析成纯文本，保留标题层级" tabindex="0"><title>文档解析 — 把各种格式的帮助文档解析成纯文本，保留标题层级</title><rect class="node-bg" x="144.0" y="658" width="151.3" height="56" rx="8" fill="#c9a227" fill-opacity="0.10" stroke="#c9a227" stroke-opacity="0.5"/><rect x="145.0" y="668" width="3" height="36" rx="1.5" fill="#c9a227"/><text class="node-title" x="219.7" y="683" text-anchor="middle">文档解析</text><text class="node-sub" x="219.7" y="700" text-anchor="middle">PDF · Word · HTML</text></g><g class="node" data-title="语义切分" data-sub="滑动窗口" data-desc="按语义边界切成 300~500 字的片段，相邻片段留重叠" tabindex="0"><title>语义切分 — 按语义边界切成 300~500 字的片段，相邻片段留重叠</title><rect class="node-bg" x="309.3" y="658" width="151.3" height="56" rx="8" fill="#c9a227" fill-opacity="0.10" stroke="#c9a227" stroke-opacity="0.5"/><rect x="310.3" y="668" width="3" height="36" rx="1.5" fill="#c9a227"/><text class="node-title" x="385.0" y="683" text-anchor="middle">语义切分</text><text class="node-sub" x="385.0" y="700" text-anchor="middle">滑动窗口</text></g><g class="node" data-title="向量化" data-sub="BGE · Embedding" data-desc="用嵌入模型把片段编成向量，离线建库和在线检索共用同一模型" tabindex="0"><title>向量化 — 用嵌入模型把片段编成向量，离线建库和在线检索共用同一模型</title><rect class="node-bg" x="474.7" y="658" width="151.3" height="56" rx="8" fill="#c9a227" fill-opacity="0.10" stroke="#c9a227" stroke-opacity="0.5"/><rect x="475.7" y="668" width="3" height="36" rx="1.5" fill="#c9a227"/><text class="node-title" x="550.3" y="683" text-anchor="middle">向量化</text><text class="node-sub" x="550.3" y="700" text-anchor="middle">BGE · Embedding</text></g><g class="node" data-title="向量数据库" data-sub="Milvus · HNSW" data-desc="存向量并做近似最近邻检索，支持按业务标签过滤" tabindex="0"><title>向量数据库 — 存向量并做近似最近邻检索，支持按业务标签过滤</title><rect class="node-bg" x="640.0" y="658" width="151.3" height="56" rx="8" fill="#c9a227" fill-opacity="0.10" stroke="#c9a227" stroke-opacity="0.5"/><rect x="641.0" y="668" width="3" height="36" rx="1.5" fill="#c9a227"/><text class="node-title" x="715.7" y="683" text-anchor="middle">向量数据库</text><text class="node-sub" x="715.7" y="700" text-anchor="middle">Milvus · HNSW</text></g><g class="node" data-title="知识图谱" data-sub="实体 · 关系" data-desc="商品、型号、故障现象的实体关系，用于精确的多跳查询" tabindex="0"><title>知识图谱 — 商品、型号、故障现象的实体关系，用于精确的多跳查询</title><rect class="node-bg" x="805.3" y="658" width="151.3" height="56" rx="8" fill="#c9a227" fill-opacity="0.10" stroke="#c9a227" stroke-opacity="0.5"/><rect x="806.3" y="668" width="3" height="36" rx="1.5" fill="#c9a227"/><text class="node-title" x="881.0" y="683" text-anchor="middle">知识图谱</text><text class="node-sub" x="881.0" y="700" text-anchor="middle">实体 · 关系</text></g><g class="node" data-title="知识更新" data-sub="增量 · 版本" data-desc="文档改动后增量重建索引，保留历史版本可回滚" tabindex="0"><title>知识更新 — 文档改动后增量重建索引，保留历史版本可回滚</title><rect class="node-bg" x="970.7" y="658" width="151.3" height="56" rx="8" fill="#c9a227" fill-opacity="0.10" stroke="#c9a227" stroke-opacity="0.5"/><rect x="971.7" y="668" width="3" height="36" rx="1.5" fill="#c9a227"/><text class="node-title" x="1046.3" y="683" text-anchor="middle">知识更新</text><text class="node-sub" x="1046.3" y="700" text-anchor="middle">增量 · 版本</text></g><g class="node" data-title="标注与评测集" data-sub="人工标注" data-desc="从真实会话抽样构建问答对，作为可复现的评测基准" tabindex="0"><title>标注与评测集 — 从真实会话抽样构建问答对，作为可复现的评测基准</title><rect class="node-bg" x="144.0" y="776" width="184.4" height="56" rx="8" fill="#d98cb3" fill-opacity="0.10" stroke="#d98cb3" stroke-opacity="0.5"/><rect x="145.0" y="786" width="3" height="36" rx="1.5" fill="#d98cb3"/><text class="node-title" x="236.2" y="801" text-anchor="middle">标注与评测集</text><text class="node-sub" x="236.2" y="818" text-anchor="middle">人工标注</text></g><g class="node" data-title="自动指标" data-sub="RAGAS · 准确率" data-desc="检索命中率、答案正确率、引用准确率等自动打分" tabindex="0"><title>自动指标 — 检索命中率、答案正确率、引用准确率等自动打分</title><rect class="node-bg" x="342.4" y="776" width="184.4" height="56" rx="8" fill="#d98cb3" fill-opacity="0.10" stroke="#d98cb3" stroke-opacity="0.5"/><rect x="343.4" y="786" width="3" height="36" rx="1.5" fill="#d98cb3"/><text class="node-title" x="434.6" y="801" text-anchor="middle">自动指标</text><text class="node-sub" x="434.6" y="818" text-anchor="middle">RAGAS · 准确率</text><g class="tag"><rect x="496.8" y="781" width="24" height="14" rx="7" fill="#d98cb3" fill-opacity="0.85"/><text x="508.8" y="791.5" text-anchor="middle">R4</text></g></g><g class="node" data-title="A/B 与灰度" data-sub="分流实验" data-desc="新旧策略按比例分流，用线上指标判断哪个更好" tabindex="0"><title>A/B 与灰度 — 新旧策略按比例分流，用线上指标判断哪个更好</title><rect class="node-bg" x="540.8" y="776" width="184.4" height="56" rx="8" fill="#d98cb3" fill-opacity="0.10" stroke="#d98cb3" stroke-opacity="0.5"/><rect x="541.8" y="786" width="3" height="36" rx="1.5" fill="#d98cb3"/><text class="node-title" x="633.0" y="801" text-anchor="middle">A/B 与灰度</text><text class="node-sub" x="633.0" y="818" text-anchor="middle">分流实验</text></g><g class="node" data-title="线上监控" data-sub="埋点 · 告警" data-desc="首响时长、转人工率、超时率实时监控并告警" tabindex="0"><title>线上监控 — 首响时长、转人工率、超时率实时监控并告警</title><rect class="node-bg" x="739.2" y="776" width="184.4" height="56" rx="8" fill="#d98cb3" fill-opacity="0.10" stroke="#d98cb3" stroke-opacity="0.5"/><rect x="740.2" y="786" width="3" height="36" rx="1.5" fill="#d98cb3"/><text class="node-title" x="831.4" y="801" text-anchor="middle">线上监控</text><text class="node-sub" x="831.4" y="818" text-anchor="middle">埋点 · 告警</text></g><g class="node" data-title="模型迭代" data-sub="反馈闭环" data-desc="差评与转人工的样本回流，进下一轮训练与提示词调整" tabindex="0"><title>模型迭代 — 差评与转人工的样本回流，进下一轮训练与提示词调整</title><rect class="node-bg" x="937.6" y="776" width="184.4" height="56" rx="8" fill="#d98cb3" fill-opacity="0.10" stroke="#d98cb3" stroke-opacity="0.5"/><rect x="938.6" y="786" width="3" height="36" rx="1.5" fill="#d98cb3"/><text class="node-title" x="1029.8" y="801" text-anchor="middle">模型迭代</text><text class="node-sub" x="1029.8" y="818" text-anchor="middle">反馈闭环</text></g><line class="flow" x1="380.5" y1="146" x2="380.5" y2="158"/><polygon class="flow-head" points="376.0,158 385.0,158 380.5,165"/><line class="flow" x1="633.0" y1="146" x2="633.0" y2="158"/><polygon class="flow-head" points="628.5,158 637.5,158 633.0,165"/><line class="flow" x1="885.5" y1="146" x2="885.5" y2="158"/><polygon class="flow-head" points="881.0,158 890.0,158 885.5,165"/><line class="flow" x1="380.5" y1="264" x2="380.5" y2="276"/><polygon class="flow-head" points="376.0,276 385.0,276 380.5,283"/><line class="flow" x1="633.0" y1="264" x2="633.0" y2="276"/><polygon class="flow-head" points="628.5,276 637.5,276 633.0,283"/><line class="flow" x1="885.5" y1="264" x2="885.5" y2="276"/><polygon class="flow-head" points="881.0,276 890.0,276 885.5,283"/><line class="flow" x1="380.5" y1="382" x2="380.5" y2="394"/><polygon class="flow-head" points="376.0,394 385.0,394 380.5,401"/><line class="flow" x1="633.0" y1="382" x2="633.0" y2="394"/><polygon class="flow-head" points="628.5,394 637.5,394 633.0,401"/><line class="flow" x1="885.5" y1="382" x2="885.5" y2="394"/><polygon class="flow-head" points="881.0,394 890.0,394 885.5,401"/><line class="flow" x1="380.5" y1="500" x2="380.5" y2="512"/><polygon class="flow-head" points="376.0,512 385.0,512 380.5,519"/><line class="flow" x1="633.0" y1="500" x2="633.0" y2="512"/><polygon class="flow-head" points="628.5,512 637.5,512 633.0,519"/><line class="flow" x1="885.5" y1="500" x2="885.5" y2="512"/><polygon class="flow-head" points="881.0,512 890.0,512 885.5,519"/><line class="flow" x1="380.5" y1="618" x2="380.5" y2="630"/><polygon class="flow-head" points="376.0,630 385.0,630 380.5,637"/><line class="flow" x1="633.0" y1="618" x2="633.0" y2="630"/><polygon class="flow-head" points="628.5,630 637.5,630 633.0,637"/><line class="flow" x1="885.5" y1="618" x2="885.5" y2="630"/><polygon class="flow-head" points="881.0,630 890.0,630 885.5,637"/><line class="flow" x1="380.5" y1="736" x2="380.5" y2="748"/><polygon class="flow-head" points="376.0,748 385.0,748 380.5,755"/><line class="flow" x1="633.0" y1="736" x2="633.0" y2="748"/><polygon class="flow-head" points="628.5,748 637.5,748 633.0,755"/><line class="flow" x1="885.5" y1="736" x2="885.5" y2="748"/><polygon class="flow-head" points="881.0,748 890.0,748 885.5,755"/><text class="gap-note" x="130" y="159">WebSocket · HTTPS</text><text class="gap-note" x="130" y="277">意图 · 实体 · 上下文</text><text class="gap-note" x="130" y="395">Top-K 知识片段</text><text class="gap-note" x="130" y="513">带引用的答案</text><text class="gap-note" x="130" y="631">会话与工单</text><text class="gap-note" x="130" y="749">索引与知识更新</text><path class="flow" d="M1138,686 L1205,686 L1205,332 L1146,332" stroke="#c9a227" stroke-opacity="0.5"/><polygon class="flow-head" points="1146,327.5 1146,336.5 1138,332" fill="#c9a227" fill-opacity="0.85"/><text class="lane-label" transform="translate(1196,509) rotate(-90)" text-anchor="middle" fill="rgba(201,162,39,.78)">向量召回 · 知识供给</text><path class="flow dash" d="M1138,804 L1170,804 L1170,568 L1146,568" stroke="#d98cb3" stroke-opacity="0.45"/><polygon class="flow-head" points="1146,563.5 1146,572.5 1138,568" fill="#d98cb3" fill-opacity="0.85"/><text class="lane-label" transform="translate(1161,686) rotate(-90)" text-anchor="middle" fill="rgba(217,140,179,.78)">指标反馈 · A/B 迭代</text><text class="foot" x="128" y="880">R1~R4 为科研关注点：混合召回融合权重 · 幻觉抑制与事实一致性 · 多轮上下文建模 · 评测指标与人工对齐</text><text class="foot" x="1138" y="880" text-anchor="end">悬停任意模块查看职责说明 · 图形为 SVG 元素，非图片</text>
+        </svg>
+    </div>
+
+    <div class="tipbox" id="tip"></div>
+
+    <h3>按科研视角拆开看</h3>
+    <div class="notes">
+        <div>
+            <b><em>R1</em> 混合召回怎么融合</b>
+            向量召回擅长同义改写，BM25 擅长型号、订单号这种精确串。两路分数尺度不同，
+            直接相加没有意义，实践中要先做归一化或用加权 RRF 融合——融合权重取多少，本身就是可做的实验点。
+        </div>
+        <div>
+            <b><em>R2</em> 幻觉从哪里堵</b>
+            大模型会顺着语气编出知识库里没有的政策。可核验的做法是生成后回查引用片段，
+            句级比对支持度，不达阈值就改写或转人工；这比事后人工审 成本低得多。
+        </div>
+        <div>
+            <b><em>R3</em> 多轮上下文怎么裁剪</b>
+            窗口塞满历史会挤掉知识片段，塞太少又接不上「那它呢」这种指代。
+            按槽位保留关键事实、丢弃寒暄，是当前比较稳的做法。
+        </div>
+        <div>
+            <b><em>R4</em> 指标要能复现</b>
+            只看线上转人工率会被流量结构带偏。所以要从真实会话抽固定的标注集，
+            每次改检索或提示词都跑同一套自动指标，A/B 只用来验证线上收益。
+        </div>
+    </div>
+
+    <h3>七层各自负责什么</h3>
+    <div class="notes">
+        <div>
+            <b>接入层：把渠道统一起来</b>
+            网页、App、公众号、电话进来的消息格式各不相同，
+            统一落成一条 <code>session + message</code> 的结构，后面所有层就只处理一种输入。
+        </div>
+        <div>
+            <b>理解层：先判断再回答</b>
+            意图识别决定走哪条流程，实体与槽位负责把「我想退昨天那个单」补成可执行的结构化请求，
+            情绪识别则是一条兜底通道，负向直接转人工。
+        </div>
+        <div>
+            <b>检索层：RAG 的核心</b>
+            改写让问句脱离上下文也能懂，混合召回＋精排决定模型看到什么，
+            上下文组装再卡住长度上限。这一层没做好，模型再强也只能编。
+        </div>
+        <div>
+            <b>生成层：让答案可核对</b>
+            微调负责语气，模板负责边界，幻觉抑制和引用溯源负责让每条答案都能点回原文。
+        </div>
+        <div>
+            <b>应用层：指标落在这里</b>
+            自助解决率、转人工率、首响时长都在这一层统计，工单则是新知识的入口。
+        </div>
+        <div>
+            <b>底座与评测：慢的那一半</b>
+            解析、切分、向量化、增量更新全是离线批处理，改动一次要重建索引；
+            评测层独立于业务链路之外，负责回答「这次改动到底有没有变好」。
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var svg = document.getElementById("arch");
+            var tip = document.getElementById("tip");
+
+            /* 提示框跟随鼠标，靠 fixed 定位，滚动时也不会错位 */
+            function show(g, cx, cy) {
+                tip.innerHTML = "<b>" + g.dataset.title + "</b>" +
+                    "<i>" + g.dataset.sub + "</i>" +
+                    g.dataset.desc;
+                tip.style.opacity = "1";
+
+                var x = cx + 16;
+                var y = cy + 18;
+                if (x + tip.offsetWidth > window.innerWidth - 8) {
+                    x = cx - tip.offsetWidth - 16;
+                }
+                if (y + tip.offsetHeight > window.innerHeight - 8) {
+                    y = cy - tip.offsetHeight - 18;
+                }
+                tip.style.left = x + "px";
+                tip.style.top = y + "px";
+            }
+
+            function hide() {
+                tip.style.opacity = "0";
+            }
+
+            /* 事件委托：整个 svg 只挂一个监听，模块再多也不增加开销 */
+            svg.addEventListener("mousemove", function (e) {
+                var g = e.target.closest(".node");
+                if (g) {
+                    show(g, e.clientX, e.clientY);
+                } else {
+                    hide();
+                }
+            });
+
+            svg.addEventListener("mouseleave", hide);
+
+            /* 键盘可达：Tab 到某个模块时也显示说明 */
+            svg.addEventListener("focusin", function (e) {
+                var g = e.target.closest(".node");
+                if (!g) {
+                    return;
+                }
+                var r = g.getBoundingClientRect();
+                show(g, r.left + r.width / 2, r.top + r.height);
+            });
+
+            svg.addEventListener("focusout", hide);
+
+            console.log("24001010528 滕菲：知识库智能客服系统架构图（SVG），模块数 " +
+                svg.querySelectorAll(".node").length +
+                "，分层数 " + svg.querySelectorAll(".band").length);
+        })();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24001010528 滕菲 · three.js 两个 3D 图表</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            font-size: 15px;
+            line-height: 1.75;
+            color: #17202d;
+            background-color: #f6f3ec;
+        }
+
+        h2 {
+            margin: 0 0 8px;
+            font-size: 24px;
+            color: #13283d;
+        }
+
+        h3 {
+            margin: 34px 0 14px;
+            padding-bottom: 8px;
+            font-size: 17px;
+            color: #13283d;
+            border-bottom: 1px solid #d9d5cb;
+        }
+
+        .tip {
+            max-width: 900px;
+            margin: 0 0 22px;
+            padding-left: 14px;
+            font-size: 14px;
+            color: #67717f;
+            border-left: 3px solid #c9a227;
+        }
+
+        code {
+            padding: 1px 6px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            color: #13283d;
+            background-color: #efeadd;
+            border-radius: 3px;
+            word-break: break-all;
+        }
+
+        /* 3D 画布 */
+        .stage {
+            position: relative;
+            height: 396px;
+            background-color: #0b1723;
+            border-radius: 10px;
+            box-shadow: 0 18px 34px rgba(19, 40, 61, .18);
+            overflow: hidden;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        .stage:active {
+            cursor: grabbing;
+        }
+
+        .stage canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 角落提示 */
+        .hint {
+            position: absolute;
+            right: 14px;
+            bottom: 12px;
+            /* canvas 是后插入的绝对定位元素，会盖在这上面，必须抬高层级 */
+            z-index: 2;
+            padding: 4px 11px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 11.5px;
+            color: rgba(243, 239, 230, .55);
+            background-color: rgba(8, 17, 28, .6);
+            border: 1px solid rgba(215, 168, 77, .26);
+            border-radius: 20px;
+            pointer-events: none;
+        }
+
+        .caption {
+            margin: 10px 0 0;
+            font-size: 13px;
+            color: #8b95a3;
+        }
+
+        .caption b {
+            color: #b8483a;
+        }
+
+        /* 加载失败兜底 */
+        .fallback {
+            display: none;
+            margin: 10px 0;
+            padding: 14px 16px;
+            font-size: 13.5px;
+            color: #b8483a;
+            background-color: #fdf1ef;
+            border: 1px solid #e8c4bd;
+            border-radius: 8px;
+        }
+
+        .fallback code {
+            background-color: #f6e3df;
+        }
+
+        /* 说明卡片 */
+        .notes {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .notes div {
+            padding: 14px 16px;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #67717f;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-top: 3px solid #c9a227;
+        }
+
+        .notes b {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 13.5px;
+            color: #b8483a;
+        }
+
+        @media (max-width: 760px) {
+            .stage {
+                height: 330px;
+            }
+
+            .notes {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h2>24001010528 滕菲：three.js 两个 3D 图表</h2>
+    <p class="tip">
+        这两个图不是用 canvas 2D 画的，而是真的在三维空间里建模：柱子是
+        <code>BoxGeometry</code>，饼图每一瓣是 <code>Shape</code> 挤出成的
+        <code>ExtrudeGeometry</code>，配上灯光和透视相机，由 WebGL 渲染。
+        按住鼠标左右拖动可以转视角，松手后会自己慢慢转。数据沿用 18-4 那张
+        2D 图表的同一批数字，方便对照。
+    </p>
+
+    <div class="fallback" id="fallback">
+        没找到 <code>cdn/three/three.min.js</code>，3D 场景无法初始化。请确认该文件在
+        <code>cdn/three/</code> 目录下（本页不依赖任何在线 CDN）。
+    </div>
+
+    <h3>图一：各业务线月咨询量（3D 柱状图）</h3>
+    <div class="stage" id="chart1">
+        <div class="hint">拖动旋转 · 松手自动转</div>
+    </div>
+    <p class="caption">
+        <b>读法：</b>柱子的高度就是咨询量，最高的商品咨询 5920 件，最低的售后维修 2300 件。
+        转到侧面能看清每根柱子之间的间距和遮挡关系——这是 2D 柱状图给不了的空间感，
+        但也正因为遮挡，比较高度时反而不如 18-4 那张平的柱状图准。
+    </p>
+
+    <h3>图二：用户意图分布（3D 饼图）</h3>
+    <div class="stage" id="chart2">
+        <div class="hint">拖动旋转 · 松手自动转</div>
+    </div>
+    <p class="caption">
+        <b>读法：</b>六种意图按占比切分，每瓣都是从圆心扇形挤出的实体，所以转起来能看到厚度和侧面。
+        占比最大的订单查询 28%，最小的其他类 6%。注意饼图只适合看「加起来是 100%」的构成，
+        要比较具体数值还是用图一。
+    </p>
+
+    <h3>three.js 的骨架就三件事</h3>
+    <div class="notes">
+        <div>
+            <b>1. 场景 / 相机 / 渲染器</b>
+            <code>Scene</code> 是容器，<code>PerspectiveCamera</code> 决定从哪个角度看，
+            <code>WebGLRenderer</code> 负责把这一帧画到 <code>&lt;canvas&gt;</code> 上。
+            三者建好，调用一次 <code>renderer.render(scene, camera)</code> 就有画面了。
+        </div>
+        <div>
+            <b>2. 网格 = 几何体 + 材质</b>
+            几何体是形状（<code>BoxGeometry</code> 立方体、<code>ExtrudeGeometry</code> 挤出），
+            材质是表面长什么样（<code>MeshStandardMaterial</code> 要灯光才有明暗）。
+            两者组合成 <code>Mesh</code>，塞进场景才看得见。
+        </div>
+        <div>
+            <b>3. 尺寸不会自己跟着 CSS 走</b>
+            画布缓冲是固定的，容器变大变小都必须重设
+            <code>renderer.setSize()</code> 并更新 <code>camera.aspect</code>，
+            否则画面会被拉扁。这里用 <code>ResizeObserver</code> 监听容器来触发。
+        </div>
+        <div>
+            <b>为什么没用 OrbitControls</b>
+            three.js 从 r148 起删掉了 <code>examples/js</code> 里的 UMD 版本，
+            而 <code>file://</code> 下又不能用 ES 模块。
+            所以这里用的是最后一个 UMD 构建 r149，拖拽旋转自己写了二十来行——
+            记录鼠标位移，累加到场景组的 <code>rotation.y</code> 上就够了。
+        </div>
+    </div>
+
+    <!-- 本地引入。r149 是最后一个带 UMD 构建的版本，会挂到 window.THREE 上 -->
+    <script src="cdn/three/three.min.js"></script>
+    <script>
+        (function () {
+            var fallback = document.getElementById("fallback");
+
+            if (typeof THREE === "undefined") {
+                fallback.style.display = "block";
+                return;
+            }
+
+            var FONT = '"Microsoft YaHei","PingFang SC",sans-serif';
+
+            /* ---------- 文字标签：把文字画到 canvas 上，再贴成 Sprite ---------- */
+            var measureCv = document.createElement("canvas");
+            var measureCtx = measureCv.getContext("2d");
+
+            function makeLabel(text, color, worldHeight) {
+                var fs = 52;
+                var font = '700 ' + fs + 'px ' + FONT;
+                measureCtx.font = font;
+                var tw = measureCtx.measureText(text).width;
+
+                var pad = 18;
+                var w = Math.ceil(tw) + pad * 2;
+                var h = fs + pad * 2;
+
+                var cv = document.createElement("canvas");
+                cv.width = w;
+                cv.height = h;
+                var c = cv.getContext("2d");
+                c.font = font;
+                c.textAlign = "center";
+                c.textBaseline = "middle";
+                c.fillStyle = color;
+                c.fillText(text, w / 2, h / 2);
+
+                var tex = new THREE.CanvasTexture(cv);
+                tex.minFilter = THREE.LinearFilter;
+                var sp = new THREE.Sprite(new THREE.SpriteMaterial({
+                    map: tex,
+                    transparent: true,
+                    depthWrite: false
+                }));
+                sp.scale.set((w / h) * worldHeight, worldHeight, 1);
+                return sp;
+            }
+
+            /* ---------- 一个可拖拽的 3D 视图 ---------- */
+            function createViewer(container, name, build) {
+                var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+                container.appendChild(renderer.domElement);
+                /* 让 canvas 绝对铺满 stage，不参与它内部那层 hint 的排版 */
+                renderer.domElement.style.position = "absolute";
+                renderer.domElement.style.left = "0";
+                renderer.domElement.style.top = "0";
+                renderer.domElement.style.width = "100%";
+                renderer.domElement.style.height = "100%";
+                if ("outputEncoding" in renderer) {
+                    renderer.outputEncoding = THREE.sRGBEncoding;
+                }
+
+                var scene = new THREE.Scene();
+                var camera = new THREE.PerspectiveCamera(42, 1, 0.1, 200);
+                camera.position.set(0, 6.4, 10.6);
+                camera.lookAt(0, 1.3, 0);
+
+                scene.add(new THREE.AmbientLight(0xdde8f2, 0.9));
+                var key = new THREE.DirectionalLight(0xfff3dc, 1.05);
+                key.position.set(6, 12, 8);
+                scene.add(key);
+                var fill = new THREE.DirectionalLight(0x9fc6e0, 0.6);
+                fill.position.set(-8, 5, -7);
+                scene.add(fill);
+
+                var group = new THREE.Group();
+                scene.add(group);
+                build(group, scene, makeLabel);
+
+                function resize() {
+                    var w = container.clientWidth || 600;
+                    var h = container.clientHeight || 380;
+                    renderer.setSize(w, h, false);
+                    camera.aspect = w / h;
+                    camera.updateProjectionMatrix();
+                }
+                resize();
+
+                /* ---------- 拖拽旋转（自己写，省掉 OrbitControls） ---------- */
+                var dragging = false;
+                var lastX = 0, lastY = 0;
+                var el = renderer.domElement;
+
+                el.addEventListener("pointerdown", function (e) {
+                    dragging = true;
+                    lastX = e.clientX;
+                    lastY = e.clientY;
+                    if (el.setPointerCapture) {
+                        try {
+                            el.setPointerCapture(e.pointerId);
+                        } catch (err) {
+                            /* 指针已经抬起时捕获会抛错，拖拽本身可以照常进行 */
+                        }
+                    }
+                });
+
+                el.addEventListener("pointermove", function (e) {
+                    if (!dragging) {
+                        return;
+                    }
+                    var dx = e.clientX - lastX;
+                    var dy = e.clientY - lastY;
+                    lastX = e.clientX;
+                    lastY = e.clientY;
+                    group.rotation.y += dx * 0.008;
+                    /* 俯仰角夹住，翻过去会看到底面，很难看 */
+                    group.rotation.x = Math.max(-0.12, Math.min(0.42, group.rotation.x + dy * 0.004));
+                });
+
+                function endDrag() {
+                    dragging = false;
+                }
+                el.addEventListener("pointerup", endDrag);
+                el.addEventListener("pointercancel", endDrag);
+
+                /* ---------- 每一帧 ---------- */
+                var logged = false;
+                function tick() {
+                    requestAnimationFrame(tick);
+                    if (!dragging) {
+                        group.rotation.y += 0.0035;
+                    }
+                    renderer.render(scene, camera);
+                    if (!logged) {
+                        logged = true;
+                        console.log(name + " 首帧三角形数 " + renderer.info.render.triangles +
+                            "，画布 " + renderer.domElement.width + "x" + renderer.domElement.height);
+                    }
+                }
+                tick();
+
+                if (typeof ResizeObserver === "function") {
+                    new ResizeObserver(resize).observe(container);
+                } else {
+                    window.addEventListener("resize", resize);
+                }
+
+                return { renderer: renderer, scene: scene, camera: camera, group: group };
+            }
+
+            /* ================= 图一：3D 柱状图 ================= */
+            var BARS = [
+                ["订单物流", 5680, 0x6fb3d2],
+                ["退换货", 4850, 0xe07b5f],
+                ["商品咨询", 5920, 0xc9a227],
+                ["支付问题", 3120, 0x5fb894],
+                ["账户会员", 2480, 0xa294e0],
+                ["售后维修", 2300, 0xd98cb3]
+            ];
+
+            createViewer(document.getElementById("chart1"), "3D 柱状图", function (group) {
+                var max = 0, i;
+                for (i = 0; i < BARS.length; i++) {
+                    max = Math.max(max, BARS[i][1]);
+                }
+
+                var step = 1.02;
+                var half = (BARS.length - 1) / 2;
+
+                for (i = 0; i < BARS.length; i++) {
+                    var h = (BARS[i][1] / max) * 3.3;
+                    var geo = new THREE.BoxGeometry(0.66, h, 0.66);
+                    var mat = new THREE.MeshStandardMaterial({
+                        color: BARS[i][2],
+                        roughness: 0.42,
+                        metalness: 0.18
+                    });
+                    var bar = new THREE.Mesh(geo, mat);
+                    bar.position.set((i - half) * step, h / 2, 0);
+                    group.add(bar);
+
+                    /* 柱顶数值 */
+                    var v = makeLabel(String(BARS[i][1]), "#f3efe6", 0.42);
+                    v.position.set(bar.position.x, h + 0.34, 0);
+                    group.add(v);
+
+                    /* 柱底业务线名 */
+                    var n = makeLabel(BARS[i][0], "rgba(238,231,216,.78)", 0.34);
+                    n.position.set(bar.position.x, -0.26, 0.72);
+                    group.add(n);
+                }
+
+                var grid = new THREE.GridHelper(9, 9, 0x2d4256, 0x1b2a37);
+                grid.position.y = 0;
+                group.add(grid);
+            });
+
+            /* ================= 图二：3D 饼图 ================= */
+            var PIE = [
+                ["订单查询", 28, 0x6fb3d2],
+                ["商品咨询", 24, 0xc9a227],
+                ["退换货", 19, 0xe07b5f],
+                ["支付问题", 13, 0x5fb894],
+                ["账户会员", 10, 0xa294e0],
+                ["其他", 6, 0xd98cb3]
+            ];
+
+            createViewer(document.getElementById("chart2"), "3D 饼图", function (group) {
+                var R = 2.9;          // 半径
+                var T = 0.62;         // 厚度
+                var total = 0, i;
+                for (i = 0; i < PIE.length; i++) {
+                    total += PIE[i][1];
+                }
+
+                var start = Math.PI / 2;   // 从 12 点方向开始，视觉上更自然
+                for (i = 0; i < PIE.length; i++) {
+                    var span = (PIE[i][1] / total) * Math.PI * 2;
+                    var gap = 0.018;       // 每瓣之间留一道细缝
+                    var a0 = start + gap;
+                    var a1 = start + span - gap;
+                    start += span;
+
+                    /* 用 Shape 画扇形，再沿 Z 挤出成有厚度的实体 */
+                    var shape = new THREE.Shape();
+                    shape.moveTo(0, 0);
+                    shape.absarc(0, 0, R, a0, a1, false);
+                    shape.lineTo(0, 0);
+
+                    var geo = new THREE.ExtrudeGeometry(shape, {
+                        depth: T,
+                        bevelEnabled: false,
+                        curveSegments: 40
+                    });
+                    /* 挤出方向本来是 +Z，转一下让扇形平躺在 XZ 平面、厚度沿 Y */
+                    geo.rotateX(-Math.PI / 2);
+
+                    var mat = new THREE.MeshStandardMaterial({
+                        color: PIE[i][2],
+                        roughness: 0.44,
+                        metalness: 0.16
+                    });
+                    group.add(new THREE.Mesh(geo, mat));
+
+                    /* 标签放在每瓣的中线外侧 */
+                    var mid = (a0 + a1) / 2;
+                    var label = makeLabel(PIE[i][0] + " " + PIE[i][1] + "%", "#f3efe6", 0.4);
+                    label.position.set(Math.cos(mid) * (R + 1.05), T + 0.42, Math.sin(mid) * (R + 1.05));
+                    group.add(label);
+                }
+
+                var grid = new THREE.GridHelper(11, 11, 0x2d4256, 0x1b2a37);
+                grid.position.y = 0;
+                group.add(grid);
+            });
+
+            console.log("24001010528 滕菲：three.js r" + THREE.REVISION + " 两个 3D 图表已启动");
+        })();
+    </script>
+</body>
+
+</html>

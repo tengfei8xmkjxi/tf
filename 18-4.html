@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24001010528 滕菲 · ECharts 折线图与柱状图</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            font-size: 15px;
+            line-height: 1.75;
+            color: #17202d;
+            background-color: #f6f3ec;
+        }
+
+        h2 {
+            margin: 0 0 8px;
+            font-size: 24px;
+            color: #13283d;
+        }
+
+        h3 {
+            margin: 34px 0 14px;
+            padding-bottom: 8px;
+            font-size: 17px;
+            color: #13283d;
+            border-bottom: 1px solid #d9d5cb;
+        }
+
+        .tip {
+            max-width: 900px;
+            margin: 0 0 22px;
+            padding-left: 14px;
+            font-size: 14px;
+            color: #67717f;
+            border-left: 3px solid #c9a227;
+        }
+
+        code {
+            padding: 1px 6px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            color: #13283d;
+            background-color: #efeadd;
+            border-radius: 3px;
+            word-break: break-all;
+        }
+
+        /* 图表面板 */
+        .stage {
+            margin-bottom: 8px;
+            padding: 10px 12px 6px;
+            background-color: #0b1723;
+            border-radius: 10px;
+            box-shadow: 0 18px 34px rgba(19, 40, 61, .18);
+        }
+
+        .chart {
+            width: 100%;
+            height: 400px;
+        }
+
+        .caption {
+            margin: 10px 0 0;
+            font-size: 13px;
+            color: #8b95a3;
+        }
+
+        .caption b {
+            color: #b8483a;
+        }
+
+        /* 加载失败兜底 */
+        .fallback {
+            display: none;
+            margin: 10px 0;
+            padding: 14px 16px;
+            font-size: 13.5px;
+            color: #b8483a;
+            background-color: #fdf1ef;
+            border: 1px solid #e8c4bd;
+            border-radius: 8px;
+        }
+
+        .fallback code {
+            background-color: #f6e3df;
+        }
+
+        /* 说明卡片 */
+        .notes {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .notes div {
+            padding: 14px 16px;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #67717f;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-top: 3px solid #c9a227;
+        }
+
+        .notes b {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 13.5px;
+            color: #b8483a;
+        }
+
+        @media (max-width: 760px) {
+            .chart {
+                height: 320px;
+            }
+
+            .notes {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h2>24001010528 滕菲：ECharts 折线图与柱状图</h2>
+    <p class="tip">
+        两个图都用 <code>echarts.init()</code> 在容器里生成 canvas，再靠
+        <code>setOption()</code> 一次性描述坐标轴、系列和样式——数据换了只改
+        <code>option</code>，不用自己画一个像素。图表库是从
+        <code>cdn/echarts/echarts.min.js</code> 本地引入的，断网也能打开。
+        两张图的数据都取自上一页那张智能客服架构图里的评测与检索环节。
+    </p>
+
+    <div class="fallback" id="fallback">
+        没找到 <code>cdn/echarts/echarts.min.js</code>，图表无法初始化。请确认该文件在
+        <code>cdn/echarts/</code> 目录下（本页不依赖任何在线 CDN）。
+    </div>
+
+    <h3>折线图：检索策略的准确率随知识库规模的变化</h3>
+    <div class="stage">
+        <div class="chart" id="lineChart"></div>
+    </div>
+    <p class="caption">
+        <b>读法：</b>横轴是知识库文档量，纵轴是 Top-1 答案准确率。三条线起点差得不多，
+        但随着语料变多，只靠关键词的 BM25 很快撞到天花板，纯向量召回持续变好但仍差一截，
+        混合召回加重排才把差距拉到 <b>20 个百分点</b>以上——这正是架构图里 R1 要研究的地方。
+    </p>
+
+    <h3>柱状图：各业务线的月咨询量与转人工结构</h3>
+    <div class="stage">
+        <div class="chart" id="barChart"></div>
+    </div>
+    <p class="caption">
+        <b>读法：</b>堆叠柱的高度是这条业务线的月咨询总量，下面绿色是机器人自助解决的，
+        上面橙色是转人工的。总量高不代表压力大——商品咨询量最大，但转人工只有 680 件；
+        退换货总量少一半，转人工却最多，说明这类问题最需要补齐知识库。
+    </p>
+
+    <h3>ECharts 用起来就三步</h3>
+    <div class="notes">
+        <div>
+            <b>1. 拿一个撑得开高度的容器</b>
+            <code>echarts.init()</code> 会读容器的实际宽高来定 canvas 尺寸。
+            容器高度若是 0（比如只写了 <code>height:auto</code> 且里面没内容），
+            图就画不出来——所以这里写死 <code>height: 400px</code>。
+        </div>
+        <div>
+            <b>2. option 描述「长什么样」</b>
+            同一个 <code>option</code> 里的 <code>xAxis</code>、
+            <code>series[].type</code> 决定图型：<code>type: "line"</code> 是折线，
+            <code>type: "bar"</code> 是柱状；两条 <code>bar</code> 用同一个
+            <code>stack</code> 名字就自动叠成一柱。
+        </div>
+        <div>
+            <b>3. 尺寸变了要手动通知</b>
+            canvas 不会跟着 CSS 变。窗口缩放后必须调 <code>chart.resize()</code>，
+            否则图会被拉伸变形。本页用 <code>ResizeObserver</code> 监听容器，
+            比监听 <code>window.resize</code> 更准。
+        </div>
+        <div>
+            <b>为什么把库下载到本地</b>
+            页面要能在机房断网、或者直接双击 <code>file://</code> 打开时也能跑。
+            本地 <code>cdn/</code> 目录和 13-1 的 font-awesome、13-2 的 lucide 是同一套做法。
+        </div>
+    </div>
+
+    <!-- 本地引入，放在 body 末尾，保证容器已经存在 -->
+    <script src="cdn/echarts/echarts.min.js"></script>
+    <script>
+        (function () {
+            var fallback = document.getElementById("fallback");
+
+            if (typeof echarts === "undefined") {
+                fallback.style.display = "block";
+                return;
+            }
+
+            /* 深色面板下统一的一组颜色，和 18-1 / 18-2 / 18-3 保持一致 */
+            var C = {
+                ink: "#f3efe6",
+                mute: "rgba(238,231,216,.62)",
+                axis: "rgba(214,208,196,.28)",
+                split: "rgba(214,208,196,.10)",
+                gold: "#c9a227",
+                blue: "#6fb3d2",
+                grey: "#8b95a3",
+                green: "#5fb894",
+                orange: "#e07b5f"
+            };
+
+            var FONT = '"Microsoft YaHei","PingFang SC",sans-serif';
+
+            /* 折线图、柱状图共用的坐标轴与提示框样式 */
+            function baseOption(extra) {
+                var opt = {
+                    backgroundColor: "transparent",
+                    textStyle: { fontFamily: FONT, color: C.mute },
+                    aria: { enabled: true },
+                    tooltip: {
+                        trigger: "axis",
+                        backgroundColor: "rgba(11,23,35,.94)",
+                        borderColor: "rgba(201,162,39,.45)",
+                        borderWidth: 1,
+                        padding: [9, 13],
+                        textStyle: { color: C.ink, fontSize: 12.5 },
+                        axisPointer: {
+                            type: "line",
+                            lineStyle: { color: "rgba(201,162,39,.45)", width: 1, type: "dashed" }
+                        }
+                    },
+                    legend: {
+                        top: 8,
+                        itemWidth: 14,
+                        itemHeight: 9,
+                        itemGap: 18,
+                        textStyle: { color: C.mute, fontSize: 12.5 }
+                    }
+                };
+                for (var k in extra) {
+                    opt[k] = extra[k];
+                }
+                return opt;
+            }
+
+            function valueAxis(name) {
+                return {
+                    type: "value",
+                    name: name,
+                    nameTextStyle: { color: C.mute, fontSize: 12, padding: [0, 0, 6, 0] },
+                    axisLine: { show: false },
+                    axisTick: { show: false },
+                    axisLabel: { color: C.mute, fontSize: 11.5 },
+                    splitLine: { lineStyle: { color: C.split, type: "dashed" } }
+                };
+            }
+
+            function categoryAxis(data, name) {
+                return {
+                    type: "category",
+                    data: data,
+                    name: name,
+                    nameLocation: "middle",
+                    nameGap: 30,
+                    nameTextStyle: { color: C.mute, fontSize: 12 },
+                    axisLine: { lineStyle: { color: C.axis } },
+                    axisTick: { show: false },
+                    axisLabel: { color: C.mute, fontSize: 11.5 }
+                };
+            }
+
+            /* ---------------- 折线图 ---------------- */
+            var lineChart = echarts.init(document.getElementById("lineChart"));
+            lineChart.setOption(baseOption({
+                grid: { top: 62, right: 34, bottom: 52, left: 24, containLabel: true },
+                xAxis: categoryAxis(["1 万", "5 万", "10 万", "20 万", "30 万", "50 万"], "知识库规模（文档数）"),
+                yAxis: valueAxis("Top-1 准确率（%）"),
+                series: [
+                    {
+                        name: "BM25 关键词",
+                        type: "line",
+                        smooth: true,
+                        symbol: "circle",
+                        symbolSize: 6,
+                        data: [61.2, 63.5, 64.1, 64.8, 65.2, 65.4],
+                        lineStyle: { width: 2, color: C.grey },
+                        itemStyle: { color: C.grey }
+                    },
+                    {
+                        name: "纯向量召回",
+                        type: "line",
+                        smooth: true,
+                        symbol: "circle",
+                        symbolSize: 6,
+                        data: [66.8, 71.4, 74.2, 76.5, 77.8, 78.6],
+                        lineStyle: { width: 2, color: C.blue },
+                        itemStyle: { color: C.blue }
+                    },
+                    {
+                        name: "混合召回 + 精排",
+                        type: "line",
+                        smooth: true,
+                        symbol: "circle",
+                        symbolSize: 7,
+                        data: [72.3, 78.9, 82.6, 85.1, 86.7, 87.9],
+                        lineStyle: { width: 2.6, color: C.gold },
+                        itemStyle: { color: C.gold, borderColor: "#0b1723", borderWidth: 2 },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: "rgba(201,162,39,.34)" },
+                                { offset: 1, color: "rgba(201,162,39,0)" }
+                            ])
+                        },
+                        markPoint: {
+                            symbolSize: 42,
+                            itemStyle: { color: "rgba(201,162,39,.9)" },
+                            label: { color: "#0b1723", fontSize: 11, fontWeight: "bold" },
+                            data: [{ type: "max", name: "最高" }]
+                        }
+                    }
+                ]
+            }));
+
+            /* ---------------- 柱状图 ---------------- */
+            var barChart = echarts.init(document.getElementById("barChart"));
+            barChart.setOption(baseOption({
+                grid: { top: 62, right: 34, bottom: 52, left: 24, containLabel: true },
+                xAxis: categoryAxis(
+                    ["订单物流", "退换货", "商品咨询", "支付问题", "账户会员", "售后维修"],
+                    "业务线"
+                ),
+                yAxis: valueAxis("月咨询量（件）"),
+                series: [
+                    {
+                        name: "机器人自助解决",
+                        type: "bar",
+                        stack: "总量",
+                        barMaxWidth: 46,
+                        data: [4820, 3610, 5240, 2180, 1960, 1420],
+                        itemStyle: { color: C.green },
+                        label: {
+                            show: true,
+                            position: "inside",
+                            color: "#0b1723",
+                            fontSize: 11,
+                            formatter: function (p) {
+                                return (p.value / 1000).toFixed(1) + "k";
+                            }
+                        }
+                    },
+                    {
+                        name: "转人工",
+                        type: "bar",
+                        stack: "总量",
+                        barMaxWidth: 46,
+                        data: [860, 1240, 680, 940, 520, 880],
+                        itemStyle: { color: C.orange, borderRadius: [4, 4, 0, 0] }
+                    }
+                ]
+            }));
+
+            /* ---------------- 尺寸联动 ---------------- */
+            function resizeAll() {
+                lineChart.resize();
+                barChart.resize();
+            }
+
+            /* 监听容器本身，比监听 window 更准：窗口没变但容器变了也能跟上 */
+            if (typeof ResizeObserver === "function") {
+                var ro = new ResizeObserver(resizeAll);
+                ro.observe(document.getElementById("lineChart"));
+                ro.observe(document.getElementById("barChart"));
+            } else {
+                window.addEventListener("resize", resizeAll);
+            }
+
+            console.log("24001010528 滕菲：ECharts " + echarts.version +
+                " 折线图 + 柱状图已渲染");
+        })();
+    </script>
+</body>
+
+</html>

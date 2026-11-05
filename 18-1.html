@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24001010528 滕菲 · canvas 粒子文字动画</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            font-size: 15px;
+            line-height: 1.75;
+            color: #17202d;
+            background-color: #f6f3ec;
+        }
+
+        h2 {
+            margin: 0 0 8px;
+            font-size: 24px;
+            color: #13283d;
+        }
+
+        h3 {
+            margin: 34px 0 14px;
+            padding-bottom: 8px;
+            font-size: 17px;
+            color: #13283d;
+            border-bottom: 1px solid #d9d5cb;
+        }
+
+        .tip {
+            max-width: 860px;
+            margin: 0 0 22px;
+            padding-left: 14px;
+            font-size: 14px;
+            color: #67717f;
+            border-left: 3px solid #c9a227;
+        }
+
+        code {
+            padding: 1px 6px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            color: #13283d;
+            background-color: #efeadd;
+            border-radius: 3px;
+            word-break: break-all;
+        }
+
+        /* 舞台 */
+        .stage {
+            position: relative;
+            border-radius: 10px;
+            box-shadow: 0 18px 34px rgba(19, 40, 61, .18);
+        }
+
+        #cv {
+            display: block;
+            width: 100%;
+            height: 430px;
+            background-color: #08111c;
+            border-radius: 10px;
+            cursor: crosshair;
+        }
+
+        .badge {
+            position: absolute;
+            right: 14px;
+            bottom: 12px;
+            padding: 4px 11px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            color: rgba(243, 239, 230, .62);
+            background-color: rgba(8, 17, 28, .58);
+            border: 1px solid rgba(215, 168, 77, .28);
+            border-radius: 20px;
+            pointer-events: none;
+        }
+
+        /* 控制条 */
+        .bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-top: 16px;
+            padding: 14px 18px;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-radius: 8px;
+        }
+
+        .field {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            font-size: 13px;
+            color: #67717f;
+        }
+
+        input {
+            width: 130px;
+            padding: 8px 12px;
+            font-family: inherit;
+            font-size: 14px;
+            color: #13283d;
+            background-color: #fff;
+            border: 1px solid #d9d5cb;
+            border-radius: 4px;
+        }
+
+        input:focus {
+            outline: 2px solid #d7c79a;
+            outline-offset: -1px;
+        }
+
+        button {
+            padding: 8px 18px;
+            font-family: inherit;
+            font-size: 14px;
+            color: #fff;
+            background-color: #b8483a;
+            border: 0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color .18s ease;
+        }
+
+        button:hover {
+            background-color: #9d3a2e;
+        }
+
+        button.ghost {
+            color: #13283d;
+            background-color: #f1ebdc;
+            border: 1px solid #e0d9c8;
+        }
+
+        button.ghost:hover {
+            color: #b8483a;
+            border-color: #c9a227;
+            background-color: #fbf4e2;
+        }
+
+        .hint {
+            margin: 10px 0 0;
+            font-size: 13px;
+            color: #8b95a3;
+        }
+
+        /* 说明卡片 */
+        .notes {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .notes div {
+            padding: 14px 16px;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #67717f;
+            background-color: #fffdf8;
+            border: 1px solid #d9d5cb;
+            border-top: 3px solid #c9a227;
+        }
+
+        .notes b {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 13.5px;
+            color: #b8483a;
+        }
+
+        @media (max-width: 700px) {
+            #cv {
+                height: 280px;
+            }
+
+            .notes {
+                grid-template-columns: 1fr;
+            }
+
+            input {
+                width: 100px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h2>24001010528 滕菲：canvas 粒子文字动画</h2>
+    <p class="tip">
+        先把文字画在一块看不见的离屏 canvas 上，用 <code>getImageData</code> 把每个像素的透明度读出来，
+        透明度大于 128 的地方就是字形的点；再把这些点当成目标，让几千个小方块在
+        <code>requestAnimationFrame</code> 的每一帧里朝目标加速飞过去，最后拼成「滕菲」两个字。
+        鼠标划过画面会把粒子推开，移开后它们会自动归位。
+    </p>
+
+    <div class="stage">
+        <canvas id="cv"></canvas>
+        <div class="badge" id="badge">粒子 0 个 · 0 fps</div>
+    </div>
+
+    <div class="bar">
+        <label class="field">文字
+            <input id="word" type="text" value="滕菲" maxlength="8" spellcheck="false">
+        </label>
+        <button id="btnBuild" type="button">重新聚合</button>
+        <button id="btnScatter" class="ghost" type="button">打散</button>
+        <button id="btnPause" class="ghost" type="button">暂停</button>
+    </div>
+    <p class="hint">提示：输入框里换成别的字（比如 528 或 高级网页设计）再点「重新聚合」，粒子会重新找位置。</p>
+
+    <h3>这一段动画是怎么做出来的</h3>
+    <div class="notes">
+        <div>
+            <b>1. 取样</b>
+            离屏 canvas 用 <code>fillText</code> 把字画白，<code>getImageData</code> 拿到 RGBA 数组，
+            每 <code>gap</code> 个像素查一次 alpha，命中就记一个坐标，这就是粒子的终点。
+        </div>
+        <div>
+            <b>2. 运动</b>
+            每一帧算「目标 − 当前位置」再乘一个系数当作加速度，速度乘 0.86 做阻尼，
+            粒子就会先冲过头再收回来，比直接赋值自然得多。
+        </div>
+        <div>
+            <b>3. 拖尾</b>
+            每帧只盖一层 20% 不透明的底色而不是清屏，旧位置的颜色慢慢褪掉，
+            配合 <code>globalCompositeOperation = "lighter"</code> 就有了发光和残影。
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var cv = document.getElementById("cv");
+            var ctx = cv.getContext("2d");
+            var badge = document.getElementById("badge");
+            var wordEl = document.getElementById("word");
+            var btnBuild = document.getElementById("btnBuild");
+            var btnScatter = document.getElementById("btnScatter");
+            var btnPause = document.getElementById("btnPause");
+
+            var FONT = '"Microsoft YaHei","PingFang SC","Hiragino Sans GB",sans-serif';
+            var dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+            var W = 0;              // 画布 CSS 宽
+            var H = 0;              // 画布 CSS 高
+            var dots = [];          // 全部粒子
+            var running = true;
+            var rafId = 0;
+            var frames = 0;
+            var fpsTime = 0;
+            var mouse = { x: -9999, y: -9999, on: false };
+
+            /* 颜色查表：色相 3 档 × 速度 8 档 = 24 个字符串。
+               粒子有几千个，每帧现拼 hsla 字符串会成为瓶颈，查表后再赋值只是取引用。 */
+            var PAL = [];
+            (function () {
+                for (var hb = 0; hb < 3; hb++) {
+                    PAL[hb] = [];
+                    for (var b = 0; b < 8; b++) {
+                        var s = b / 7;
+                        PAL[hb][b] = "hsla(" + (36 + hb * 5) + ",86%," +
+                            (78 - s * 24).toFixed(1) + "%," +
+                            (0.30 + (1 - s) * 0.55).toFixed(2) + ")";
+                    }
+                }
+            })();
+
+            /* ---------- 尺寸：按 CSS 尺寸 × dpr 设后台缓冲 ---------- */
+            function size() {
+                var rect = cv.getBoundingClientRect();
+                W = Math.max(280, Math.round(rect.width));
+                H = Math.max(200, Math.round(rect.height));
+                cv.width = Math.round(W * dpr);
+                cv.height = Math.round(H * dpr);
+                /* 之后所有绘制都按 CSS 像素来写，缩放交给 transform */
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            }
+
+            /* ---------- 采样：文字 → 目标点集 ---------- */
+            function buildText(text) {
+                var off = document.createElement("canvas");
+                off.width = W;
+                off.height = H;
+                var oc = off.getContext("2d");
+
+                var chars = Math.max(text.length, 1);
+                var fontSize = Math.min(H * 0.62, (W * 0.9) / chars);
+                oc.font = "800 " + Math.round(fontSize) + "px " + FONT;
+                oc.textAlign = "center";
+                oc.textBaseline = "middle";
+                oc.fillStyle = "#fff";
+                oc.fillText(text, W / 2, H * 0.53);
+
+                var px = oc.getImageData(0, 0, W, H).data;
+                /* 采样间距跟字号挂钩，但压到 4px 左右：粒子直径 2~4px，
+                   间距再大点与点之间就会露出 5px 以上的空档，字看着是断续的 */
+                var gap = Math.max(4, Math.round(fontSize / 60));
+                var pts = [];
+
+                for (var y = 0; y < H; y += gap) {
+                    for (var x = 0; x < W; x += gap) {
+                        if (px[(y * W + x) * 4 + 3] > 128) {
+                            pts.push([x, y]);
+                        }
+                    }
+                }
+
+                /* 打乱终点顺序，粒子会从各个方向飞过去，而不是整体平移 */
+                for (var i = pts.length - 1; i > 0; i--) {
+                    var j = (Math.random() * (i + 1)) | 0;
+                    var tmp = pts[i];
+                    pts[i] = pts[j];
+                    pts[j] = tmp;
+                }
+
+                /* 粒子不够就补，多了就裁 */
+                while (dots.length < pts.length) {
+                    dots.push({
+                        x: W / 2 + (Math.random() - 0.5) * W,
+                        y: H + Math.random() * 90,
+                        vx: 0,
+                        vy: 0,
+                        tx: W / 2,
+                        ty: H / 2,
+                        r: 0.9 + Math.random() * 1.3,
+                        hb: (Math.random() * 3) | 0
+                    });
+                }
+                dots.length = pts.length;
+
+                for (var k = 0; k < pts.length; k++) {
+                    dots[k].tx = pts[k][0];
+                    dots[k].ty = pts[k][1];
+                }
+            }
+
+            /* ---------- 一帧 ---------- */
+            function draw() {
+                /* 半透明盖一层 = 拖尾 */
+                ctx.fillStyle = "rgba(8,17,28,0.20)";
+                ctx.fillRect(0, 0, W, H);
+
+                ctx.globalCompositeOperation = "lighter";
+
+                for (var i = 0; i < dots.length; i++) {
+                    var d = dots[i];
+
+                    /* 弹簧：朝目标点加速 */
+                    var ax = (d.tx - d.x) * 0.05;
+                    var ay = (d.ty - d.y) * 0.05;
+
+                    /* 鼠标排斥 */
+                    if (mouse.on) {
+                        var dx = d.x - mouse.x;
+                        var dy = d.y - mouse.y;
+                        var d2 = dx * dx + dy * dy;
+                        var R = 110;
+                        if (d2 < R * R && d2 > 0.5) {
+                            var dist = Math.sqrt(d2);
+                            var f = ((R - dist) / R) * 5.5;
+                            ax += (dx / dist) * f;
+                            ay += (dy / dist) * f;
+                        }
+                    }
+
+                    d.vx = (d.vx + ax) * 0.86;
+                    d.vy = (d.vy + ay) * 0.86;
+                    d.x += d.vx;
+                    d.y += d.vy;
+
+                    /* 速度越快越暗越冷，慢下来就是暖金色；分 8 档查表 */
+                    var sp = Math.sqrt(d.vx * d.vx + d.vy * d.vy) / 7;
+                    ctx.fillStyle = PAL[d.hb][sp >= 1 ? 7 : (sp * 8) | 0];
+                    ctx.fillRect(d.x, d.y, d.r * 2, d.r * 2);
+                }
+
+                ctx.globalCompositeOperation = "source-over";
+            }
+
+            /* ---------- 主循环 ---------- */
+            function loop(now) {
+                if (!running) {
+                    return;
+                }
+                rafId = requestAnimationFrame(loop);
+                draw();
+
+                frames++;
+                if (now - fpsTime > 500) {
+                    var fps = Math.round((frames * 1000) / (now - fpsTime));
+                    badge.textContent = "粒子 " + dots.length + " 个 · " + fps + " fps";
+                    frames = 0;
+                    fpsTime = now;
+                }
+            }
+
+            function start() {
+                if (rafId) {
+                    return;
+                }
+                running = true;
+                btnPause.textContent = "暂停";
+                frames = 0;
+                fpsTime = performance.now();
+                rafId = requestAnimationFrame(loop);
+            }
+
+            function stop() {
+                running = false;
+                if (rafId) {
+                    cancelAnimationFrame(rafId);
+                }
+                rafId = 0;
+            }
+
+            function currentWord() {
+                var t = wordEl.value.trim();
+                return t || "滕菲";
+            }
+
+            function rebuild() {
+                buildText(currentWord());
+                start();
+            }
+
+            /* ---------- 交互 ---------- */
+            btnBuild.addEventListener("click", rebuild);
+
+            btnScatter.addEventListener("click", function () {
+                for (var i = 0; i < dots.length; i++) {
+                    var d = dots[i];
+                    d.x = Math.random() * W;
+                    d.y = Math.random() * H;
+                    d.vx = (Math.random() - 0.5) * 14;
+                    d.vy = (Math.random() - 0.5) * 14;
+                }
+                start();
+            });
+
+            btnPause.addEventListener("click", function () {
+                if (running) {
+                    stop();
+                    btnPause.textContent = "继续";
+                } else {
+                    start();
+                }
+            });
+
+            wordEl.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") {
+                    rebuild();
+                }
+            });
+
+            cv.addEventListener("mousemove", function (e) {
+                var rect = cv.getBoundingClientRect();
+                mouse.x = e.clientX - rect.left;
+                mouse.y = e.clientY - rect.top;
+                mouse.on = true;
+            });
+
+            cv.addEventListener("mouseleave", function () {
+                mouse.on = false;
+                mouse.x = -9999;
+                mouse.y = -9999;
+            });
+
+            cv.addEventListener("touchmove", function (e) {
+                var t = e.touches[0];
+                if (!t) {
+                    return;
+                }
+                var rect = cv.getBoundingClientRect();
+                mouse.x = t.clientX - rect.left;
+                mouse.y = t.clientY - rect.top;
+                mouse.on = true;
+                e.preventDefault();
+            }, { passive: false });
+
+            cv.addEventListener("touchend", function () {
+                mouse.on = false;
+            });
+
+            var resizeTimer = 0;
+            window.addEventListener("resize", function () {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function () {
+                    size();
+                    buildText(currentWord());
+                    ctx.fillStyle = "#08111c";
+                    ctx.fillRect(0, 0, W, H);
+                }, 160);
+            });
+
+            /* ---------- 启动 ---------- */
+            size();
+            buildText(currentWord());
+            ctx.fillStyle = "#08111c";
+            ctx.fillRect(0, 0, W, H);
+            start();
+
+            console.log("24001010528 滕菲：canvas 粒子文字动画，粒子数 " + dots.length);
+        })();
+    </script>
+</body>
+
+</html>

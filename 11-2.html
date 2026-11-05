@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS3 3D动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding: 24px;
+        }
+
+        h1 {
+            font-size: 26px;
+            margin-bottom: 6px;
+        }
+
+        .cui-sub {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 18px;
+        }
+
+        h2 {
+            font-size: 18px;
+            margin: 28px 0 12px;
+            padding-left: 10px;
+            border-left: 5px solid #4dabf7;
+        }
+
+        .cui-panel {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 24px 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .cui-tip {
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .cui-tip code {
+            background: #eef1f5;
+            padding: 1px 6px;
+            border-radius: 4px;
+            color: #d63384;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+        }
+
+        /* ===== 演示一：旋转的正方体 ===== */
+        .cui-scene {
+            perspective: 700px;
+        }
+
+        .cui-cube {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            transform-style: preserve-3d;
+            animation: cui-cube-spin 10s linear infinite;
+        }
+
+        .cui-face {
+            position: absolute;
+            width: 160px;
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            font-weight: bold;
+            color: #fff;
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            opacity: 0.9;
+        }
+
+        .cui-face-front  { background: rgba(152, 125, 221, 0.85);  transform: translateZ(80px); }
+        .cui-face-back   { background: rgba(157, 104, 210, 0.85);  transform: rotateY(180deg) translateZ(80px); }
+        .cui-face-right  { background: rgba(145, 64, 192, 0.85);   transform: rotateY(90deg) translateZ(80px); }
+        .cui-face-left   { background: rgba(112, 47, 203, 0.85);   transform: rotateY(-90deg) translateZ(80px); }
+        .cui-face-top    { background: rgba(121, 80, 242, 0.85);  transform: rotateX(90deg) translateZ(80px); }
+        .cui-face-bottom { background: rgba(145, 18, 199, 0.85);  transform: rotateX(-90deg) translateZ(80px); }
+
+        @keyframes cui-cube-spin {
+            from { transform: rotateX(0deg) rotateY(0deg); }
+            to   { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        /* ===== 演示二：悬停翻转卡片 ===== */
+        .cui-flip {
+            width: 260px;
+            height: 170px;
+            perspective: 800px;
+            cursor: pointer;
+        }
+
+        .cui-flip-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+        }
+
+        .cui-flip:hover .cui-flip-inner {
+            transform: rotateY(180deg);
+        }
+
+        .cui-flip-side {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #fff;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .cui-flip-front {
+            background: linear-gradient(135deg, #4dabf7, #339af0);
+        }
+
+        .cui-flip-back {
+            background: linear-gradient(135deg, #dc7de1, #a946ab);
+            transform: rotateY(180deg);
+        }
+
+        .cui-flip-side strong {
+            font-size: 20px;
+        }
+
+        .cui-flip-side span {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* ===== 演示三：3D 环形轮播 ===== */
+        .cui-ring-scene {
+            perspective: 900px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 20px 0 40px;
+        }
+
+        .cui-ring {
+            position: relative;
+            width: 200px;
+            height: 130px;
+            transform-style: preserve-3d;
+            animation: cui-ring-spin 14s linear infinite;
+        }
+
+        .cui-ring:hover {
+            animation-play-state: paused;
+        }
+
+        .cui-ring-item {
+            position: absolute;
+            width: 200px;
+            height: 130px;
+            left: 0;
+            top: 0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .cui-ring-item:nth-child(1) { background: rgba(77, 171, 247, 0.8);   transform: rotateY(0deg)   translateZ(173px); }
+        .cui-ring-item:nth-child(2) { background: rgba(214, 51, 132, 0.8);   transform: rotateY(60deg)  translateZ(173px); }
+        .cui-ring-item:nth-child(3) { background: rgba(55, 55, 168, 0.8);    transform: rotateY(120deg) translateZ(173px); }
+        .cui-ring-item:nth-child(4) { background: rgba(26, 32, 113, 0.8);    transform: rotateY(180deg) translateZ(173px); }
+        .cui-ring-item:nth-child(5) { background: rgba(121, 80, 242, 0.8);   transform: rotateY(240deg) translateZ(173px); }
+        .cui-ring-item:nth-child(6) { background: rgba(34, 184, 204, 0.8);   transform: rotateY(300deg) translateZ(173px); }
+
+        @keyframes cui-ring-spin {
+            from { transform: rotateY(0deg); }
+            to   { transform: rotateY(360deg); }
+        }
+
+        /* ===== 演示四：3D 倾斜响应（hover rotateX/Y） ===== */
+        .cui-tilt-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .cui-tilt {
+            width: 160px;
+            height: 110px;
+            perspective: 500px;
+        }
+
+        .cui-tilt-face {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 15px;
+            background: linear-gradient(135deg, #7950f2, #5f3dc4);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: transform 0.4s;
+        }
+
+        .cui-tilt:hover .cui-tilt-face {
+            transform: rotateX(25deg) rotateY(-25deg);
+        }
+
+        .cui-tilt:nth-child(2) .cui-tilt-face {
+            background: linear-gradient(135deg, #6043a2, #36168d);
+        }
+
+        .cui-tilt:nth-child(2):hover .cui-tilt-face {
+            transform: rotateX(-25deg) rotateY(25deg) translateZ(30px);
+        }
+
+        .cui-tilt:nth-child(3) .cui-tilt-face {
+            background: linear-gradient(135deg, #35035b, #26062b);
+        }
+
+        .cui-tilt:nth-child(3):hover .cui-tilt-face {
+            transform: rotateX(25deg) rotateY(25deg) scale(1.08);
+        }
+    </style>
+</head>
+<body>
+    <h1>CSS3 3D 动画</h1>
+    <p class="cui-sub">核心三件套：<code>perspective</code>（透视）、<code>transform-style: preserve-3d</code>（保留立体空间）、<code>backface-visibility</code>（背面可见性）。</p>
+
+    <h2>一、旋转的正方体（自动播放）</h2>
+    <div class="cui-panel">
+        <p class="cui-tip">父级加 <code>perspective</code> 产生透视，立方体加 <code>transform-style: preserve-3d</code>，六个面分别沿 Z 轴平移 <code>translateZ(80px)</code> 拼出立体，再用 <code>@keyframes</code> 同时旋转 X / Y 轴。</p>
+        <div class="cui-scene">
+            <div class="cui-cube">
+                <div class="cui-face cui-face-front">前</div>
+                <div class="cui-face cui-face-back">后</div>
+                <div class="cui-face cui-face-right">右</div>
+                <div class="cui-face cui-face-left">左</div>
+                <div class="cui-face cui-face-top">上</div>
+                <div class="cui-face cui-face-bottom">下</div>
+            </div>
+        </div>
+    </div>
+
+    <h2>二、悬停翻转卡片（backface-visibility）</h2>
+    <div class="cui-panel">
+        <p class="cui-tip">两面叠放，背面预先 <code>rotateY(180deg)</code>；<code>backface-visibility: hidden</code> 隐藏背面，hover 时容器整体旋转 180° 完成翻牌。</p>
+        <div class="cui-flip">
+            <div class="cui-flip-inner">
+                <div class="cui-flip-side cui-flip-front">
+                    <strong>正面</strong>
+                    <span>把鼠标悬停在我上面</span>
+                </div>
+                <div class="cui-flip-side cui-flip-back">
+                    <strong>背面</strong>
+                    <span>翻转的秘密是 preserve-3d</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2>三、3D 环形轮播（自动旋转，悬停暂停）</h2>
+    <div class="cui-panel">
+        <p class="cui-tip">6 个面板各旋转 60° 后沿 Z 轴推出 <code>translateZ(173px)</code>（= 半宽 ÷ tan30°），围成一个环；整体绕 Y 轴持续旋转，鼠标悬停时暂停。</p>
+        <div class="cui-ring-scene">
+            <div class="cui-ring">
+                <div class="cui-ring-item">面板 1</div>
+                <div class="cui-ring-item">面板 2</div>
+                <div class="cui-ring-item">面板 3</div>
+                <div class="cui-ring-item">面板 4</div>
+                <div class="cui-ring-item">面板 5</div>
+                <div class="cui-ring-item">面板 6</div>
+            </div>
+        </div>
+    </div>
+
+    <h2>四、3D 倾斜交互（hover 触发）</h2>
+    <div class="cui-panel">
+        <p class="cui-tip">每张卡片自带 <code>perspective</code>，悬停时用 <code>rotateX / rotateY / translateZ / scale</code> 组合出抬起、内凹、放大的立体效果。</p>
+        <div class="cui-tilt-row">
+            <div class="cui-tilt">
+                <div class="cui-tilt-face">抬起 rotateX/Y</div>
+            </div>
+            <div class="cui-tilt">
+                <div class="cui-tilt-face">内凹 + 前移</div>
+            </div>
+            <div class="cui-tilt">
+                <div class="cui-tilt-face">外翻 + 放大</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

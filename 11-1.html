@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS长度单位</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: #3451a9;
+            color: #333;
+            padding: 24px;
+        }
+
+        h1 {
+            font-size: 26px;
+            margin-bottom: 6px;
+        }
+
+        .sub {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 18px;
+        }
+
+        h2 {
+            font-size: 18px;
+            margin: 28px 0 12px;
+            padding-left: 10px;
+            border-left: 5px solid #4dabf7;
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .tip {
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 8px;
+        }
+
+        code {
+            background: #eef1f5;
+            padding: 1px 6px;
+            border-radius: 4px;
+            color: #d633bd;
+            font-family: Consolas, monospace;
+            font-size: 13px;
+        }
+
+        /* 一、绝对单位：换算后长度完全相同 */
+        .abs-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .abs-item {
+            width: 130px;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        .abs-bar {
+            width: 96px;
+            height: 24px;
+            background: #488f8f;
+            color: #fff;
+            font-size: 12px;
+            line-height: 24px;
+            text-align: center;
+            border-radius: 4px;
+        }
+
+        /* em：相对自身 font-size，随父级字号变化 */
+        .em-parent {
+            background: #fff6e6;
+            border: 1px dashed #ffa94d;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .em-parent.small { font-size: 16px; }
+        .em-parent.large { font-size: 32px; }
+
+        .em-box {
+            width: 6em;
+            background: #ffec99;
+            border: 1px solid #e67700;
+            border-radius: 4px;
+            padding: 6px 0;
+            text-align: center;
+        }
+
+        /* rem：只相对根元素 html 的 font-size，不受父级影响 */
+        .rem-parent {
+            background: #e7f5ff;
+            border: 1px dashed #1c7ed6;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .rem-parent.small { font-size: 16px; }
+        .rem-parent.large { font-size: 32px; }
+
+        .rem-box {
+            width: 6rem;
+            background: #d0ebff;
+            border: 1px solid #1c7ed6;
+            border-radius: 4px;
+            padding: 6px 0;
+            text-align: center;
+            display: inline-block;
+        }
+
+        /* %：相对父元素同属性，层层嵌套 */
+        .pct-outer {
+            width: 70%;
+            background: #d3f9d8;
+            border: 2px solid #40c057;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .pct-inner {
+            width: 50%;
+            background: #b2f2bb;
+            border: 1px solid #40c057;
+            border-radius: 6px;
+            padding: 8px;
+        }
+
+        .pct-inner2 {
+            width: 60%;
+            background: #8ce99a;
+            border-radius: 4px;
+            padding: 8px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        /* vw / vh：相对视口 */
+        .vw-bar {
+            height: 26px;
+            background: #748ffc;
+            color: #fff;
+            font-size: 12px;
+            line-height: 26px;
+            padding-left: 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            max-width: 100%;
+        }
+
+        .w90 { width: 90vw; }
+        .w50 { width: 50vw; }
+        .w25 { width: 25vw; }
+
+        .vh-box {
+            width: 60vw;
+            height: 18vh;
+            max-width: 100%;
+            background: #e7f5ff;
+            border: 2px dashed #1c7ed6;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: #1c7ed6;
+        }
+
+        /* fr：Grid 轨道份额 */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 10px;
+            width: 80%;
+            max-width: 700px;
+        }
+
+        .grid div {
+            background: #e599f7;
+            color: #fff;
+            font-weight: bold;
+            text-align: center;
+            padding: 14px 0;
+            border-radius: 6px;
+        }
+
+        /* ch：字符 0 的宽度 */
+        .ch-box {
+            width: 20ch;
+            background: #ffe3e3;
+            border: 1px solid #ff6b6b;
+            border-radius: 6px;
+            padding: 6px;
+            font-family: Consolas, monospace;
+            font-size: 14px;
+        }
+
+        /* 速查表 */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 14px;
+            background: #fff;
+        }
+
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 8px 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #4dabf7;
+            color: #fff;
+        }
+
+        tr:nth-child(even) td {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <h1>CSS 长度单位</h1>
+    <p class="sub">Web 前端的长度单位分为绝对单位与相对单位；相对单位会随父元素、根字号或视口大小变化。</p>
+
+    <h2>一、绝对单位（固定长度）</h2>
+    <div class="panel">
+        <p class="tip">下面每根色条换算后都是 <code>96px = 1in</code>，长度完全相同：</p>
+        <div class="abs-list">
+            <div class="abs-item">96px（像素）<div class="abs-bar">96px</div></div>
+            <div class="abs-item">1in（英寸）<div class="abs-bar">1in</div></div>
+            <div class="abs-item">2.54cm（厘米）<div class="abs-bar">2.54cm</div></div>
+            <div class="abs-item">25.4mm（毫米）<div class="abs-bar">25.4mm</div></div>
+            <div class="abs-item">72pt（磅）<div class="abs-bar">72pt</div></div>
+            <div class="abs-item">6pc（派卡）<div class="abs-bar">6pc</div></div>
+        </div>
+    </div>
+
+    <h2>二、相对单位</h2>
+
+    <div class="panel">
+        <p class="tip"><code>em</code>：相对自身 font-size（写在 font-size 上则相对父元素）——父级字号变大，盒子跟着变：</p>
+        <div class="em-parent small">
+            <p class="tip">父级 font-size: 16px → 子元素 width: 6em = 96px</p>
+            <div class="em-box">width:6em</div>
+        </div>
+        <div class="em-parent large">
+            <p class="tip">父级 font-size: 32px → 子元素 width: 6em = 192px</p>
+            <div class="em-box">width:6em</div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <p class="tip"><code>rem</code>：只相对根元素 <code>html</code> 的 font-size（默认 16px）——父级字号再怎么变都不影响：</p>
+        <div class="rem-parent small">
+            <p class="tip">父级 font-size: 16px → 子元素 width: 6rem = 96px</p>
+            <div class="rem-box">width:6rem</div>
+        </div>
+        <div class="rem-parent large">
+            <p class="tip">父级 font-size: 32px → 子元素 width: 6rem = 96px（两个盒子一样宽）</p>
+            <div class="rem-box">width:6rem</div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <p class="tip"><code>%</code>：相对父元素的同一属性（宽度相对父宽）——拖动窗口看嵌套盒子一起缩放：</p>
+        <div class="pct-outer">
+            外层 width: 70%
+            <div class="pct-inner">
+                中层 width: 50%（父的 1/2）
+                <div class="pct-inner2">内层 width: 60%（中层的 6/10）</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <p class="tip"><code>vw / vh</code>：相对视口，1vw = 视口宽度的 1%，1vh = 视口高度的 1%——拖动浏览器窗口宽度试试：</p>
+        <div class="vw-bar w90">width: 90vw</div>
+        <div class="vw-bar w50">width: 50vw</div>
+        <div class="vw-bar w25">width: 25vw</div>
+        <div class="vh-box">width: 60vw; height: 18vh</div>
+    </div>
+
+    <div class="panel">
+        <p class="tip"><code>fr</code>：Grid 轨道的剩余空间份额，只能用在 <code>grid-template-columns/rows</code>：</p>
+        <div class="grid">
+            <div>1fr</div>
+            <div>2fr</div>
+            <div>1fr</div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <p class="tip"><code>ch</code>：数字 “0” 在当前字体下的宽度，常用于限制每行文本长度：</p>
+        <div class="ch-box">width: 20ch</div>
+    </div>
+
+    <h2>三、单位速查表</h2>
+    <table>
+        <tr>
+            <th>类型</th>
+            <th>单位</th>
+            <th>基准 / 换算</th>
+            <th>说明</th>
+        </tr>
+        <tr>
+            <td rowspan="6">绝对单位</td>
+            <td>px</td>
+            <td>无（基本单位）</td>
+            <td>像素，网页中最常用</td>
+        </tr>
+        <tr>
+            <td>in</td>
+            <td>1in = 96px</td>
+            <td>英寸</td>
+        </tr>
+        <tr>
+            <td>cm</td>
+            <td>1cm ≈ 37.8px</td>
+            <td>厘米</td>
+        </tr>
+        <tr>
+            <td>mm</td>
+            <td>1mm ≈ 3.78px</td>
+            <td>毫米</td>
+        </tr>
+        <tr>
+            <td>pt</td>
+            <td>1pt = 1/72 in ≈ 1.33px</td>
+            <td>磅，常用于打印排版</td>
+        </tr>
+        <tr>
+            <td>pc</td>
+            <td>1pc = 12pt = 16px</td>
+            <td>派卡</td>
+        </tr>
+        <tr>
+            <td rowspan="8">相对单位</td>
+            <td>em</td>
+            <td>自身 font-size（font-size 则看父元素）</td>
+            <td>会层层叠加，适合弹性排版</td>
+        </tr>
+        <tr>
+            <td>rem</td>
+            <td>根元素 html 的 font-size</td>
+            <td>不受嵌套影响，适合整体缩放</td>
+        </tr>
+        <tr>
+            <td>%</td>
+            <td>父元素的同属性</td>
+            <td>响应式布局的基础</td>
+        </tr>
+        <tr>
+            <td>vw / vh</td>
+            <td>视口宽 / 高的 1%</td>
+            <td>相对浏览器窗口大小</td>
+        </tr>
+        <tr>
+            <td>vmin / vmax</td>
+            <td>视口较短 / 较长边的 1%</td>
+            <td>适配横竖屏切换</td>
+        </tr>
+        <tr>
+            <td>ch</td>
+            <td>字符 “0” 的宽度</td>
+            <td>控制每行字符数</td>
+        </tr>
+        <tr>
+            <td>ex</td>
+            <td>小写字母 x 的高度</td>
+            <td>较少使用</td>
+        </tr>
+        <tr>
+            <td>fr</td>
+            <td>Grid 剩余空间的份额</td>
+            <td>仅限 grid 轨道</td>
+        </tr>
+    </table>
+</body>
+</html>

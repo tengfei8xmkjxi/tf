@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>10-3 响应式全屏动画</title>
+  <style>
+    :root {
+      --bg-start: #111827;
+      --bg-end: #6460d2;
+      --text-color: #ffffff;
+      --panel-color: rgba(17, 24, 39, 0.38);
+      --accent-color: rgba(255, 255, 255, 0.18);
+      --title-size: 3rem;
+      --subtitle-size: 1.1rem;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>10-3 响应式全屏动画</title>
+  <style>
+    :root {
+      --bg-start: #111827;
+      --bg-end: #312e81;
+      --text-color: #ffffff;
+      --panel-color: rgba(17, 24, 39, 0.38);
+      --accent-color: rgba(255, 255, 255, 0.18);
+      --title-size: 3rem;
+      --subtitle-size: 1.1rem;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+      color: var(--text-color);
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      transition: background 0.8s ease;
+      overflow: hidden;
+    }
+
+    .hero {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative;
+      background: rgba(0, 0, 0, 0.08);
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.7;
+      animation: floatBlur 8s ease-in-out infinite alternate;
+    }
+
+    .hero::before {
+      width: 20rem;
+      height: 20rem;
+      background: rgba(96, 165, 250, 0.35);
+      left: 10%;
+      top: 18%;
+    }
+
+    .hero::after {
+      width: 18rem;
+      height: 18rem;
+      background: rgba(244, 114, 182, 0.25);
+      right: 12%;
+      bottom: 16%;
+      animation-delay: 1s;
+    }
+
+    .panel {
+      position: relative;
+      z-index: 1;
+      width: min(62rem, 86vw);
+      padding: 2.5rem 2rem;
+      border-radius: 1.5rem;
+      background: var(--panel-color);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 1.25rem 3.75rem rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(8px);
+      text-align: center;
+      animation: fadeUp 1.2s ease;
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      letter-spacing: 0.35rem;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: var(--title-size);
+      line-height: 1.1;
+      letter-spacing: 0.08em;
+      margin-bottom: 1rem;
+      text-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.3);
+      animation: titleWave 3s ease-in-out infinite;
+    }
+
+    p {
+      font-size: var(--subtitle-size);
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.85);
+      max-width: 42rem;
+      margin: 0 auto;
+      animation: textGlow 3s ease-in-out infinite alternate;
+    }
+
+    .name {
+      display: inline-block;
+      margin-top: 1.5rem;
+      padding: 0.7rem 1.5rem;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+      animation: namePulse 2.8s ease-in-out infinite;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes titleWave {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-8px);
+      }
+    }
+
+    @keyframes textGlow {
+      from {
+        text-shadow: 0 0 0 rgba(255,255,255,0);
+      }
+      to {
+        text-shadow: 0 0 0.75rem rgba(255,255,255,0.3);
+      }
+    }
+
+    @keyframes namePulse {
+      0%, 100% {
+        transform: scale(1);
+        background: rgba(0, 0, 0, 0.28);
+      }
+      50% {
+        transform: scale(1.05);
+        background: rgba(255, 255, 255, 0.12);
+      }
+    }
+
+    @keyframes floatBlur {
+      from {
+        transform: translate3d(-10px, 0, 0) scale(1);
+      }
+      to {
+        transform: translate3d(20px, -20px, 0) scale(1.2);
+      }
+    }
+
+    @media (max-width: 900px) {
+      :root {
+        --bg-start: #1f2937;
+        --bg-end: #0f766e;
+        --title-size: 2.3rem;
+        --subtitle-size: 1rem;
+      }
+
+      .panel {
+        padding: 2rem 1.5rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      :root {
+        --bg-start: #3f3f46;
+        --bg-end: #7c2d12;
+        --title-size: 1.8rem;
+        --subtitle-size: 0.9rem;
+      }
+
+      .hero {
+        padding: 1rem;
+      }
+
+      .panel {
+        width: 90vw;
+        padding: 1.5rem 1rem;
+      }
+
+      .eyebrow {
+        letter-spacing: 0.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <div class="panel">
+      <div class="eyebrow">RESPONSIVE DESIGN</div>
+      <h1>VIEWPORT<span style="display:block;">变化</span></h1>
+      <p>
+        当视口发生变化时，页面背景会跟随切换，文字大小也会适配调整，
+        同时保持清晰和舒适的视觉体验。
+      </p>
+      <div class="name">滕菲</div>
+    </div>
+  </div>
+</body>
+</html>
+
+ 

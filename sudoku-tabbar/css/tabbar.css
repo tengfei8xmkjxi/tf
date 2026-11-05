@@ -1,0 +1,191 @@
+/* ============================================================
+   tabbar.css —— 下导航的两种图标实现
+   24001010528 滕菲
+   ① 字体图标版：.tf-tabbar--font  （<i class="iconfont icon-shouye">）
+   ② 内联 SVG 版：.tf-tabbar--svg  （<svg><use> 或内联 path）
+   两者共用同一套定位、尺寸与自适应规则，只是图标载体不同
+   ============================================================ */
+
+/* ---------- 导航外壳：固定 + 全宽 + 自适应 ---------- */
+.tf-tabbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    width: 100%;
+    display: flex;
+    background-color: #fff;
+    border-top: 1px solid var(--tf-line);
+    box-shadow: 0 -2px 12px rgba(31, 45, 61, .07);
+    /* iPhone 底部小黑条区域，避免导航被遮住 */
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ---------- 导航项：自适应宽度的关键 ---------- */
+.tf-tabbar__item {
+    /* flex: 1 1 0 —— 每一项的基准宽度是 0，剩余空间平均分配，4 项即各占 25% */
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    height: var(--tf-tabbar-h);
+    color: var(--tf-ink-light);
+    font-size: 11px;
+    transition: color .2s;
+}
+
+/* 当前选中项：图标与文字同时变蓝（字体图标的颜色由 color 继承） */
+.tf-tabbar__item.is-active {
+    color: var(--tf-blue);
+}
+
+/* 图标容器：作为徽章 / 红点的定位参照 */
+.tf-tabbar__icon {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: 24px;
+    line-height: 1;
+}
+
+/* iconfont.css 里把 .iconfont 写死成 font-size:16px !important，
+   这里用「更高优先级选择器 + !important」把它覆盖成 24px */
+.tf-tabbar--font .iconfont {
+    font-size: 24px !important;
+}
+
+/* ---------- 内联 SVG 版：尺寸靠 width/height，颜色靠 currentColor ---------- */
+.tf-tabbar--svg .tf-svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* ---------- 数字徽章 ---------- */
+.tf-tabbar__badge {
+    position: absolute;
+    top: -6px;
+    right: -13px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background-color: #ff3b30;
+    color: #fff;
+    font-size: 11px;
+    font-style: normal;
+    line-height: 17px;
+    text-align: center;
+    white-space: nowrap;
+    box-shadow: 0 0 0 2px #fff;
+}
+
+/* ---------- 纯红点 ---------- */
+.tf-tabbar__dot {
+    position: absolute;
+    top: -1px;
+    right: -4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #ff3b30;
+    box-shadow: 0 0 0 2px #fff;
+}
+
+/* ============================================================
+   页面内「SVG 实现对照」区：同一条导航换成内联 SVG 后的样子
+   （不固定，只是把两种载体并在同一页里做对照）
+   ============================================================ */
+.tf-compare {
+    margin-top: 12px;
+}
+
+.tf-compare__bar {
+    display: flex;
+    overflow: hidden;
+    background-color: #fff;
+    border: 1px solid var(--tf-line);
+    border-radius: var(--tf-radius);
+}
+
+.tf-compare__item {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    height: var(--tf-tabbar-h);
+    color: var(--tf-ink-light);
+    font-size: 11px;
+}
+
+.tf-compare__item.is-active {
+    color: var(--tf-blue);
+}
+
+.tf-compare__bar .tf-svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* 图例：说明每种图标技术用在哪 */
+.tf-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--tf-ink-soft);
+}
+
+.tf-legend__key {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 6px;
+    border-radius: 3px;
+    vertical-align: middle;
+}
+
+.tf-legend__key--font {
+    background-color: var(--tf-blue);
+}
+
+.tf-legend__key--svg {
+    background-color: #7a5af8;
+}
+
+/* ---------- 极窄视口（≤320px）文字略缩，导航依然 4 等分不换行 ---------- */
+@media (max-width: 320px) {
+    .tf-tabbar__item,
+    .tf-compare__item {
+        font-size: 10px;
+    }
+
+    .tf-tabbar--font .iconfont,
+    .tf-compare__bar .tf-svg {
+        font-size: 22px !important;
+    }
+}
+
+/* ---------- 横屏时导航会占用过多高度，压扁一点 ---------- */
+@media (orientation: landscape) and (max-height: 480px) {
+    :root {
+        --tf-tabbar-h: 46px;
+    }
+}

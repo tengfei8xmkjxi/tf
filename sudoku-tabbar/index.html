@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<!--
+    《高级网页设计I》实验「图像解决方案」
+    学号：24001010528　姓名：滕菲
+    三级项目：数独小游戏（桌面版无下导航，故按指导书允许的第二种情况，
+              为其补做一套移动端下导航）
+    图标来源：iconfont.cn（字体图标）+ 手写内联 SVG
+-->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <!-- 移动端自适应：按设备宽度渲染 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="author" content="24001010528 滕菲">
+    <title>24001010528 滕菲 · 数独 App 下导航（字体图标 + SVG）</title>
+
+    <!-- 1. iconfont 字体图标文件（与三级项目共用同一个图标库，项目 id 5244844） -->
+    <link rel="stylesheet" href="../font/iconfont.css">
+    <!-- 2. 全局样式：变量、重置、容器、卡片、按钮 -->
+    <link rel="stylesheet" href="css/global.css">
+    <!-- 3. 本实验的样式：下导航的两种图标实现 -->
+    <link rel="stylesheet" href="css/tabbar.css">
+</head>
+<body>
+    <!-- ---------- 顶部标题栏：用字体图标做工具按钮 ---------- -->
+    <header class="tf-header">
+        <div class="tf-shell tf-header__inner">
+            <h1 class="tf-header__title">数独</h1>
+            <div class="tf-header__tools">
+                <i class="iconfont icon-sousuo" aria-hidden="true"></i>
+                <i class="iconfont icon-gengduo" aria-hidden="true"></i>
+            </div>
+        </div>
+    </header>
+
+    <main class="tf-shell">
+        <!-- ---------- 说明卡：把本实验的四个技术点写清楚 ---------- -->
+        <section class="tf-card">
+            <h2 class="tf-card__title">
+                <i class="iconfont icon-editor" aria-hidden="true"></i>
+                本页要点
+            </h2>
+            <p class="tf-card__text">
+                1. 底部导航图标取自 iconfont 字体文件：<code>&lt;i class="iconfont icon-shouye"&gt;&lt;/i&gt;</code>；<br>
+                2. 自适应宽度：<code>flex: 1 1 0</code>，4 个导航项平分整个屏幕宽度；<br>
+                3. 固定底栏：<code>position: fixed; left: 0; right: 0; bottom: 0</code>，并处理 iPhone 安全区；<br>
+                4. 页面中部的对照条用<b>内联 SVG</b> 画同样 4 个图标，验证两种图像方案。
+            </p>
+        </section>
+
+        <!-- ---------- 每日挑战 ---------- -->
+        <section class="tf-card">
+            <h2 class="tf-card__title">
+                <i class="iconfont icon-btn_play" aria-hidden="true"></i>
+                每日挑战
+            </h2>
+            <p class="tf-card__text">
+                难度 <b>中等</b>　·　限时 <b>12:00</b>　·　今日已有 <b>3,482</b> 人完成
+            </p>
+            <div class="tf-card__row">
+                <button class="tf-btn" type="button">
+                    <i class="iconfont icon-btn_play" aria-hidden="true"></i>
+                    开始挑战
+                </button>
+                <i class="iconfont icon-shuaxin tf-icon tf-icon--m" aria-hidden="true"></i>
+                <i class="iconfont icon-langdu tf-icon tf-icon--m" aria-hidden="true"></i>
+                <i class="iconfont icon-shoucang tf-icon tf-icon--m" aria-hidden="true"></i>
+            </div>
+        </section>
+
+        <!-- ---------- 排行榜 ---------- -->
+        <section class="tf-card">
+            <h2 class="tf-card__title">
+                <i class="iconfont icon-haoyouzhuli" aria-hidden="true"></i>
+                本周排行
+            </h2>
+            <p class="tf-card__text">
+                1　李同学　02:41　·　2　王同学　02:58　·　3　<b>你　03:05</b>
+            </p>
+        </section>
+
+        <!-- ---------- SVG 对照：同一套导航换成内联 SVG ---------- -->
+        <section class="tf-card tf-compare">
+            <h2 class="tf-card__title">
+                <i class="iconfont icon-GC_138_line-Translate" aria-hidden="true"></i>
+                对照：同一套下导航的 SVG 实现
+            </h2>
+            <p class="tf-card__text">下面这条导航不使用字体文件，4 个图标全部是手写内联 <code>&lt;svg&gt;</code>，颜色跟随 <code>currentColor</code>。</p>
+
+            <nav class="tf-compare__bar" aria-label="SVG 下导航对照">
+                <a class="tf-compare__item is-active" href="#">
+                    <svg class="tf-svg" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M3 10.5 12 3l9 7.5"/>
+                        <path d="M5.5 9.5V20h13V9.5"/>
+                    </svg>
+                    <span>首页</span>
+                </a>
+                <a class="tf-compare__item" href="#">
+                    <svg class="tf-svg" viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="4" y="4" width="16" height="16" rx="2"/>
+                        <path d="M12 4v16M4 12h16"/>
+                    </svg>
+                    <span>挑战</span>
+                </a>
+                <a class="tf-compare__item" href="#">
+                    <svg class="tf-svg" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M5 20v-9M12 20V5M19 20v-6"/>
+                        <path d="M3 20h18"/>
+                    </svg>
+                    <span>排行</span>
+                </a>
+                <a class="tf-compare__item" href="#">
+                    <svg class="tf-svg" viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="8.5" r="3.5"/>
+                        <path d="M5 20c0-3.6 3.1-5.5 7-5.5s7 1.9 7 5.5"/>
+                    </svg>
+                    <span>我的</span>
+                </a>
+            </nav>
+
+            <div class="tf-legend">
+                <span><i class="tf-legend__key tf-legend__key--font"></i>底部导航 = iconfont 字体图标</span>
+                <span><i class="tf-legend__key tf-legend__key--svg"></i>对照条 = 内联 SVG</span>
+            </div>
+        </section>
+
+        <!-- ---------- 图标尺寸与颜色演示（对应指导书「改变字体大小和颜色」） ---------- -->
+        <section class="tf-card">
+            <h2 class="tf-card__title">
+                <i class="iconfont icon-iconfonticon-xitong" aria-hidden="true"></i>
+                字体图标的尺寸与颜色
+            </h2>
+            <p class="tf-card__text">同一个字符，改 <code>font-size</code> 就是改图标大小，改 <code>color</code> 就是改图标颜色——这是字体图标和普通图片最大的区别。</p>
+            <div class="tf-iconrow">
+                <i class="iconfont icon-shouye tf-icon tf-icon--s" aria-hidden="true"></i>
+                <i class="iconfont icon-shouye tf-icon tf-icon--m" aria-hidden="true"></i>
+                <i class="iconfont icon-shouye tf-icon tf-icon--l" aria-hidden="true"></i>
+                <i class="iconfont icon-shouye tf-icon tf-icon--xl" aria-hidden="true"></i>
+                <i class="iconfont icon-shouye tf-icon tf-icon--m tf-icon--blue" aria-hidden="true"></i>
+                <i class="iconfont icon-shouye tf-icon tf-icon--m tf-icon--green" aria-hidden="true"></i>
+                <i class="iconfont icon-shouye tf-icon tf-icon--m tf-icon--gray" aria-hidden="true"></i>
+            </div>
+        </section>
+    </main>
+
+    <!-- ---------- 固定底部导航（字体图标版）：自适应宽度 ---------- -->
+    <nav class="tf-tabbar tf-tabbar--font" aria-label="底部导航">
+        <a class="tf-tabbar__item is-active" href="#">
+            <span class="tf-tabbar__icon">
+                <i class="iconfont icon-shouye" aria-hidden="true"></i>
+            </span>
+            <span>首页</span>
+        </a>
+        <a class="tf-tabbar__item" href="#">
+            <span class="tf-tabbar__icon">
+                <i class="iconfont icon-btn_play" aria-hidden="true"></i>
+                <em class="tf-tabbar__dot"></em>
+            </span>
+            <span>挑战</span>
+        </a>
+        <a class="tf-tabbar__item" href="#">
+            <span class="tf-tabbar__icon">
+                <i class="iconfont icon-haoyouzhuli" aria-hidden="true"></i>
+                <em class="tf-tabbar__badge">3</em>
+            </span>
+            <span>排行</span>
+        </a>
+        <a class="tf-tabbar__item" href="#">
+            <span class="tf-tabbar__icon">
+                <i class="iconfont icon-iconfonticon5" aria-hidden="true"></i>
+            </span>
+            <span>我的</span>
+        </a>
+    </nav>
+</body>
+</html>

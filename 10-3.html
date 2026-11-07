@@ -1,254 +1,287 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>10-3 响应式全屏动画</title>
-  <style>
-    :root {
-      --bg-start: #111827;
-      --bg-end: #6460d2;
-      --text-color: #ffffff;
-      --panel-color: rgba(17, 24, 39, 0.38);
-      --accent-color: rgba(255, 255, 255, 0.18);
-      --title-size: 3rem;
-      --subtitle-size: 1.1rem;
-    }
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>10-3 视口与色彩 · 滕菲</title>
+	<style>
+		:root {
+			font-size: 16px;
+			color-scheme: light;
+			--ink: #fff4e6;
+			--soft-ink: rgba(255, 244, 230, 0.72);
+			--rule: rgba(255, 244, 230, 0.25);
+			--accent: #f0c45d;
+		}
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>10-3 响应式全屏动画</title>
-  <style>
-    :root {
-      --bg-start: #111827;
-      --bg-end: #312e81;
-      --text-color: #ffffff;
-      --panel-color: rgba(17, 24, 39, 0.38);
-      --accent-color: rgba(255, 255, 255, 0.18);
-      --title-size: 3rem;
-      --subtitle-size: 1.1rem;
-    }
+		* {
+			box-sizing: border-box;
+		}
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+		body {
+			min-width: 320px;
+			min-height: 100vh;
+			margin: 0;
+			font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+		}
 
-    html {
-      font-size: 16px;
-    }
+		.scene {
+			position: relative;
+			isolation: isolate;
+			display: flex;
+			flex-direction: column;
+			min-height: 100vh;
+			min-height: 100svh;
+			overflow: hidden;
+			padding: 2rem clamp(1.25rem, 5vw, 5rem);
+			color: var(--ink);
+			background-color: #bb503b;
+			background-image: linear-gradient(115deg, transparent 0 67%, rgba(255, 241, 220, 0.07) 67.1%, transparent 67.2%), linear-gradient(rgba(255, 241, 220, 0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 241, 220, 0.055) 1px, transparent 1px);
+			background-size: auto, 2rem 2rem, 2rem 2rem;
+			transition: background-color 240ms ease, color 240ms ease;
+		}
 
-    body {
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
-      color: var(--text-color);
-      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
-      transition: background 0.8s ease;
-      overflow: hidden;
-    }
+		.masthead,
+		.footer {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 1rem;
+		}
 
-    .hero {
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-      position: relative;
-      background: rgba(0, 0, 0, 0.08);
-    }
+		.masthead {
+			min-height: 2.5rem;
+			border-bottom: 1px solid var(--rule);
+		}
 
-    .hero::before,
-    .hero::after {
-      content: "";
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(60px);
-      opacity: 0.7;
-      animation: floatBlur 8s ease-in-out infinite alternate;
-    }
+		.brand,
+		.edition,
+		.footer {
+			font-size: 0.7rem;
+			font-weight: 700;
+			letter-spacing: 0.12em;
+		}
 
-    .hero::before {
-      width: 20rem;
-      height: 20rem;
-      background: rgba(96, 165, 250, 0.35);
-      left: 10%;
-      top: 18%;
-    }
+		.brand {
+			display: flex;
+			align-items: center;
+			gap: 0.65rem;
+		}
 
-    .hero::after {
-      width: 18rem;
-      height: 18rem;
-      background: rgba(244, 114, 182, 0.25);
-      right: 12%;
-      bottom: 16%;
-      animation-delay: 1s;
-    }
+		.brand::before {
+			width: 0.55rem;
+			height: 0.55rem;
+			background: var(--accent);
+			content: "";
+			transform: rotate(45deg);
+		}
 
-    .panel {
-      position: relative;
-      z-index: 1;
-      width: min(62rem, 86vw);
-      padding: 2.5rem 2rem;
-      border-radius: 1.5rem;
-      background: var(--panel-color);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 1.25rem 3.75rem rgba(0, 0, 0, 0.25);
-      backdrop-filter: blur(8px);
-      text-align: center;
-      animation: fadeUp 1.2s ease;
-    }
+		.edition,
+		.footer {
+			color: var(--soft-ink);
+		}
 
-    .eyebrow {
-      font-size: 0.85rem;
-      letter-spacing: 0.35rem;
-      text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.8);
-      margin-bottom: 1rem;
-    }
+		.composition {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr);
+			align-items: center;
+			gap: 2.5rem;
+			flex: 1;
+			width: min(100%, 78rem);
+			margin: 0 auto;
+			padding: 4rem 0;
+		}
 
-    h1 {
-      font-size: var(--title-size);
-      line-height: 1.1;
-      letter-spacing: 0.08em;
-      margin-bottom: 1rem;
-      text-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.3);
-      animation: titleWave 3s ease-in-out infinite;
-    }
+		.eyebrow {
+			margin: 0 0 1.25rem;
+			color: var(--accent);
+			font-size: 0.72rem;
+			font-weight: 700;
+			letter-spacing: 0.16em;
+		}
 
-    p {
-      font-size: var(--subtitle-size);
-      line-height: 1.8;
-      color: rgba(255, 255, 255, 0.85);
-      max-width: 42rem;
-      margin: 0 auto;
-      animation: textGlow 3s ease-in-out infinite alternate;
-    }
+		h1 {
+			max-width: 12em;
+			margin: 0;
+			font-size: 3.2rem;
+			font-weight: 800;
+			line-height: 1.2;
+			letter-spacing: 0;
+		}
 
-    .name {
-      display: inline-block;
-      margin-top: 1.5rem;
-      padding: 0.7rem 1.5rem;
-      border-radius: 999px;
-      background: rgba(0, 0, 0, 0.28);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: #fff;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-      animation: namePulse 2.8s ease-in-out infinite;
-    }
+		.description {
+			max-width: 27rem;
+			margin: 1.35rem 0 0;
+			color: var(--soft-ink);
+			font-size: 0.95rem;
+			line-height: 1.9;
+		}
 
-    @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+		.credit {
+			display: flex;
+			align-items: baseline;
+			gap: 1rem;
+			width: fit-content;
+			margin-top: 2.2rem;
+			padding-top: 0.85rem;
+			border-top: 1px solid var(--rule);
+		}
 
-    @keyframes titleWave {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-8px);
-      }
-    }
+		.credit span {
+			color: var(--soft-ink);
+			font-size: 0.68rem;
+			letter-spacing: 0.12em;
+		}
 
-    @keyframes textGlow {
-      from {
-        text-shadow: 0 0 0 rgba(255,255,255,0);
-      }
-      to {
-        text-shadow: 0 0 0.75rem rgba(255,255,255,0.3);
-      }
-    }
+		.credit strong {
+			font-size: 1rem;
+			font-weight: 700;
+		}
 
-    @keyframes namePulse {
-      0%, 100% {
-        transform: scale(1);
-        background: rgba(0, 0, 0, 0.28);
-      }
-      50% {
-        transform: scale(1.05);
-        background: rgba(255, 255, 255, 0.12);
-      }
-    }
+		.specimen {
+			position: relative;
+			display: grid;
+			place-items: center;
+			min-height: 15rem;
+			border: 1px solid var(--rule);
+		}
 
-    @keyframes floatBlur {
-      from {
-        transform: translate3d(-10px, 0, 0) scale(1);
-      }
-      to {
-        transform: translate3d(20px, -20px, 0) scale(1.2);
-      }
-    }
+		.specimen::before,
+		.specimen::after {
+			position: absolute;
+			content: "";
+			pointer-events: none;
+		}
 
-    @media (max-width: 900px) {
-      :root {
-        --bg-start: #1f2937;
-        --bg-end: #0f766e;
-        --title-size: 2.3rem;
-        --subtitle-size: 1rem;
-      }
+		.specimen::before {
+			inset: 0.65rem;
+			border: 1px solid var(--rule);
+		}
 
-      .panel {
-        padding: 2rem 1.5rem;
-      }
-    }
+		.specimen::after {
+			top: 50%;
+			left: 0;
+			width: 100%;
+			border-top: 1px solid var(--rule);
+		}
 
-    @media (max-width: 600px) {
-      :root {
-        --bg-start: #3f3f46;
-        --bg-end: #7c2d12;
-        --title-size: 1.8rem;
-        --subtitle-size: 0.9rem;
-      }
+		.specimen-inner {
+			position: relative;
+			z-index: 1;
+			display: flex;
+			align-items: baseline;
+			gap: 0.4rem;
+			padding: 0 1.25rem;
+			background: #bb503b;
+			transition: background-color 240ms ease;
+		}
 
-      .hero {
-        padding: 1rem;
-      }
+		.specimen-value {
+			font-size: 5.8rem;
+			font-weight: 800;
+			line-height: 1;
+			letter-spacing: -0.045em;
+		}
 
-      .panel {
-        width: 90vw;
-        padding: 1.5rem 1rem;
-      }
+		.specimen-unit {
+			color: var(--accent);
+			font-size: 1.2rem;
+			font-weight: 700;
+		}
 
-      .eyebrow {
-        letter-spacing: 0.2rem;
-      }
-    }
-  </style>
+		.specimen-label {
+			position: absolute;
+			bottom: 1.15rem;
+			left: 1.25rem;
+			color: var(--soft-ink);
+			font-size: 0.64rem;
+			letter-spacing: 0.14em;
+		}
+
+		.footer {
+			min-height: 2.5rem;
+			border-top: 1px solid var(--rule);
+		}
+
+		@media (max-width: 599px) {
+			:root { font-size: 15px; }
+
+			.scene {
+				background-color: #bb503b;
+			}
+
+			.specimen-inner { background-color: #bb503b; }
+
+			h1 { font-size: 2.7rem; }
+			.specimen { min-height: 12rem; }
+			.specimen-value { font-size: 4.6rem; }
+			.edition { font-size: 0.6rem; }
+		}
+
+		@media (min-width: 600px) and (max-width: 899px) {
+			:root {
+				font-size: 16px;
+				--ink: #29271e;
+				--soft-ink: rgba(41, 39, 30, 0.68);
+				--rule: rgba(41, 39, 30, 0.25);
+				--accent: #8c3d2e;
+			}
+
+			.scene {
+				color: var(--ink);
+				background-color: #dfbd67;
+				background-image: linear-gradient(115deg, transparent 0 67%, rgba(41, 39, 30, 0.045) 67.1%, transparent 67.2%), linear-gradient(rgba(41, 39, 30, 0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(41, 39, 30, 0.055) 1px, transparent 1px);
+			}
+
+			.specimen-inner { background-color: #dfbd67; }
+		}
+
+		@media (min-width: 900px) {
+			:root { font-size: 18px; }
+
+			.scene {
+				background-color: #376c5d;
+			}
+
+			.specimen-inner { background-color: #376c5d; }
+
+			.composition {
+				grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.9fr);
+			}
+
+			h1 { font-size: 4rem; }
+		}
+	</style>
 </head>
 <body>
-  <div class="hero">
-    <div class="panel">
-      <div class="eyebrow">RESPONSIVE DESIGN</div>
-      <h1>VIEWPORT<span style="display:block;">变化</span></h1>
-      <p>
-        当视口发生变化时，页面背景会跟随切换，文字大小也会适配调整，
-        同时保持清晰和舒适的视觉体验。
-      </p>
-      <div class="name">滕菲</div>
-    </div>
-  </div>
+    <a href="./index.html" aria-label="返回首页" style="position:fixed;top:12px;right:12px;z-index:9999;padding:9px 14px;border-radius:999px;background:#426b50;color:#fff;text-decoration:none;font:14px 'Microsoft YaHei',sans-serif;box-shadow:0 3px 12px rgba(0,0,0,.18)">← 返回首页</a>
+	<main class="scene">
+		<header class="masthead">
+			<span class="brand">VIEWPORT STUDY <span>/ 03</span></span>
+			<span class="edition">CSS MEDIA QUERY</span>
+		</header>
+
+		<section class="composition">
+			<div class="copy">
+				<p class="eyebrow">响应式练习 · 03</p>
+				<h1>视口改变，<br>色彩回应。</h1>
+				<p class="description">同一块全屏画布，随着屏幕尺寸切换色彩与文字尺度。</p>
+				<div class="credit"><span>DESIGNED BY</span><strong>滕菲</strong></div>
+			</div>
+
+			<div class="specimen" aria-hidden="true">
+				<div class="specimen-inner">
+					<span class="specimen-value">100</span>
+					<span class="specimen-unit">vh</span>
+				</div>
+				<span class="specimen-label">FULL VIEWPORT / COLOR STUDY</span>
+			</div>
+		</section>
+
+		<footer class="footer">
+			<span>SCREEN / COLOR / TYPE</span>
+			<span>10 — 03</span>
+		</footer>
+	</main>
 </body>
 </html>
-
- 

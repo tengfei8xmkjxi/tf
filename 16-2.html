@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- 姓名：滕菲，日期：2026-10-29，功能名称：JavaScript 对象与字符串可视化演示 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>16-2 JavaScript 对象与字符串</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0 0 46px;
+            min-height: 100vh;
+            color: #22304a;
+            font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
+            background:
+                radial-gradient(1100px 560px at 8% -12%, #d9f5ec 0%, transparent 58%),
+                radial-gradient(900px 500px at 100% 4%, #f0e5ff 0%, transparent 58%),
+                linear-gradient(180deg, #f8fbfb 0%, #f5f7fb 100%);
+        }
+
+        .tf-head {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 26px 18px 6px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .tf-title {
+            margin: 0;
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #0ca678, #7048e8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .tf-sub { margin-top: 8px; font-size: 14px; color: #6b7894; line-height: 1.8; }
+
+        .tf-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+        .tf-btn {
+            border: 1px solid #d5def7;
+            background: #fff;
+            color: #2f49a5;
+            font-family: inherit;
+            font-size: 14px;
+            padding: 9px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all .18s ease;
+        }
+
+        .tf-btn:hover { border-color: #7048e8; box-shadow: 0 6px 16px rgba(112, 72, 232, .16); transform: translateY(-1px); }
+        .tf-btn.tf-green { background: linear-gradient(135deg, #12b886, #0ca678); border-color: transparent; color: #fff; }
+        .tf-btn.tf-purple { background: linear-gradient(135deg, #7048e8, #4263eb); border-color: transparent; color: #fff; }
+
+        .tf-arg {
+            width: 170px;
+            padding: 8px 12px;
+            border: 1px solid #dbe3f8;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 13px;
+            color: #2f3f63;
+            outline: none;
+        }
+
+        .tf-arg:focus { border-color: #0ca678; box-shadow: 0 0 0 3px rgba(12, 166, 120, .14); }
+
+        .tf-wrap {
+            max-width: 1180px;
+            margin: 14px auto 0;
+            padding: 0 18px;
+            display: grid;
+            grid-template-columns: minmax(0, 1.55fr) minmax(300px, .95fr);
+            gap: 18px;
+            align-items: start;
+        }
+
+        .tf-card {
+            background: #fff;
+            border: 1px solid #e6ecfb;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(48, 72, 140, .07);
+            padding: 18px;
+        }
+
+        .tf-card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #2f3f63;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tf-card-title::before {
+            content: "";
+            width: 4px;
+            height: 16px;
+            border-radius: 3px;
+            background: linear-gradient(180deg, #4263eb, #7048e8);
+        }
+
+        .tf-card-title.tf-teal::before { background: linear-gradient(180deg, #0ca678, #38d9a9); }
+        .tf-card-title.tf-violet::before { background: linear-gradient(180deg, #7048e8, #a78bfa); }
+
+        .tf-chip {
+            font-size: 12px;
+            color: #5a6b91;
+            background: #f2f5ff;
+            border: 1px solid #e0e7fb;
+            padding: 4px 10px;
+            border-radius: 999px;
+        }
+
+        .tf-chip.tf-lock { background: #e7f5ff; border-color: #a5d8ff; color: #1c7ed6; }
+
+        .tf-str {
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 20px 10px;
+            min-height: 118px;
+            padding: 20px 16px 16px;
+            border-radius: 14px;
+            border: 1px dashed #bfe6d8;
+            background: linear-gradient(180deg, #fbfefd, #eefaf6);
+        }
+
+        .tf-ch {
+            position: relative;
+            width: 54px;
+            height: 62px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            background: linear-gradient(180deg, #ffffff, #e9f9f3);
+            border: 1px solid #c9ead9;
+            box-shadow: 0 6px 14px rgba(12, 140, 105, .10);
+        }
+
+        .tf-chv { font-size: 20px; font-weight: 800; color: #0b7a5c; font-family: Consolas, monospace; }
+        .tf-chi { font-size: 11px; color: #8aa0b8; font-family: Consolas, monospace; }
+        .tf-ch.tf-space .tf-chv { color: #b6c2d4; }
+
+        .tf-ch.tf-add { background: linear-gradient(180deg, #eafaf1, #d7f4e5); border-color: #86dcb4; animation: tfPop .5s cubic-bezier(.2, .9, .25, 1.2) both; }
+        .tf-ch.tf-chg { background: linear-gradient(180deg, #fff8e8, #ffefd2); border-color: #f5b64a; animation: tfChg .6s ease both; }
+        .tf-ch.tf-hit { background: linear-gradient(180deg, #fff3e9, #ffe6d4); border-color: #f08c3c; animation: tfHit .9s ease both; }
+        .tf-ch.tf-out { animation: tfOut .32s ease forwards; background: linear-gradient(180deg, #ffeef1, #ffdde3); border-color: #f783ac; }
+
+        .tf-objbox {
+            padding: 16px;
+            border-radius: 14px;
+            border: 1px dashed #d8cdf7;
+            background: linear-gradient(180deg, #fcfbff, #f3efff);
+        }
+
+        .tf-objline { font-family: Consolas, monospace; font-size: 14px; color: #7048e8; margin-bottom: 12px; }
+
+        .tf-props { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+
+        .tf-prop {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: #fff;
+            border: 1px solid #e7e1fb;
+            box-shadow: 0 6px 14px rgba(112, 72, 232, .07);
+        }
+
+        .tf-pkey { font-family: Consolas, monospace; font-weight: 700; color: #7048e8; }
+        .tf-parrow { color: #c0b2f5; font-family: Consolas, monospace; }
+        .tf-pval { font-family: Consolas, monospace; font-weight: 700; color: #2f3f63; word-break: break-all; }
+        .tf-ptype { margin-left: auto; font-size: 11px; color: #8a97b8; background: #f4f2ff; border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
+
+        .tf-prop.tf-add { background: linear-gradient(180deg, #eafaf1, #dcf6e8); border-color: #86dcb4; animation: tfPop .5s cubic-bezier(.2, .9, .25, 1.2) both; }
+        .tf-prop.tf-chg { background: linear-gradient(180deg, #fff8e8, #ffefd2); border-color: #f5b64a; animation: tfChg .6s ease both; }
+        .tf-prop.tf-hit { background: linear-gradient(180deg, #fff3e9, #ffe6d4); border-color: #f08c3c; animation: tfHit .9s ease both; }
+        .tf-prop.tf-out { animation: tfOut .32s ease forwards; background: linear-gradient(180deg, #ffeef1, #ffdde3); border-color: #f783ac; }
+
+        @keyframes tfPop { 0% { transform: scale(.4); opacity: 0; } 65% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes tfChg { 0% { transform: scale(1); } 40% { transform: scale(1.09) rotate(-2deg); } 100% { transform: scale(1); } }
+        @keyframes tfHit { 0% { transform: translateY(0); } 30% { transform: translateY(-9px); } 100% { transform: translateY(0); } }
+        @keyframes tfOut { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(.5) translateY(12px); opacity: 0; } }
+
+        .tf-now {
+            margin-top: 14px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            background: #f7f9ff;
+            border: 1px solid #e6ecfb;
+            font-family: Consolas, monospace;
+            font-size: 14px;
+            color: #364a86;
+            word-break: break-all;
+            line-height: 1.7;
+        }
+
+        .tf-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+        .tf-lg { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #6b7894; }
+        .tf-dot { width: 12px; height: 12px; border-radius: 4px; border: 1px solid; }
+        .tf-lg-add .tf-dot { background: #d7f4e5; border-color: #86dcb4; }
+        .tf-lg-out .tf-dot { background: #ffdde3; border-color: #f783ac; }
+        .tf-lg-chg .tf-dot { background: #ffefd2; border-color: #f5b64a; }
+        .tf-lg-hit .tf-dot { background: #ffe6d4; border-color: #f08c3c; }
+
+        .tf-group + .tf-group { margin-top: 16px; }
+
+        .tf-group-title {
+            font-size: 12px;
+            letter-spacing: 1px;
+            color: #7c89a8;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tf-group-title::after { content: ""; flex: 1; height: 1px; background: #e8eefb; }
+
+        .tf-mbtn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-align: left;
+            font-family: inherit;
+            border: 1px solid #e6ecfb;
+            background: #fbfcff;
+            border-radius: 12px;
+            padding: 9px 12px;
+            margin-bottom: 7px;
+            cursor: pointer;
+            transition: all .18s ease;
+        }
+
+        .tf-mbtn:hover { border-color: #b9c8f5; background: #f2f6ff; transform: translateX(3px); }
+        .tf-mbtn.tf-on { border-color: #4263eb; background: #edf2ff; box-shadow: 0 0 0 3px rgba(66, 99, 235, .12); }
+        .tf-spanel .tf-mname { color: #0b7a5c; }
+        .tf-spanel .tf-mbtn.tf-on { border-color: #0ca678; background: #e9fbf5; box-shadow: 0 0 0 3px rgba(12, 166, 120, .12); }
+        .tf-opanel .tf-mname { color: #5f3dc4; }
+        .tf-opanel .tf-mbtn.tf-on { border-color: #7048e8; background: #f3efff; box-shadow: 0 0 0 3px rgba(112, 72, 232, .12); }
+
+        .tf-mname { font-family: Consolas, monospace; font-weight: 700; font-size: 14px; }
+        .tf-mdesc { flex: 1; font-size: 12px; color: #7b88a6; }
+
+        .tf-tag { font-size: 10px; padding: 2px 7px; border-radius: 999px; white-space: nowrap; }
+        .tf-tag.tf-new { background: #e6fcf5; color: #0ca678; }
+        .tf-tag.tf-read { background: #eef2ff; color: #3b5bdb; }
+        .tf-tag.tf-mut { background: #ffecf0; color: #d6336c; }
+
+        .tf-outwrap {
+            max-width: 1180px;
+            margin: 14px auto 0;
+            padding: 0 18px;
+            display: grid;
+            grid-template-columns: .85fr 1.15fr 1fr;
+            gap: 18px;
+            align-items: start;
+        }
+
+        .tf-resval {
+            font-family: Consolas, monospace;
+            font-size: 17px;
+            font-weight: 700;
+            color: #0b7a5c;
+            word-break: break-all;
+            min-height: 30px;
+            line-height: 1.6;
+        }
+
+        .tf-resval.tf-violet { color: #5f3dc4; }
+        .tf-meta { margin-top: 8px; font-size: 12px; color: #8a97b8; line-height: 1.6; }
+
+        .tf-code {
+            margin: 0;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: #1f2a44;
+            color: #e7ecff;
+            font-family: Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .tf-log { list-style: none; margin: 0; padding: 0; max-height: 232px; overflow: auto; }
+
+        .tf-log li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 4px;
+            border-bottom: 1px dashed #e8eefb;
+            font-size: 12px;
+        }
+
+        .tf-log li b { font-family: Consolas, monospace; color: #2f49a5; font-size: 13px; }
+        .tf-log li em { margin-left: auto; font-style: normal; font-family: Consolas, monospace; color: #5f3dc4; text-align: right; }
+        .tf-log li span { color: #8a97b8; }
+
+        .tf-foot { max-width: 1180px; margin: 22px auto 0; padding: 0 18px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; color: #7c89a8; font-size: 13px; }
+        .tf-foot a { color: #4263eb; text-decoration: none; font-weight: 700; }
+
+        @media (max-width: 980px) {
+            .tf-wrap, .tf-outwrap { grid-template-columns: minmax(0, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <header class="tf-head">
+        <div>
+            <h1 class="tf-title">16-2 JavaScript 对象与字符串可视化</h1>
+            <div class="tf-sub">
+                上半部分：字符串 —— 每个字符一格，点击方法即可看到<strong>查找、截取、变换</strong>时哪些字符被命中、被改写、被删除。<br>
+                下半部分：对象 —— 每个属性一条，点击方法即可看到<strong>属性新增、修改、删除、遍历与转换</strong>的全过程。<br>
+                绿色＝新增，红色淡出＝删除，琥珀色＝被改写，橙色＝被命中/被读取。
+            </div>
+        </div>
+        <div class="tf-tools">
+            <a class="tf-btn" href="./1-1.html">首页</a>
+        </div>
+    </header>
+
+    <main class="tf-wrap">
+        <section class="tf-card">
+            <div class="tf-card-title tf-teal">
+                字符串舞台
+                <span class="tf-chip">长度 <b id="tf_slen">0</b></span>
+                <span class="tf-chip">下标 0 ~ length-1，负数从末尾倒数</span>
+                <span style="margin-left:auto"></span>
+                <input id="tf_sarg" class="tf-arg" type="text" placeholder="自定义参数（如 崔）" />
+                <button id="tf_sreset" class="tf-btn tf-green" type="button">重置字符串</button>
+            </div>
+
+            <div class="tf-str" id="tf_str"></div>
+
+            <div class="tf-legend">
+                <span class="tf-lg tf-lg-add"><i class="tf-dot"></i>新增字符 concat / padStart / repeat</span>
+                <span class="tf-lg tf-lg-out"><i class="tf-dot"></i>删除字符 trim</span>
+                <span class="tf-lg tf-lg-chg"><i class="tf-dot"></i>改写 toUpperCase / replace</span>
+                <span class="tf-lg tf-lg-hit"><i class="tf-dot"></i>命中 charAt / indexOf / includes / slice</span>
+            </div>
+
+            <div class="tf-now" id="tf_snow"></div>
+        </section>
+
+        <aside class="tf-card">
+            <div class="tf-card-title tf-teal">字符串方法（共 <span id="tf_scount">0</span> 个）</div>
+            <div id="tf_spanel" class="tf-spanel"></div>
+        </aside>
+    </main>
+
+    <section class="tf-outwrap">
+        <div class="tf-card">
+            <div class="tf-card-title tf-teal">字符串返回值</div>
+            <div class="tf-resval" id="tf_sresult">—</div>
+            <div class="tf-meta" id="tf_stype">尚未执行任何方法</div>
+        </div>
+        <div class="tf-card">
+            <div class="tf-card-title tf-teal">执行代码</div>
+            <pre class="tf-code" id="tf_scode">// 点击右上角方法按钮开始演示</pre>
+        </div>
+        <div class="tf-card">
+            <div class="tf-card-title tf-teal">操作日志</div>
+            <ul class="tf-log" id="tf_slog"></ul>
+        </div>
+    </section>
+
+    <main class="tf-wrap">
+        <section class="tf-card">
+            <div class="tf-card-title tf-violet">
+                对象舞台
+                <span class="tf-chip">属性 <b id="tf_olen">0</b> 个</span>
+                <span class="tf-chip" id="tf_olock" style="display:none">❄ 已冻结 freeze</span>
+                <span style="margin-left:auto"></span>
+                <input id="tf_oarg" class="tf-arg" type="text" placeholder="自定义属性名/值" />
+                <button id="tf_oreset" class="tf-btn tf-purple" type="button">重置对象</button>
+            </div>
+
+            <div class="tf-objbox">
+                <div class="tf-objline">let tf_obj = {</div>
+                <div class="tf-props" id="tf_obj"></div>
+                <div class="tf-objline" style="margin:12px 0 0">}</div>
+            </div>
+
+            <div class="tf-legend">
+                <span class="tf-lg tf-lg-add"><i class="tf-dot"></i>新增属性 赋值 / assign / 展开</span>
+                <span class="tf-lg tf-lg-out"><i class="tf-dot"></i>删除属性 delete</span>
+                <span class="tf-lg tf-lg-chg"><i class="tf-dot"></i>修改属性值</span>
+                <span class="tf-lg tf-lg-hit"><i class="tf-dot"></i>命中 keys / values / entries / 解构</span>
+            </div>
+
+            <div class="tf-now" id="tf_onow"></div>
+        </section>
+
+        <aside class="tf-card">
+            <div class="tf-card-title tf-violet">对象方法（共 <span id="tf_ocount">0</span> 个）</div>
+            <div id="tf_opanel" class="tf-opanel"></div>
+        </aside>
+    </main>
+
+    <section class="tf-outwrap">
+        <div class="tf-card">
+            <div class="tf-card-title tf-violet">对象返回值</div>
+            <div class="tf-resval tf-violet" id="tf_oresult">—</div>
+            <div class="tf-meta" id="tf_otype">尚未执行任何方法</div>
+        </div>
+        <div class="tf-card">
+            <div class="tf-card-title tf-violet">执行代码</div>
+            <pre class="tf-code" id="tf_ocode">// 点击右上角方法按钮开始演示</pre>
+        </div>
+        <div class="tf-card">
+            <div class="tf-card-title tf-violet">操作日志</div>
+            <ul class="tf-log" id="tf_olog"></ul>
+        </div>
+    </section>
+
+    <footer class="tf-foot">
+        <span>姓名：滕菲 · 《高级网页设计》课堂实践</span>
+        <a href="./1-1.html">返回首页</a>
+    </footer>
+
+    <script>
+        var tf_kindText = { read: '只读取', new: '返回新值', mut: '改自身' };
+
+        function tf_fmt(v) {
+            if (Array.isArray(v)) { return '[' + v.map(tf_fmt).join(', ') + ']'; }
+            if (v && typeof v === 'object') {
+                return '{ ' + Object.keys(v).map(function (k) { return k + ': ' + tf_fmt(v[k]); }).join(', ') + ' }';
+            }
+            if (typeof v === 'string') { return '"' + v + '"'; }
+            if (typeof v === 'boolean') { return v ? 'true' : 'false'; }
+            if (v === undefined) { return 'undefined'; }
+            if (v === null) { return 'null'; }
+            return String(v);
+        }
+
+        function tf_typeOf(v) {
+            if (Array.isArray(v)) { return 'Array，长度 ' + v.length; }
+            if (v && typeof v === 'object') { return 'Object，属性 ' + Object.keys(v).length + ' 个'; }
+            return typeof v;
+        }
+
+        function tf_range(a, b) {
+            var r = [];
+            for (var i = a; i <= b; i++) { r.push(i); }
+            return r;
+        }
+
+        function tf_argOf(arg, def) {
+            return (arg === null || arg === undefined || arg === '') ? def : arg;
+        }
+
+        function tf_copy(o) {
+            var r = {};
+            Object.keys(o).forEach(function (k) { r[k] = o[k]; });
+            return r;
+        }
+
+        /* ========================= 字符串部分 ========================= */
+
+        var tf_sInit = '  Hello 滕菲!';
+        var tf_str = tf_sInit;
+        var tf_sReady = true;
+
+        var tf_sMethods = [
+            {
+                tf_cat: '一、长度与读取（不改变原串）', tf_name: 'length', tf_kind: 'read',
+                tf_note: '字符串的长度属性（不是方法），空格、汉字、标点都各占 1 个长度。',
+                tf_code: 'tf_str.length',
+                tf_run: function (s) { return { tf_ret: s.length, tf_hit: tf_range(0, s.length - 1), tf_stagger: true }; }
+            },
+            {
+                tf_cat: '一、长度与读取（不改变原串）', tf_name: 'charAt', tf_kind: 'read',
+                tf_note: '按下标取一个字符，下标越界返回空字符串 ""。',
+                tf_code: function (a) { return 'tf_str.charAt(' + tf_argOf(a, 3) + ')'; },
+                tf_run: function (s, arg) {
+                    var i = Number(tf_argOf(arg, 3));
+                    return { tf_ret: s.charAt(i), tf_hit: (i >= 0 && i < s.length) ? [i] : [] };
+                }
+            },
+            {
+                tf_cat: '一、长度与读取（不改变原串）', tf_name: 'at', tf_kind: 'read',
+                tf_note: '支持负数下标：at(-1) 取最后一个字符，比 s[s.length-1] 更简洁。',
+                tf_code: 'tf_str.at(-1)',
+                tf_run: function (s) {
+                    var i = s.length - 1;
+                    return { tf_ret: s.charAt(i), tf_hit: i >= 0 ? [i] : [] };
+                }
+            },
+            {
+                tf_cat: '一、长度与读取（不改变原串）', tf_name: 'charCodeAt', tf_kind: 'read',
+                tf_note: '返回指定位置字符的 Unicode 编码，"H" 是 72，常用来做字符判断。',
+                tf_code: 'tf_str.charCodeAt(2)',
+                tf_run: function (s) { return { tf_ret: s.charCodeAt(2), tf_hit: [2] }; }
+            },
+            {
+                tf_cat: '一、长度与读取（不改变原串）', tf_name: '索引读写', tf_kind: 'read',
+                tf_note: '可以用 s[i] 读取字符，但不能用 s[i]="X" 修改——字符串是不可变的。',
+                tf_code: 'tf_str[2]        // 读到 "H"\ntf_str[2] = "X"  // 无效，严格模式会报错',
+                tf_run: function (s) {
+                    return { tf_ret: 's[2] = "' + s.charAt(2) + '"，赋值修改无效（字符串不可变）', tf_hit: [2] };
+                }
+            },
+
+            {
+                tf_cat: '二、查找与判断（只读取）', tf_name: 'indexOf', tf_kind: 'read',
+                tf_note: '查找子串第一次出现的下标，找不到返回 -1。',
+                tf_code: function (a) { return 'tf_str.indexOf("' + tf_argOf(a, '崔') + '")'; },
+                tf_run: function (s, arg) {
+                    var t = String(tf_argOf(arg, '崔'));
+                    var i = s.indexOf(t);
+                    return { tf_ret: i, tf_hit: i > -1 ? tf_range(i, i + t.length - 1) : [] };
+                }
+            },
+            {
+                tf_cat: '二、查找与判断（只读取）', tf_name: 'lastIndexOf', tf_kind: 'read',
+                tf_note: '从后往前查找子串最后一次出现的下标，找不到返回 -1。',
+                tf_code: function (a) { return 'tf_str.lastIndexOf("' + tf_argOf(a, 'l') + '")'; },
+                tf_run: function (s, arg) {
+                    var t = String(tf_argOf(arg, 'l'));
+                    var i = s.lastIndexOf(t);
+                    return { tf_ret: i, tf_hit: i > -1 ? tf_range(i, i + t.length - 1) : [] };
+                }
+            },
+            {
+                tf_cat: '二、查找与判断（只读取）', tf_name: 'includes', tf_kind: 'read',
+                tf_note: '判断是否包含某个子串，返回 true / false，比 indexOf() !== -1 更直观。',
+                tf_code: function (a) { return 'tf_str.includes("' + tf_argOf(a, '滕菲') + '")'; },
+                tf_run: function (s, arg) {
+                    var t = String(tf_argOf(arg, '滕菲'));
+                    var i = s.indexOf(t);
+                    return { tf_ret: i > -1, tf_hit: i > -1 ? tf_range(i, i + t.length - 1) : [] };
+                }
+            },
+            {
+                tf_cat: '二、查找与判断（只读取）', tf_name: 'startsWith', tf_kind: 'read',
+                tf_note: '判断是否以某子串开头，第二个参数可指定从哪个下标开始比较。',
+                tf_code: 'tf_str.startsWith("Hello", 2)',
+                tf_run: function (s) {
+                    var t = 'Hello';
+                    var i = s.indexOf(t);
+                    return { tf_ret: s.startsWith(t, 2), tf_hit: i > -1 ? tf_range(i, i + t.length - 1) : [] };
+                }
+            },
+            {
+                tf_cat: '二、查找与判断（只读取）', tf_name: 'endsWith', tf_kind: 'read',
+                tf_note: '判断是否以某子串结尾，常用来判断文件后缀名。',
+                tf_code: function (a) { return 'tf_str.endsWith("' + tf_argOf(a, '!') + '")'; },
+                tf_run: function (s, arg) {
+                    var t = String(tf_argOf(arg, '!'));
+                    var i = s.lastIndexOf(t);
+                    return { tf_ret: s.endsWith(t), tf_hit: i > -1 ? tf_range(i, i + t.length - 1) : [] };
+                }
+            },
+
+            {
+                tf_cat: '三、截取与拆分（返回新值）', tf_name: 'slice', tf_kind: 'new',
+                tf_note: '截取 [start, end) 区间的子串，支持负数下标，原串不变。',
+                tf_code: 'tf_str.slice(2, 7)',
+                tf_run: function (s) { return { tf_ret: s.slice(2, 7), tf_hit: tf_range(2, 6) }; }
+            },
+            {
+                tf_cat: '三、截取与拆分（返回新值）', tf_name: 'substring', tf_kind: 'new',
+                tf_note: '同样截取 [start, end)，但负数下标会被当成 0，且大数小数会自动交换。',
+                tf_code: 'tf_str.substring(7, 12)',
+                tf_run: function (s) { return { tf_ret: s.substring(7, 12), tf_hit: tf_range(7, Math.min(11, s.length - 1)) }; }
+            },
+            {
+                tf_cat: '三、截取与拆分（返回新值）', tf_name: 'split', tf_kind: 'new',
+                tf_note: '按分隔符把字符串切成数组，是“字符串 → 数组”的桥梁。',
+                tf_code: 'tf_str.trim().split(" ")',
+                tf_run: function (s) {
+                    return { tf_ret: s.trim().split(' '), tf_hit: tf_range(0, s.length - 1), tf_stagger: true };
+                }
+            },
+
+            {
+                tf_cat: '四、变换（返回新串，原串不变）', tf_name: 'toUpperCase', tf_kind: 'new',
+                tf_note: '全部转大写后返回一个新字符串，必须重新赋值才会“改变”。',
+                tf_code: 'tf_str = tf_str.toUpperCase()',
+                tf_run: function (s) { return { tf_ret: s.toUpperCase(), tf_str: s.toUpperCase(), tf_chg: 'all' }; }
+            },
+            {
+                tf_cat: '四、变换（返回新串，原串不变）', tf_name: 'toLowerCase', tf_kind: 'new',
+                tf_note: '全部转小写后返回一个新字符串，常用于忽略大小写的比较。',
+                tf_code: 'tf_str = tf_str.toLowerCase()',
+                tf_run: function (s) { return { tf_ret: s.toLowerCase(), tf_str: s.toLowerCase(), tf_chg: 'all' }; }
+            },
+            {
+                tf_cat: '四、变换（返回新串，原串不变）', tf_name: 'trim', tf_kind: 'new',
+                tf_note: '去掉首尾空白字符（表单输入必用），trimStart / trimEnd 只去掉一头。',
+                tf_code: 'tf_str = tf_str.trim()',
+                tf_run: function (s) {
+                    var lead = s.length - s.replace(/^\s+/, '').length;
+                    var trail = s.length - s.replace(/\s+$/, '').length;
+                    var out = tf_range(0, lead - 1).concat(tf_range(s.length - trail, s.length - 1));
+                    return { tf_ret: s.trim(), tf_str: s.trim(), tf_out: out, tf_hit: tf_range(lead, s.length - trail - 1) };
+                }
+            },
+            {
+                tf_cat: '四、变换（返回新串，原串不变）', tf_name: 'replace', tf_kind: 'new',
+                tf_note: '替换第一个匹配的子串；用正则 /g 或 replaceAll 才能全部替换。',
+                tf_code: 'tf_str = tf_str.replace("滕菲", "同学")',
+                tf_run: function (s) {
+                    var next = s.replace('滕菲', '同学');
+                    var i = s.indexOf('滕菲');
+                    return { tf_ret: next, tf_str: next, tf_chg: 'all', tf_hit: i > -1 ? tf_range(i, i + 2) : [] };
+                }
+            },
+            {
+                tf_cat: '四、变换（返回新串，原串不变）', tf_name: 'replaceAll', tf_kind: 'new',
+                tf_note: '把所有匹配的子串全部替换成新内容。',
+                tf_code: 'tf_str = tf_str.replaceAll("l", "L")',
+                tf_run: function (s) {
+                    var hit = [];
+                    for (var i = 0; i < s.length; i++) { if (s.charAt(i) === 'l') { hit.push(i); } }
+                    var next = s.split('l').join('L');
+                    return { tf_ret: next, tf_str: next, tf_chg: hit };
+                }
+            },
+            {
+                tf_cat: '四、变换（返回新串，原串不变）', tf_name: 'padStart', tf_kind: 'new',
+                tf_note: '在开头补字符到指定长度，常用于编号补零 "7".padStart(3,"0")。',
+                tf_code: 'tf_str = tf_str.padStart(tf_str.length + 3, "★")',
+                tf_run: function (s) {
+                    var next = s.padStart(s.length + 3, '★');
+                    return { tf_ret: next, tf_str: next, tf_add: tf_range(0, 2) };
+                }
+            },
+
+            {
+                tf_cat: '五、拼接与模板', tf_name: 'concat', tf_kind: 'new',
+                tf_note: '把字符串拼接起来返回一个新串，日常更常用 + 号或模板字符串。',
+                tf_code: 'tf_str = tf_str.concat(" —— 2026")',
+                tf_run: function (s) {
+                    var next = s.concat(' —— 2026');
+                    return { tf_ret: next, tf_str: next, tf_add: tf_range(s.length, next.length - 1) };
+                }
+            },
+            {
+                tf_cat: '五、拼接与模板', tf_name: 'repeat', tf_kind: 'new',
+                tf_note: '把字符串重复 n 次生成新串，n 为 0 得到空串。',
+                tf_code: 'tf_str = tf_str.trim().repeat(2)',
+                tf_run: function (s) {
+                    var next = s.trim().repeat(2);
+                    return { tf_ret: next, tf_str: next, tf_chg: 'all' };
+                }
+            },
+            {
+                tf_cat: '五、拼接与模板', tf_name: '模板字符串', tf_kind: 'new',
+                tf_note: '反引号包裹，${} 里可直接写变量或表达式，还能换行，比 + 拼接更好用。',
+                tf_code: '`你好，我是 ${tf_str.trim()}，今年 20 岁`',
+                tf_run: function (s) {
+                    return { tf_ret: '你好，我是 ' + s.trim() + '，今年 20 岁', tf_hit: tf_range(0, s.length - 1), tf_stagger: true };
+                }
+            }
+        ];
+
+        function tf_sRender(fx) {
+            fx = fx || {};
+            var tf_box = document.getElementById('tf_str');
+            tf_box.innerHTML = '';
+
+            for (var i = 0; i < tf_str.length; i++) {
+                var tf_ch = tf_str.charAt(i);
+                var tf_cell = document.createElement('div');
+                tf_cell.className = 'tf-ch';
+                tf_cell.setAttribute('data-cy-id', i);
+                if (tf_ch === ' ') { tf_cell.className += ' tf-space'; }
+                if (fx.tf_add && fx.tf_add.indexOf(i) > -1) { tf_cell.className += ' tf-add'; }
+                if (fx.tf_chg === 'all' || (fx.tf_chg && fx.tf_chg.indexOf(i) > -1)) { tf_cell.className += ' tf-chg'; }
+                if (fx.tf_hit && fx.tf_hit.indexOf(i) > -1) {
+                    tf_cell.className += ' tf-hit';
+                    if (fx.tf_stagger) { tf_cell.style.animationDelay = (i * 0.05) + 's'; }
+                }
+
+                var tf_v = document.createElement('span');
+                tf_v.className = 'tf-chv';
+                tf_v.textContent = tf_ch === ' ' ? '␣' : tf_ch;
+
+                var tf_k = document.createElement('span');
+                tf_k.className = 'tf-chi';
+                tf_k.textContent = '[' + i + ']';
+
+                tf_cell.appendChild(tf_v);
+                tf_cell.appendChild(tf_k);
+                tf_box.appendChild(tf_cell);
+            }
+
+            document.getElementById('tf_slen').textContent = tf_str.length;
+            document.getElementById('tf_snow').textContent = 'tf_str = ' + tf_fmt(tf_str);
+        }
+
+        function tf_sExec(m) {
+            if (!tf_sReady) { return; }
+
+            var tf_raw = document.getElementById('tf_sarg').value.trim();
+            var tf_arg = tf_raw === '' ? null : (isNaN(Number(tf_raw)) ? tf_raw : Number(tf_raw));
+
+            var tf_out = m.tf_run(tf_str, tf_arg) || {};
+            var tf_box = document.getElementById('tf_str');
+
+            Array.prototype.forEach.call(document.querySelectorAll('#tf_spanel .tf-mbtn'), function (b) {
+                b.classList.toggle('tf-on', b.getAttribute('data-cy-name') === m.tf_name);
+            });
+
+            document.getElementById('tf_sresult').textContent = tf_fmt(tf_out.tf_ret);
+            document.getElementById('tf_stype').textContent = '类型：' + tf_typeOf(tf_out.tf_ret) + '　|　' + m.tf_note;
+            document.getElementById('tf_scode').textContent = '// ' + m.tf_note + '\n' +
+                (typeof m.tf_code === 'function' ? m.tf_code(tf_arg) : m.tf_code) + ';';
+
+            tf_sReady = false;
+
+            (tf_out.tf_out || []).forEach(function (i) {
+                var tf_el = tf_box.querySelector('[data-cy-id="' + i + '"]');
+                if (tf_el) { tf_el.classList.add('tf-out'); }
+            });
+
+            setTimeout(function () {
+                if (typeof tf_out.tf_str === 'string') { tf_str = tf_out.tf_str; }
+                tf_sRender(tf_out);
+
+                var tf_li = document.createElement('li');
+                tf_li.innerHTML = '<b>' + m.tf_name + '</b>' +
+                    '<span class="tf-tag tf-' + m.tf_kind + '">' + tf_kindText[m.tf_kind] + '</span>' +
+                    '<span>长度 ' + tf_str.length + '</span>' +
+                    '<em>' + tf_fmt(tf_out.tf_ret) + '</em>';
+                var tf_ul = document.getElementById('tf_slog');
+                tf_ul.insertBefore(tf_li, tf_ul.firstChild);
+                while (tf_ul.children.length > 8) { tf_ul.removeChild(tf_ul.lastChild); }
+
+                tf_sReady = true;
+            }, (tf_out.tf_out || []).length ? 320 : 0);
+        }
+
+        /* ========================= 对象部分 ========================= */
+
+        function tf_oInit() {
+            return { 姓名: '滕菲', 年龄: 20, 专业: '高级网页设计', 城市: '北京' };
+        }
+
+        var tf_obj = tf_oInit();
+        var tf_oFrozen = false;
+        var tf_oReady = true;
+
+        var tf_oMethods = [
+            {
+                tf_cat: '一、属性访问与修改', tf_name: '点号访问', tf_kind: 'read',
+                tf_note: '对象.属性名 取值；属性名不存在时返回 undefined，不会报错。',
+                tf_code: 'tf_obj.姓名',
+                tf_run: function (o) { return { tf_ret: o.姓名, tf_hit: ['姓名'] }; }
+            },
+            {
+                tf_cat: '一、属性访问与修改', tf_name: '中括号访问', tf_kind: 'read',
+                tf_note: '对象["属性名"]，属性名可以是变量或含特殊字符，更灵活。',
+                tf_code: function (a) { return 'tf_obj["' + tf_argOf(a, '年龄') + '"]'; },
+                tf_run: function (o, arg) {
+                    var k = String(tf_argOf(arg, '年龄'));
+                    return { tf_ret: o[k], tf_hit: Object.prototype.hasOwnProperty.call(o, k) ? [k] : [] };
+                }
+            },
+            {
+                tf_cat: '一、属性访问与修改', tf_name: '新增/修改属性', tf_kind: 'mut',
+                tf_note: '给不存在的属性赋值＝新增，给已存在的属性赋值＝修改。',
+                tf_code: function (a) { return 'tf_obj.年级 = "' + tf_argOf(a, '大二') + '"'; },
+                tf_run: function (o, arg) {
+                    var next = tf_copy(o);
+                    next.年级 = String(tf_argOf(arg, '大二'));
+                    return { tf_ret: next.年级, tf_obj: next };
+                }
+            },
+            {
+                tf_cat: '一、属性访问与修改', tf_name: 'delete', tf_kind: 'mut',
+                tf_note: 'delete 对象.属性 删除一个属性，删除成功返回 true。',
+                tf_code: function (a) { return 'delete tf_obj.' + tf_argOf(a, '城市'); },
+                tf_run: function (o, arg) {
+                    var k = String(tf_argOf(arg, '城市'));
+                    var next = tf_copy(o);
+                    var ok = Object.prototype.hasOwnProperty.call(next, k);
+                    delete next[k];
+                    return { tf_ret: ok, tf_obj: next };
+                }
+            },
+            {
+                tf_cat: '一、属性访问与修改', tf_name: '解构赋值', tf_kind: 'read',
+                tf_note: 'const { 姓名, 年龄 } = tf_obj 一次性把属性取成变量，还能起别名、设默认值。',
+                tf_code: 'const { 姓名, 年龄 } = tf_obj',
+                tf_run: function (o) {
+                    return { tf_ret: o.姓名 + ' / ' + o.年龄, tf_hit: ['姓名', '年龄'] };
+                }
+            },
+
+            {
+                tf_cat: '二、遍历与查询', tf_name: 'Object.keys', tf_kind: 'read',
+                tf_note: '把全部属性名取出来组成数组，常配合 forEach / map 使用。',
+                tf_code: 'Object.keys(tf_obj)',
+                tf_run: function (o) { return { tf_ret: Object.keys(o), tf_hit: Object.keys(o), tf_stagger: true }; }
+            },
+            {
+                tf_cat: '二、遍历与查询', tf_name: 'Object.values', tf_kind: 'read',
+                tf_note: '把全部属性值取出来组成数组。',
+                tf_code: 'Object.values(tf_obj)',
+                tf_run: function (o) { return { tf_ret: Object.values(o), tf_hit: Object.keys(o), tf_stagger: true }; }
+            },
+            {
+                tf_cat: '二、遍历与查询', tf_name: 'Object.entries', tf_kind: 'read',
+                tf_note: '把对象转成 [键, 值] 的二维数组，方便用 for...of 遍历。',
+                tf_code: 'Object.entries(tf_obj)',
+                tf_run: function (o) { return { tf_ret: Object.entries(o), tf_hit: Object.keys(o), tf_stagger: true }; }
+            },
+            {
+                tf_cat: '二、遍历与查询', tf_name: 'for...in', tf_kind: 'read',
+                tf_note: '依次取出每个属性名（会沿原型链枚举），对象遍历的经典写法。',
+                tf_code: 'for (let k in tf_obj) { 输出 k + "=" + tf_obj[k] }',
+                tf_run: function (o) {
+                    var out = [];
+                    for (var k in o) { out.push(k + '=' + o[k]); }
+                    return { tf_ret: out.join('，'), tf_hit: Object.keys(o), tf_stagger: true };
+                }
+            },
+            {
+                tf_cat: '二、遍历与查询', tf_name: 'in 运算符', tf_kind: 'read',
+                tf_note: '"属性名" in 对象 判断属性是否存在（含原型链上的属性）。',
+                tf_code: function (a) { return '"' + tf_argOf(a, '姓名') + '" in tf_obj'; },
+                tf_run: function (o, arg) {
+                    var k = String(tf_argOf(arg, '姓名'));
+                    return { tf_ret: k in o, tf_hit: (k in o) ? [k] : [] };
+                }
+            },
+            {
+                tf_cat: '二、遍历与查询', tf_name: 'hasOwnProperty', tf_kind: 'read',
+                tf_note: '只判断属性是不是对象“自己”的，不看原型链。',
+                tf_code: function (a) { return 'tf_obj.hasOwnProperty("' + tf_argOf(a, '姓名') + '")'; },
+                tf_run: function (o, arg) {
+                    var k = String(tf_argOf(arg, '姓名'));
+                    return { tf_ret: Object.prototype.hasOwnProperty.call(o, k), tf_hit: Object.prototype.hasOwnProperty.call(o, k) ? [k] : [] };
+                }
+            },
+
+            {
+                tf_cat: '三、合并、复制与转换', tf_name: 'Object.assign', tf_kind: 'new',
+                tf_note: '把后面的对象合并进第一个参数；第一个参数传 {} 就是浅拷贝。',
+                tf_code: 'tf_obj = Object.assign({}, tf_obj, { 学院: "信息学院" })',
+                tf_run: function (o) {
+                    var next = Object.assign({}, o, { 学院: '信息学院' });
+                    return { tf_ret: next, tf_obj: next };
+                }
+            },
+            {
+                tf_cat: '三、合并、复制与转换', tf_name: '展开运算符', tf_kind: 'new',
+                tf_note: '{ ...对象, 新属性 } 复制并覆盖属性，是现在最推荐的合并写法。',
+                tf_code: 'tf_obj = { ...tf_obj, 学号: "2024001" }',
+                tf_run: function (o) {
+                    var next = Object.assign({}, o, { 学号: '2024001' });
+                    return { tf_ret: next, tf_obj: next };
+                }
+            },
+            {
+                tf_cat: '三、合并、复制与转换', tf_name: 'Object.fromEntries', tf_kind: 'new',
+                tf_note: 'entries 的逆操作：把 [键, 值] 数组还原成对象。',
+                tf_code: 'tf_obj = Object.fromEntries(Object.entries(tf_obj))',
+                tf_run: function (o) {
+                    return { tf_ret: Object.fromEntries(Object.entries(o)), tf_obj: Object.fromEntries(Object.entries(o)) };
+                }
+            },
+            {
+                tf_cat: '三、合并、复制与转换', tf_name: 'JSON.stringify', tf_kind: 'new',
+                tf_note: '对象 → JSON 字符串（序列化），用于 localStorage 存储或接口提交。',
+                tf_code: 'JSON.stringify(tf_obj)',
+                tf_run: function (o) { return { tf_ret: JSON.stringify(o), tf_hit: Object.keys(o), tf_stagger: true }; }
+            },
+            {
+                tf_cat: '三、合并、复制与转换', tf_name: 'JSON.parse', tf_kind: 'new',
+                tf_note: 'JSON 字符串 → 对象（反序列化），字符串必须是标准双引号 JSON。',
+                tf_code: 'tf_obj = JSON.parse(JSON.stringify(tf_obj))',
+                tf_run: function (o) {
+                    var next = JSON.parse(JSON.stringify(o));
+                    return { tf_ret: next, tf_obj: next, tf_hit: Object.keys(next), tf_stagger: true };
+                }
+            },
+
+            {
+                tf_cat: '四、对象保护', tf_name: 'Object.freeze', tf_kind: 'mut',
+                tf_note: '冻结对象：不能新增、删除、修改属性（严格模式下修改会报错）。',
+                tf_code: 'Object.freeze(tf_obj)',
+                tf_run: function (o) {
+                    tf_oFrozen = true;
+                    return { tf_ret: '对象已冻结，共 ' + Object.keys(o).length + ' 个属性', tf_hit: Object.keys(o), tf_stagger: true };
+                }
+            },
+            {
+                tf_cat: '四、对象保护', tf_name: '冻结后修改测试', tf_kind: 'mut',
+                tf_note: '先执行 Object.freeze，再执行本方法，可以看到修改“无效”的效果。',
+                tf_code: 'tf_obj.姓名 = "滕菲"   // 冻结后赋值静默失败',
+                tf_run: function (o) {
+                    if (tf_oFrozen) {
+                        return { tf_ret: '修改失败：对象已被 freeze 冻结，姓名仍为 ' + o.姓名, tf_hit: ['姓名'] };
+                    }
+                    var next = tf_copy(o);
+                    next.姓名 = '滕菲';
+                    return { tf_ret: '修改成功，姓名 = ' + next.姓名, tf_obj: next };
+                }
+            }
+        ];
+
+        function tf_oRender(fx) {
+            fx = fx || {};
+            var tf_box = document.getElementById('tf_obj');
+            tf_box.innerHTML = '';
+            var tf_keys = Object.keys(tf_obj);
+
+            if (!tf_keys.length) {
+                var tf_empty = document.createElement('div');
+                tf_empty.className = 'tf-objline';
+                tf_empty.textContent = '　// 空对象，没有任何属性';
+                tf_box.appendChild(tf_empty);
+            }
+
+            tf_keys.forEach(function (k) {
+                var tf_row = document.createElement('div');
+                tf_row.className = 'tf-prop';
+                if (fx.tf_add && fx.tf_add.indexOf(k) > -1) { tf_row.className += ' tf-add'; }
+                if (fx.tf_chg && fx.tf_chg.indexOf(k) > -1) { tf_row.className += ' tf-chg'; }
+                if (fx.tf_hit && fx.tf_hit.indexOf(k) > -1) {
+                    tf_row.className += ' tf-hit';
+                    if (fx.tf_stagger) { tf_row.style.animationDelay = (Object.keys(tf_obj).indexOf(k) * 0.07) + 's'; }
+                }
+
+                var tf_k = document.createElement('span');
+                tf_k.className = 'tf-pkey';
+                tf_k.textContent = k;
+
+                var tf_a = document.createElement('span');
+                tf_a.className = 'tf-parrow';
+                tf_a.textContent = ':';
+
+                var tf_v = document.createElement('span');
+                tf_v.className = 'tf-pval';
+                tf_v.textContent = tf_fmt(tf_obj[k]);
+
+                var tf_t = document.createElement('span');
+                tf_t.className = 'tf-ptype';
+                tf_t.textContent = tf_typeOf(tf_obj[k]);
+
+                tf_row.appendChild(tf_k);
+                tf_row.appendChild(tf_a);
+                tf_row.appendChild(tf_v);
+                tf_row.appendChild(tf_t);
+                tf_box.appendChild(tf_row);
+            });
+
+            document.getElementById('tf_olen').textContent = tf_keys.length;
+            document.getElementById('tf_olock').style.display = tf_oFrozen ? '' : 'none';
+            document.getElementById('tf_onow').textContent = 'tf_obj = ' + tf_fmt(tf_obj);
+        }
+
+        function tf_oExec(m) {
+            if (!tf_oReady) { return; }
+
+            var tf_raw = document.getElementById('tf_oarg').value.trim();
+            var tf_arg = tf_raw === '' ? null : tf_raw;
+
+            var tf_out = m.tf_run(tf_obj, tf_arg) || {};
+            var tf_next = tf_out.tf_obj || tf_obj;
+            var tf_prev = tf_obj;
+
+            Array.prototype.forEach.call(document.querySelectorAll('#tf_opanel .tf-mbtn'), function (b) {
+                b.classList.toggle('tf-on', b.getAttribute('data-cy-name') === m.tf_name);
+            });
+
+            document.getElementById('tf_oresult').textContent = tf_fmt(tf_out.tf_ret);
+            document.getElementById('tf_otype').textContent = '类型：' + tf_typeOf(tf_out.tf_ret) + '　|　' + m.tf_note;
+            document.getElementById('tf_ocode').textContent = '// ' + m.tf_note + '\n' +
+                (typeof m.tf_code === 'function' ? m.tf_code(tf_arg) : m.tf_code) + ';';
+
+            var tf_add = Object.keys(tf_next).filter(function (k) { return !(k in tf_prev); });
+            var tf_gone = Object.keys(tf_prev).filter(function (k) { return !(k in tf_next); });
+            var tf_chg = Object.keys(tf_next).filter(function (k) {
+                return (k in tf_prev) && JSON.stringify(tf_prev[k]) !== JSON.stringify(tf_next[k]);
+            });
+
+            tf_oReady = false;
+
+            tf_gone.forEach(function (k) {
+                Array.prototype.forEach.call(document.querySelectorAll('#tf_obj .tf-prop'), function (el) {
+                    if (el.querySelector('.tf-pkey').textContent === k) { el.classList.add('tf-out'); }
+                });
+            });
+
+            setTimeout(function () {
+                tf_obj = tf_next;
+                tf_oRender({ tf_add: tf_add, tf_chg: tf_chg, tf_hit: tf_out.tf_hit, tf_stagger: tf_out.tf_stagger });
+
+                var tf_li = document.createElement('li');
+                tf_li.innerHTML = '<b>' + m.tf_name + '</b>' +
+                    '<span class="tf-tag tf-' + m.tf_kind + '">' + tf_kindText[m.tf_kind] + '</span>' +
+                    '<span>属性 ' + Object.keys(tf_obj).length + ' 个</span>' +
+                    '<em>' + tf_fmt(tf_out.tf_ret) + '</em>';
+                var tf_ul = document.getElementById('tf_olog');
+                tf_ul.insertBefore(tf_li, tf_ul.firstChild);
+                while (tf_ul.children.length > 8) { tf_ul.removeChild(tf_ul.lastChild); }
+
+                tf_oReady = true;
+            }, tf_gone.length ? 320 : 0);
+        }
+
+        /* ========================= 构建与事件 ========================= */
+
+        function tf_build(panelId, methods, handler) {
+            var tf_panel = document.getElementById(panelId);
+            var tf_order = [];
+            var tf_map = {};
+
+            methods.forEach(function (m) {
+                if (!tf_map[m.tf_cat]) {
+                    tf_map[m.tf_cat] = [];
+                    tf_order.push(m.tf_cat);
+                }
+                tf_map[m.tf_cat].push(m);
+            });
+
+            tf_order.forEach(function (cat) {
+                var tf_g = document.createElement('div');
+                tf_g.className = 'tf-group';
+
+                var tf_t = document.createElement('div');
+                tf_t.className = 'tf-group-title';
+                tf_t.textContent = cat;
+                tf_g.appendChild(tf_t);
+
+                tf_map[cat].forEach(function (m) {
+                    var tf_b = document.createElement('button');
+                    tf_b.type = 'button';
+                    tf_b.className = 'tf-mbtn';
+                    tf_b.setAttribute('data-cy-name', m.tf_name);
+                    tf_b.innerHTML = '<span class="tf-mname">' + m.tf_name + '</span>' +
+                        '<span class="tf-mdesc">' + m.tf_note.split('；')[0].split('，')[0] + '</span>' +
+                        '<span class="tf-tag tf-' + m.tf_kind + '">' + tf_kindText[m.tf_kind] + '</span>';
+                    tf_b.addEventListener('click', function () { handler(m); });
+                    tf_g.appendChild(tf_b);
+                });
+
+                tf_panel.appendChild(tf_g);
+            });
+        }
+
+        document.getElementById('tf_sreset').addEventListener('click', function () {
+            if (!tf_sReady) { return; }
+            tf_str = tf_sInit;
+            tf_sRender();
+            document.getElementById('tf_slog').innerHTML = '';
+            document.getElementById('tf_sresult').textContent = '—';
+            document.getElementById('tf_stype').textContent = '字符串已重置';
+            document.getElementById('tf_scode').textContent = '// 点击右上角方法按钮开始演示';
+            Array.prototype.forEach.call(document.querySelectorAll('#tf_spanel .tf-mbtn'), function (b) {
+                b.classList.remove('tf-on');
+            });
+        });
+
+        document.getElementById('tf_oreset').addEventListener('click', function () {
+            if (!tf_oReady) { return; }
+            tf_obj = tf_oInit();
+            tf_oFrozen = false;
+            tf_oRender();
+            document.getElementById('tf_olog').innerHTML = '';
+            document.getElementById('tf_oresult').textContent = '—';
+            document.getElementById('tf_otype').textContent = '对象已重置';
+            document.getElementById('tf_ocode').textContent = '// 点击右上角方法按钮开始演示';
+            Array.prototype.forEach.call(document.querySelectorAll('#tf_opanel .tf-mbtn'), function (b) {
+                b.classList.remove('tf-on');
+            });
+        });
+
+        tf_build('tf_spanel', tf_sMethods, tf_sExec);
+        tf_build('tf_opanel', tf_oMethods, tf_oExec);
+        document.getElementById('tf_scount').textContent = tf_sMethods.length;
+        document.getElementById('tf_ocount').textContent = tf_oMethods.length;
+        tf_sRender();
+        tf_oRender();
+    </script>
+</body>
+</html>

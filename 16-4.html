@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- 姓名：滕菲，日期：2026-10-29，功能名称：新闻点击排行列表 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>16-4 点击排行</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: #f4f6f9;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 40px 16px;
+        }
+        .tf-page {
+            width: 100%;
+            max-width: 320px;
+            background: #ffffff;
+            border-radius: 6px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .tf-title {
+            padding: 14px 16px 8px;
+            font-size: 15px;
+            color: #222;
+            font-weight: 600;
+        }
+        .tf-tabs {
+            display: flex;
+            padding: 4px 16px 0;
+            gap: 10px;
+        }
+        .tf-tab {
+            font-size: 13px;
+            color: #999;
+            padding: 6px 16px;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.15s;
+            border-radius: 4px;
+        }
+        .tf-tab.tf-active {
+            color: #fff;
+            font-weight: 600;
+            background: #ff4d4f;
+        }
+        .tf-tab.tf-active::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: -9px;
+            width: 0;
+            height: 0;
+            border-left: 7px solid transparent;
+            border-right: 7px solid transparent;
+            border-top: 9px solid #ff4d4f;
+        }
+        .tf-list { padding: 14px 0 2px; }
+        .tf-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            cursor: pointer;
+        }
+        .tf-num {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #d9d9d9;
+            border-radius: 2px;
+            font-size: 11px;
+            color: #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-weight: 600;
+        }
+        .tf-item:nth-child(1) .tf-num {
+            background: #ff4d4f;
+            border-color: #ff4d4f;
+            color: #fff;
+        }
+        .tf-item:nth-child(2) .tf-num {
+            background: #ff7a45;
+            border-color: #ff7a45;
+            color: #fff;
+        }
+        .tf-item:nth-child(3) .tf-num {
+            background: #ffa940;
+            border-color: #ffa940;
+            color: #fff;
+        }
+        .tf-title-text {
+            flex: 1;
+            font-size: 13px;
+            color: #666;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .tf-count {
+            font-size: 12px;
+            color: #999;
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+        }
+    </style>
+</head>
+<body>
+    <div class="tf-page">
+        <div class="tf-title">点击排行</div>
+
+        <div class="tf-tabs">
+            <div class="tf-tab" data-target="tf-realtime">实时点击</div>
+            <div class="tf-tab tf-active" data-target="tf-24h">24小时排行</div>
+        </div>
+
+        <div class="tf-list" id="tf-24h">
+            <div class="tf-item"><span class="tf-num">1</span><span class="tf-title-text">灯塔水母：地球上唯一不死生物</span><span class="tf-count">356322</span></div>
+            <div class="tf-item"><span class="tf-num">2</span><span class="tf-title-text">阿里巴巴全资收购UC 俞永福称U</span><span class="tf-count">311246</span></div>
+            <div class="tf-item"><span class="tf-num">3</span><span class="tf-title-text">亚马逊惊现三米长巨滑舌鱼用肺</span><span class="tf-count">295883</span></div>
+            <div class="tf-item"><span class="tf-num">4</span><span class="tf-title-text">奉化男子上山抓野味 遭遇覆颈窝</span><span class="tf-count">286061</span></div>
+            <div class="tf-item"><span class="tf-num">5</span><span class="tf-title-text">大白鲨深海失踪 或被大型生物</span><span class="tf-count">243936</span></div>
+            <div class="tf-item"><span class="tf-num">6</span><span class="tf-title-text">南非小牛目睹母亲被猎杀不肯离</span><span class="tf-count">224346</span></div>
+            <div class="tf-item"><span class="tf-num">7</span><span class="tf-title-text">余额宝周岁：收益率"过山车"</span><span class="tf-count">172694</span></div>
+            <div class="tf-item"><span class="tf-num">8</span><span class="tf-title-text">"尸油入餐桌"纯属无稽之谈</span><span class="tf-count">128789</span></div>
+        </div>
+
+        <div class="tf-list" id="tf-realtime" style="display:none">
+            <div class="tf-item"><span class="tf-num">1</span><span class="tf-title-text">我国成功发射新一代通信卫星</span><span class="tf-count">15820</span></div>
+            <div class="tf-item"><span class="tf-num">2</span><span class="tf-title-text">多地气温骤降 局地降温超10℃</span><span class="tf-count">12346</span></div>
+            <div class="tf-item"><span class="tf-num">3</span><span class="tf-title-text">国产大飞机C919再获新订单</span><span class="tf-count">9872</span></div>
+            <div class="tf-item"><span class="tf-num">4</span><span class="tf-title-text">知名导演新片上映首日票房破亿</span><span class="tf-count">8215</span></div>
+            <div class="tf-item"><span class="tf-num">5</span><span class="tf-title-text">新能源汽车销量再创新高</span><span class="tf-count">7103</span></div>
+            <div class="tf-item"><span class="tf-num">6</span><span class="tf-title-text">科学家发现新型超导材料</span><span class="tf-count">5924</span></div>
+            <div class="tf-item"><span class="tf-num">7</span><span class="tf-title-text">故宫博物院推出数字文物展</span><span class="tf-count">4681</span></div>
+            <div class="tf-item"><span class="tf-num">8</span><span class="tf-title-text">全国铁路今日起实行新运行图</span><span class="tf-count">3526</span></div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var tfTabs = document.querySelectorAll(".tf-tab");
+            tfTabs.forEach(function (tab) {
+                tab.addEventListener("click", function () {
+                    var tfTarget = tab.getAttribute("data-target");
+                    tfTabs.forEach(function (t) { t.classList.remove("tf-active"); });
+                    document.querySelectorAll(".tf-list").forEach(function (p) { p.style.display = "none"; });
+                    tab.classList.add("tf-active");
+                    document.getElementById(tfTarget).style.display = "block";
+                });
+            });
+        })();
+    </script>
+</body>
+</html>

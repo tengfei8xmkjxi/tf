@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- 姓名：滕菲，日期：2026-10-29，功能名称：携程旅行 App 垂直导航栏复刻 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>16-3 携程旅行垂直导航</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: #f4f6f9;
+            color: #22304a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 40px 16px;
+        }
+        .tf-page {
+            width: 100%;
+            max-width: 280px;
+            background: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.07);
+            overflow: hidden;
+        }
+        .tf-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        .tf-item:last-child {
+            border-bottom: none;
+        }
+        .tf-item:active {
+            background: #f5f8fb;
+        }
+        .tf-icon {
+            width: 24px;
+            height: 24px;
+            fill: #1fa0e0;
+            flex-shrink: 0;
+        }
+        .tf-label {
+            font-size: 15px;
+            color: #1a1a1a;
+            letter-spacing: 0.5px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="tf-page">
+        <div class="tf-item">
+            <svg class="tf-icon" viewBox="0 0 24 24">
+                <path d="M12 3.5L2 12h3v8h14v-8h3L12 3.5zM10 20v-6h4v6h-4z"/>
+            </svg>
+            <span class="tf-label">酒店</span>
+        </div>
+        <div class="tf-item">
+            <svg class="tf-icon" viewBox="0 0 24 24">
+                <path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 00-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+            </svg>
+            <span class="tf-label">机票</span>
+        </div>
+        <div class="tf-item">
+            <svg class="tf-icon" viewBox="0 0 24 24">
+                <path d="M12 2C8 2 4 2.5 4 6v9.5c0 1.93 1.57 3.5 3.5 3.5L6 21v1h2l2-2h4l2 2h2v-1l-1.5-2c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-4-4-8-4zm-3 16a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm6 0a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm3-8H6V6h12v4z"/>
+            </svg>
+            <span class="tf-label">火车票</span>
+        </div>
+        <div class="tf-item">
+            <svg class="tf-icon" viewBox="0 0 24 24">
+                <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm7.93 9h-3.17a15.66 15.66 0 00-1.36-5.32A8 8 0 0119.93 11zM12 4.07A13 13 0 0113.79 11h-3.58A13 13 0 0112 4.07zM4.07 13h3.17a15.66 15.66 0 001.36 5.32A8 8 0 014.07 13zm0-2a8 8 0 014.53-5.68A15.66 15.66 0 007.24 11H4.07zM12 19.93A13 13 0 0110.21 13h3.58A13 13 0 0112 19.93zm3.47-1.61A15.66 15.66 0 0016.76 13h3.17a8 8 0 01-4.46 5.32z"/>
+            </svg>
+            <span class="tf-label">旅游</span>
+        </div>
+        <div class="tf-item">
+            <svg class="tf-icon" viewBox="0 0 24 24">
+                <path d="M20.25 2.5H3.75A1.25 1.25 0 002.5 3.75v2.5a.75.75 0 00.75.75A1.25 1.25 0 014.5 8.25a.75.75 0 00-.75.75v2.5a1.25 1.25 0 001.25 1.25 1.25 1.25 0 010 2.5.75.75 0 00-.75.75v2.5a1.25 1.25 0 001.25 1.25h16.5a1.25 1.25 0 001.25-1.25v-2.5a.75.75 0 00-.75-.75 1.25 1.25 0 010-2.5 1.25 1.25 0 001.25-1.25v-2.5a.75.75 0 00-.75-.75 1.25 1.25 0 010-2.5.75.75 0 00.75-.75v-2.5A1.25 1.25 0 0020.25 2.5z"/>
+            </svg>
+            <span class="tf-label">门票 · 活动</span>
+        </div>
+        <div class="tf-item">
+            <svg class="tf-icon" viewBox="0 0 24 24">
+                <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+            </svg>
+            <span class="tf-label">汽车 · 船票</span>
+        </div>
+        <div class="tf-item">
+            <svg class="tf-icon" viewBox="0 0 24 24">
+                <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+            </svg>
+            <span class="tf-label">用车</span>
+        </div>
+    </div>
+</body>
+</html>

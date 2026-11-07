@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>12-1 CSS变量</title>
+<style>
+    :root {
+        /* 全局 CSS 变量（自定义属性） */
+        --cui-main-color: #2c7fb8;
+        --cui-bg-color: #f0f6fa;
+        --cui-text-color: #333333;
+        --cui-radius: 10px;
+        --cui-shadow: 0 4px 12px rgba(44, 127, 184, 0.25);
+        --cui-font-size: 16px;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: "Microsoft YaHei", sans-serif;
+        background-color: var(--cui-bg-color);
+        color: var(--cui-text-color);
+        font-size: var(--cui-font-size);
+        line-height: 1.8;
+        padding: 40px 20px;
+    }
+
+    .cui-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .cui-title {
+        text-align: center;
+        color: var(--cui-main-color);
+        margin-bottom: 10px;
+    }
+
+    .cui-subtitle {
+        text-align: center;
+        color: #888888;
+        margin-bottom: 30px;
+    }
+
+    /* 普通元素中定义局部变量，只在该元素及其子元素生效 */
+    .cui-card {
+        --cui-main-color: #e67e22;   /* 覆盖局部颜色变量（橙色主题） */
+        --cui-shadow: 0 4px 12px rgba(230, 126, 34, 0.25);
+        background-color: #ffffff;
+        border-radius: var(--cui-radius);
+        box-shadow: var(--cui-shadow);
+        padding: 24px;
+        margin-bottom: 24px;
+        border-top: 5px solid var(--cui-main-color);
+    }
+
+    .cui-card-title {
+        color: var(--cui-main-color);
+        margin-bottom: 12px;
+        font-size: 20px;
+    }
+
+    .cui-code {
+        background-color: #282c34;
+        color: #98c379;
+        font-family: Consolas, monospace;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .cui-demo-box {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-top: 12px;
+    }
+
+    .cui-swatch {
+        width: 120px;
+        height: 80px;
+        border-radius: var(--cui-radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 14px;
+    }
+
+    .cui-swatch-a {
+        background-color: var(--cui-main-color);
+    }
+
+    .cui-swatch-b {
+        background-color: var(--cui-color-green, #27ae60); /* 带后备值的变量 */
+    }
+
+    .cui-swatch-c {
+        background-color: var(--cui-color-purple, #8e44ad);
+    }
+
+    .cui-name {
+        color: var(--cui-main-color);
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .cui-name-box {
+        background-color: var(--cui-bg-color);
+        border: 2px dashed var(--cui-main-color);
+        border-radius: var(--cui-radius);
+        padding: 16px;
+        margin-top: 12px;
+    }
+</style>
+</head>
+<body>
+    <div class="cui-container">
+        <h1 class="cui-title">CSS 变量（自定义属性）演示</h1>
+        <p class="cui-subtitle">制作者：滕菲</p>
+
+        <div class="cui-card">
+            <h2 class="cui-card-title">1. 在 :root 中定义全局变量</h2>
+            <p>变量必须以 <span class="cui-code">--</span> 开头，通过 <span class="cui-code">var()</span> 使用：</p>
+            <p><span class="cui-code">:root { --cui-main-color: #2c7fb8; }</span></p>
+            <div class="cui-demo-box">
+                <div class="cui-swatch cui-swatch-a">var()</div>
+                <div class="cui-swatch cui-swatch-b">后备值</div>
+                <div class="cui-swatch cui-swatch-c">后备值</div>
+            </div>
+        </div>
+
+        <div class="cui-card">
+            <h2 class="cui-card-title">2. 后备值（fallback）</h2>
+            <p>当变量未定义时，使用 <span class="cui-code">var(--未定义变量, 备用值)</span> 中的备用值：</p>
+            <p><span class="cui-code">var(--cui-color-green, #27ae60)</span> 上方绿色色块即为后备值效果。</p>
+        </div>
+
+        <div class="cui-card">
+            <h2 class="cui-card-title">3. 局部作用域覆盖</h2>
+            <p>本卡片内部将 <span class="cui-code">--cui-main-color</span> 覆盖为橙色，只影响卡片内部元素：</p>
+            <p>我的名字是：<span class="cui-name">滕菲</span></p>
+            <div class="cui-name-box">
+                <p>这个虚线边框的盒子也使用了局部变量 <span class="cui-code">var(--cui-main-color)</span>，所以是橙色的。</p>
+            </div>
+        </div>
+
+        <p style="text-align:center; margin-top:30px;">
+            <a href="./1-1.html" style="color:var(--cui-main-color);">返回首页</a>
+        </p>
+    </div>
+</body>
+</html>

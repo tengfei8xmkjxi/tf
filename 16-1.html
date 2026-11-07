@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- 姓名：滕菲，日期：2026-10-29，功能名称：JavaScript 主要数组方法可视化演示 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>16-1 JavaScript 数组方法可视化</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0 0 46px;
+            min-height: 100vh;
+            color: #22304a;
+            font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
+            background:
+                radial-gradient(1100px 560px at 10% -12%, #dde8ff 0%, transparent 60%),
+                radial-gradient(880px 480px at 100% 0%, #f1e5ff 0%, transparent 58%),
+                linear-gradient(180deg, #f8faff 0%, #f4f6fb 100%);
+        }
+
+        code, pre, .tf-mono { font-family: Consolas, "Courier New", monospace; }
+
+        .tf-head {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 26px 18px 6px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .tf-title {
+            margin: 0;
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #3b5bdb, #7048e8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .tf-sub { margin-top: 8px; font-size: 14px; color: #6b7894; line-height: 1.7; }
+
+        .tf-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+        .tf-btn {
+            border: 1px solid #d5def7;
+            background: #fff;
+            color: #2f49a5;
+            font-family: inherit;
+            font-size: 14px;
+            padding: 9px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all .18s ease;
+        }
+
+        .tf-btn:hover { border-color: #3b5bdb; box-shadow: 0 6px 16px rgba(59, 91, 219, .16); transform: translateY(-1px); }
+
+        .tf-btn.tf-primary {
+            background: linear-gradient(135deg, #4263eb, #7048e8);
+            border-color: transparent;
+            color: #fff;
+        }
+
+        .tf-home { text-decoration: none; }
+
+        .tf-wrap {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 10px 18px 0;
+            display: grid;
+            grid-template-columns: minmax(0, 1.55fr) minmax(300px, .95fr);
+            gap: 18px;
+            align-items: start;
+        }
+
+        .tf-card {
+            background: #fff;
+            border: 1px solid #e6ecfb;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(48, 72, 140, .07);
+            padding: 18px;
+        }
+
+        .tf-card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #2f3f63;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tf-card-title::before {
+            content: "";
+            width: 4px;
+            height: 16px;
+            border-radius: 3px;
+            background: linear-gradient(180deg, #4263eb, #7048e8);
+        }
+
+        .tf-stage-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .tf-chip {
+            font-size: 12px;
+            color: #5a6b91;
+            background: #f2f5ff;
+            border: 1px solid #e0e7fb;
+            padding: 4px 10px;
+            border-radius: 999px;
+        }
+
+        .tf-arg {
+            width: 190px;
+            padding: 8px 12px;
+            border: 1px solid #dbe3f8;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 13px;
+            color: #2f3f63;
+            outline: none;
+        }
+
+        .tf-arg:focus { border-color: #4263eb; box-shadow: 0 0 0 3px rgba(66, 99, 235, .14); }
+
+        .tf-arr {
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 24px 14px;
+            min-height: 122px;
+            padding: 20px 16px 16px;
+            border-radius: 14px;
+            border: 1px dashed #ccd7f5;
+            background: linear-gradient(180deg, #fbfcff, #f1f5fd);
+        }
+
+        .tf-cell {
+            position: relative;
+            width: 76px;
+            height: 76px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            background: linear-gradient(180deg, #ffffff, #ecf2ff);
+            border: 1px solid #d7e0fb;
+            box-shadow: 0 6px 14px rgba(60, 90, 180, .10);
+        }
+
+        .tf-val { font-size: 21px; font-weight: 800; color: #2f49a5; font-family: Consolas, monospace; }
+        .tf-idx { font-size: 11px; color: #8a97b8; font-family: Consolas, monospace; }
+        .tf-cell.tf-nest { border-style: dashed; border-color: #b9a6f0; background: linear-gradient(180deg, #fbf9ff, #f2ecff); }
+        .tf-cell.tf-nest .tf-val { color: #7048e8; font-size: 18px; }
+
+        .tf-cell.tf-add { background: linear-gradient(180deg, #eafaf1, #d7f4e5); border-color: #86dcb4; animation: tfPop .55s cubic-bezier(.2, .9, .25, 1.2) both; }
+        .tf-cell.tf-chg { background: linear-gradient(180deg, #fff8e8, #ffefd2); border-color: #f5b64a; animation: tfChg .6s ease both; }
+        .tf-cell.tf-hit { background: linear-gradient(180deg, #fff3e9, #ffe6d4); border-color: #f08c3c; animation: tfHit .9s ease both; }
+        .tf-cell.tf-move { box-shadow: 0 0 0 3px rgba(66, 99, 235, .22), 0 6px 14px rgba(60, 90, 180, .12); }
+        .tf-cell.tf-out { animation: tfOut .32s ease forwards; background: linear-gradient(180deg, #ffeef1, #ffdde3); border-color: #f783ac; }
+
+        @keyframes tfPop { 0% { transform: scale(.35); opacity: 0; } 65% { transform: scale(1.14); } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes tfChg { 0% { transform: scale(1); } 40% { transform: scale(1.18) rotate(-3deg); } 100% { transform: scale(1); } }
+        @keyframes tfHit { 0% { transform: translateY(0); } 30% { transform: translateY(-10px); } 60% { transform: translateY(0); } 100% { transform: translateY(0); } }
+        @keyframes tfOut { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(.45) translateY(14px); opacity: 0; } }
+
+        .tf-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+        .tf-lg { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #6b7894; }
+        .tf-dot { width: 12px; height: 12px; border-radius: 4px; border: 1px solid; }
+        .tf-lg-add .tf-dot { background: #d7f4e5; border-color: #86dcb4; }
+        .tf-lg-out .tf-dot { background: #ffdde3; border-color: #f783ac; }
+        .tf-lg-chg .tf-dot { background: #ffefd2; border-color: #f5b64a; }
+        .tf-lg-hit .tf-dot { background: #ffe6d4; border-color: #f08c3c; }
+        .tf-lg-move .tf-dot { background: #e7ecfd; border-color: #4263eb; }
+
+        .tf-now {
+            margin-top: 14px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            background: #f7f9ff;
+            border: 1px solid #e6ecfb;
+            font-family: Consolas, monospace;
+            font-size: 14px;
+            color: #364a86;
+            word-break: break-all;
+        }
+
+        .tf-group + .tf-group { margin-top: 16px; }
+
+        .tf-group-title {
+            font-size: 12px;
+            letter-spacing: 1px;
+            color: #7c89a8;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tf-group-title::after { content: ""; flex: 1; height: 1px; background: #e8eefb; }
+
+        .tf-mbtn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-align: left;
+            font-family: inherit;
+            border: 1px solid #e6ecfb;
+            background: #fbfcff;
+            border-radius: 12px;
+            padding: 9px 12px;
+            margin-bottom: 7px;
+            cursor: pointer;
+            transition: all .18s ease;
+        }
+
+        .tf-mbtn:hover { border-color: #b9c8f5; background: #f2f6ff; transform: translateX(3px); }
+        .tf-mbtn.tf-on { border-color: #4263eb; background: #edf2ff; box-shadow: 0 0 0 3px rgba(66, 99, 235, .12); }
+
+        .tf-mname { font-family: Consolas, monospace; font-weight: 700; font-size: 14px; color: #2f49a5; }
+        .tf-mdesc { flex: 1; font-size: 12px; color: #7b88a6; }
+
+        .tf-tag { font-size: 10px; padding: 2px 7px; border-radius: 999px; white-space: nowrap; }
+        .tf-tag.tf-mut { background: #ffecf0; color: #d6336c; }
+        .tf-tag.tf-new { background: #e6fcf5; color: #0ca678; }
+        .tf-tag.tf-read { background: #eef2ff; color: #3b5bdb; }
+
+        .tf-outwrap {
+            max-width: 1180px;
+            margin: 18px auto 0;
+            padding: 0 18px;
+            display: grid;
+            grid-template-columns: .85fr 1.15fr 1fr;
+            gap: 18px;
+            align-items: start;
+        }
+
+        .tf-resval {
+            font-family: Consolas, monospace;
+            font-size: 18px;
+            font-weight: 700;
+            color: #7048e8;
+            word-break: break-all;
+            min-height: 30px;
+            line-height: 1.5;
+        }
+
+        .tf-meta { margin-top: 8px; font-size: 12px; color: #8a97b8; }
+
+        .tf-code {
+            margin: 0;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: #1f2a44;
+            color: #e7ecff;
+            font-family: Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .tf-desc { margin-top: 10px; font-size: 13px; color: #5f6d90; line-height: 1.8; }
+
+        .tf-log { list-style: none; margin: 0; padding: 0; max-height: 250px; overflow: auto; }
+
+        .tf-log li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 4px;
+            border-bottom: 1px dashed #e8eefb;
+            font-size: 12px;
+        }
+
+        .tf-log li b { font-family: Consolas, monospace; color: #2f49a5; font-size: 13px; }
+        .tf-log li em { margin-left: auto; font-style: normal; font-family: Consolas, monospace; color: #7048e8; text-align: right; }
+        .tf-log li span { color: #8a97b8; }
+
+        .tf-foot { max-width: 1180px; margin: 22px auto 0; padding: 0 18px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; color: #7c89a8; font-size: 13px; }
+        .tf-foot a { color: #4263eb; text-decoration: none; font-weight: 700; }
+
+        @media (max-width: 980px) {
+            .tf-wrap, .tf-outwrap { grid-template-columns: minmax(0, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <header class="tf-head">
+        <div>
+            <h1 class="tf-title">16-1 JavaScript 数组方法可视化</h1>
+            <div class="tf-sub">
+                点击右侧方法按钮，观察下方数组盒子的变化：绿色＝新增元素，红色淡出＝被删除，琥珀色＝被改写，<br>
+                橙色＝被命中/遍历，蓝色描边＝位置发生移动。带 <span class="tf-tag tf-mut">改原数组</span>
+                <span class="tf-tag tf-new">返回新数组</span> <span class="tf-tag tf-read">只读取</span> 标签区分方法特性。
+            </div>
+        </div>
+        <div class="tf-tools">
+            <input id="tf_arg" class="tf-arg" type="text" placeholder="自定义参数（如 88）" />
+            <button id="tf_reset" class="tf-btn tf-primary" type="button">重置数组</button>
+            <a class="tf-btn tf-home" href="./1-1.html">首页</a>
+        </div>
+    </header>
+
+    <main class="tf-wrap">
+        <section class="tf-card">
+            <div class="tf-stage-head">
+                <div class="tf-card-title" style="margin-bottom:0">数组舞台 · 当前元素 <span class="tf-chip" id="tf_len">0</span> 个</div>
+                <span class="tf-chip">下标从 0 开始，负值下标从末尾倒数</span>
+            </div>
+
+            <div class="tf-arr" id="tf_array"></div>
+
+            <div class="tf-legend">
+                <span class="tf-lg tf-lg-add"><i class="tf-dot"></i>新增 push/unshift/concat/flat</span>
+                <span class="tf-lg tf-lg-out"><i class="tf-dot"></i>删除 pop/shift/splice/filter</span>
+                <span class="tf-lg tf-lg-chg"><i class="tf-dot"></i>改写 map/fill</span>
+                <span class="tf-lg tf-lg-hit"><i class="tf-dot"></i>命中 find/indexOf/includes/遍历</span>
+                <span class="tf-lg tf-lg-move"><i class="tf-dot"></i>移动 sort/reverse</span>
+            </div>
+
+            <div class="tf-now" id="tf_now">[]</div>
+        </section>
+
+        <aside class="tf-card">
+            <div class="tf-card-title">方法列表（共 <span id="tf_count">0</span> 个）</div>
+            <div id="tf_panel"></div>
+        </aside>
+    </main>
+
+    <section class="tf-outwrap">
+        <div class="tf-card">
+            <div class="tf-card-title">返回值</div>
+            <div class="tf-resval" id="tf_result">—</div>
+            <div class="tf-meta" id="tf_restype">尚未执行任何方法</div>
+        </div>
+
+        <div class="tf-card">
+            <div class="tf-card-title">执行代码</div>
+            <pre class="tf-code" id="tf_code">// 点击右侧方法按钮开始演示</pre>
+            <div class="tf-desc" id="tf_desc">数组方法分三类：改变原数组、返回新数组、只读取不修改。</div>
+        </div>
+
+        <div class="tf-card">
+            <div class="tf-card-title">操作日志</div>
+            <ul class="tf-log" id="tf_log"></ul>
+        </div>
+    </section>
+
+    <footer class="tf-foot">
+        <span>姓名：滕菲 · 《高级网页设计》课堂实践</span>
+        <a href="./1-1.html">返回首页</a>
+    </footer>
+
+    <script>
+        var tf_uid = 0;
+
+        function tf_it(v) {
+            tf_uid += 1;
+            return { tf_id: tf_uid, tf_v: v };
+        }
+
+        function tf_seed() {
+            return [12, 45, 8, 33, [3, 6], 70, 21, 5].map(function (v) { return tf_it(v); });
+        }
+
+        function tf_vals(a) {
+            return a.map(function (x) { return x.tf_v; });
+        }
+
+        function tf_isNum(x) {
+            return typeof x.tf_v === 'number';
+        }
+
+        function tf_key(x) {
+            return tf_isNum(x) ? x.tf_v : Number.MAX_VALUE;
+        }
+
+        function tf_argOf(arg, def) {
+            return (arg === null || arg === undefined || arg === '') ? def : arg;
+        }
+
+        var tf_items = tf_seed();
+        var tf_ready = true;
+
+        var tf_methods = [
+            {
+                tf_cat: '一、增删元素（改变原数组）', tf_name: 'push', tf_kind: 'mut',
+                tf_note: '在数组末尾添加一个或多个元素，返回添加后的新长度。',
+                tf_code: function (a) { return 'tf_arr.push(' + tf_argOf(a, 66) + ')'; },
+                tf_run: function (a, arg) {
+                    var r = a.concat([tf_it(tf_argOf(arg, 66))]);
+                    return { tf_items: r, tf_ret: r.length };
+                }
+            },
+            {
+                tf_cat: '一、增删元素（改变原数组）', tf_name: 'pop', tf_kind: 'mut',
+                tf_note: '删除并返回数组的最后一个元素，长度减 1。',
+                tf_code: function () { return 'tf_arr.pop()'; },
+                tf_run: function (a) {
+                    if (!a.length) { return { tf_items: a, tf_ret: undefined }; }
+                    return { tf_items: a.slice(0, a.length - 1), tf_ret: a[a.length - 1].tf_v };
+                }
+            },
+            {
+                tf_cat: '一、增删元素（改变原数组）', tf_name: 'unshift', tf_kind: 'mut',
+                tf_note: '在数组开头添加一个或多个元素，返回添加后的新长度。',
+                tf_code: function (a) { return 'tf_arr.unshift(' + tf_argOf(a, 15) + ')'; },
+                tf_run: function (a, arg) {
+                    var r = [tf_it(tf_argOf(arg, 15))].concat(a);
+                    return { tf_items: r, tf_ret: r.length };
+                }
+            },
+            {
+                tf_cat: '一、增删元素（改变原数组）', tf_name: 'shift', tf_kind: 'mut',
+                tf_note: '删除并返回数组的第一个元素，其余元素整体前移。',
+                tf_code: function () { return 'tf_arr.shift()'; },
+                tf_run: function (a) {
+                    if (!a.length) { return { tf_items: a, tf_ret: undefined }; }
+                    return { tf_items: a.slice(1), tf_ret: a[0].tf_v };
+                }
+            },
+            {
+                tf_cat: '一、增删元素（改变原数组）', tf_name: 'splice', tf_kind: 'mut',
+                tf_note: '从指定下标开始删除若干元素并插入新元素，返回被删除的元素数组（万能增删改）。',
+                tf_code: function () { return "tf_arr.splice(2, 2, '新1', '新2')"; },
+                tf_run: function (a) {
+                    var cut = a.slice(2, 4);
+                    var r = a.slice(0, 2).concat([tf_it('新1'), tf_it('新2')]).concat(a.slice(4));
+                    return { tf_items: r, tf_ret: tf_vals(cut) };
+                }
+            },
+            {
+                tf_cat: '一、增删元素（改变原数组）', tf_name: 'fill', tf_kind: 'mut',
+                tf_note: '用固定值填充 [start, end) 区间的元素，返回填充后的数组。',
+                tf_code: function () { return "tf_arr.fill('★', 2, 5)"; },
+                tf_run: function (a) {
+                    var r = a.map(function (x, i) {
+                        return (i >= 2 && i < 5) ? { tf_id: x.tf_id, tf_v: '★' } : x;
+                    });
+                    return { tf_items: r, tf_ret: tf_vals(r) };
+                }
+            },
+
+            {
+                tf_cat: '二、拼接与截取（返回新结果）', tf_name: 'concat', tf_kind: 'new',
+                tf_note: '把多个数组/值合并成一个新数组，原数组不变。',
+                tf_code: function () { return 'tf_arr = tf_arr.concat([88, 99])'; },
+                tf_run: function (a) {
+                    var r = a.concat([tf_it(88), tf_it(99)]);
+                    return { tf_items: r, tf_ret: tf_vals(r) };
+                }
+            },
+            {
+                tf_cat: '二、拼接与截取（返回新结果）', tf_name: 'slice', tf_kind: 'new',
+                tf_note: '截取 [start, end) 区间生成新数组，原数组不变，常用来复制数组。',
+                tf_code: function () { return 'tf_arr = tf_arr.slice(1, 5)'; },
+                tf_run: function (a) {
+                    var r = a.slice(1, 5);
+                    return { tf_items: r, tf_ret: tf_vals(r) };
+                }
+            },
+            {
+                tf_cat: '二、拼接与截取（返回新结果）', tf_name: 'join', tf_kind: 'new',
+                tf_note: '用指定分隔符把全部元素连接成一个字符串，默认分隔符是逗号。',
+                tf_code: function () { return "tf_arr.join(' - ')"; },
+                tf_run: function (a) {
+                    return { tf_items: a, tf_ret: tf_vals(a).join(' - '), tf_hit: a.map(function (x, i) { return i; }), tf_stagger: true };
+                }
+            },
+            {
+                tf_cat: '二、拼接与截取（返回新结果）', tf_name: 'toString', tf_kind: 'new',
+                tf_note: '把数组转成逗号分隔的字符串，等价于 join(",")。',
+                tf_code: function () { return 'tf_arr.toString()'; },
+                tf_run: function (a) {
+                    return { tf_items: a, tf_ret: tf_vals(a).join(','), tf_hit: a.map(function (x, i) { return i; }), tf_stagger: true };
+                }
+            },
+            {
+                tf_cat: '二、拼接与截取（返回新结果）', tf_name: 'flat', tf_kind: 'new',
+                tf_note: '按指定深度把嵌套数组拉平成一维数组，默认深度为 1。',
+                tf_code: function () { return 'tf_arr = tf_arr.flat()'; },
+                tf_run: function (a) {
+                    var r = [];
+                    a.forEach(function (x) {
+                        if (Array.isArray(x.tf_v)) {
+                            x.tf_v.forEach(function (v) { r.push(tf_it(v)); });
+                        } else {
+                            r.push(x);
+                        }
+                    });
+                    return { tf_items: r, tf_ret: tf_vals(r) };
+                }
+            },
+
+            {
+                tf_cat: '三、查找与判断（只读取）', tf_name: 'indexOf', tf_kind: 'read',
+                tf_note: '从头查找指定值首次出现的下标，找不到返回 -1（严格相等比较）。',
+                tf_code: function (a) { return 'tf_arr.indexOf(' + tf_argOf(a, 70) + ')'; },
+                tf_run: function (a, arg) {
+                    var t = tf_argOf(arg, 70);
+                    var i = tf_vals(a).indexOf(t);
+                    return { tf_items: a, tf_ret: i, tf_hit: i > -1 ? [i] : [] };
+                }
+            },
+            {
+                tf_cat: '三、查找与判断（只读取）', tf_name: 'lastIndexOf', tf_kind: 'read',
+                tf_note: '从末尾开始查找指定值最后一次出现的下标，找不到返回 -1。',
+                tf_code: function (a) { return 'tf_arr.lastIndexOf(' + tf_argOf(a, 8) + ')'; },
+                tf_run: function (a, arg) {
+                    var t = tf_argOf(arg, 8);
+                    var i = tf_vals(a).lastIndexOf(t);
+                    return { tf_items: a, tf_ret: i, tf_hit: i > -1 ? [i] : [] };
+                }
+            },
+            {
+                tf_cat: '三、查找与判断（只读取）', tf_name: 'includes', tf_kind: 'read',
+                tf_note: '判断数组是否包含某个值，返回布尔值 true / false。',
+                tf_code: function (a) { return 'tf_arr.includes(' + tf_argOf(a, 70) + ')'; },
+                tf_run: function (a, arg) {
+                    var t = tf_argOf(arg, 70);
+                    var i = tf_vals(a).indexOf(t);
+                    return { tf_items: a, tf_ret: i > -1, tf_hit: i > -1 ? [i] : [] };
+                }
+            },
+            {
+                tf_cat: '三、查找与判断（只读取）', tf_name: 'find', tf_kind: 'read',
+                tf_note: '返回第一个满足回调函数条件的元素值，找不到返回 undefined。',
+                tf_code: function () { return 'tf_arr.find(v => v > 30)'; },
+                tf_run: function (a) {
+                    var i = -1;
+                    a.forEach(function (x, k) { if (i === -1 && tf_isNum(x) && x.tf_v > 30) { i = k; } });
+                    return { tf_items: a, tf_ret: i > -1 ? a[i].tf_v : undefined, tf_hit: i > -1 ? [i] : [] };
+                }
+            },
+            {
+                tf_cat: '三、查找与判断（只读取）', tf_name: 'findIndex', tf_kind: 'read',
+                tf_note: '返回第一个满足条件的元素下标，找不到返回 -1。',
+                tf_code: function () { return 'tf_arr.findIndex(v => v > 30)'; },
+                tf_run: function (a) {
+                    var i = -1;
+                    a.forEach(function (x, k) { if (i === -1 && tf_isNum(x) && x.tf_v > 30) { i = k; } });
+                    return { tf_items: a, tf_ret: i, tf_hit: i > -1 ? [i] : [] };
+                }
+            },
+            {
+                tf_cat: '三、查找与判断（只读取）', tf_name: 'some', tf_kind: 'read',
+                tf_note: '只要有任意一个元素满足条件就返回 true（一真即真）。',
+                tf_code: function () { return 'tf_arr.some(v => v > 50)'; },
+                tf_run: function (a) {
+                    var hit = [];
+                    a.forEach(function (x, k) { if (tf_isNum(x) && x.tf_v > 50) { hit.push(k); } });
+                    return { tf_items: a, tf_ret: hit.length > 0, tf_hit: hit, tf_stagger: true };
+                }
+            },
+            {
+                tf_cat: '三、查找与判断（只读取）', tf_name: 'every', tf_kind: 'read',
+                tf_note: '必须全部元素都满足条件才返回 true（一假即假）。',
+                tf_code: function () { return 'tf_arr.every(v => v > 0)'; },
+                tf_run: function (a) {
+                    var hit = [];
+                    a.forEach(function (x, k) { if (tf_isNum(x) && x.tf_v > 0) { hit.push(k); } });
+                    return { tf_items: a, tf_ret: hit.length === a.length, tf_hit: hit, tf_stagger: true };
+                }
+            },
+            {
+                tf_cat: '三、查找与判断（只读取）', tf_name: 'at', tf_kind: 'read',
+                tf_note: '按下标取元素，支持负数下标，at(-1) 即最后一个元素。',
+                tf_code: function () { return 'tf_arr.at(-2)'; },
+                tf_run: function (a) {
+                    var i = a.length - 2;
+                    if (i < 0) { return { tf_items: a, tf_ret: undefined }; }
+                    return { tf_items: a, tf_ret: a[i].tf_v, tf_hit: [i] };
+                }
+            },
+
+            {
+                tf_cat: '四、遍历与计算', tf_name: 'forEach', tf_kind: 'read',
+                tf_note: '依次把每个元素交给回调函数处理，没有返回值（undefined），常用于渲染列表。',
+                tf_code: function () { return 'tf_arr.forEach((v, i) => 输出 v)'; },
+                tf_run: function (a) {
+                    return {
+                        tf_items: a,
+                        tf_ret: '遍历了 ' + a.length + ' 个元素，无返回值',
+                        tf_hit: a.map(function (x, i) { return i; }),
+                        tf_stagger: true
+                    };
+                }
+            },
+            {
+                tf_cat: '四、遍历与计算', tf_name: 'map', tf_kind: 'new',
+                tf_note: '把每个元素按规则加工后组成新数组，长度不变，原数组不变。',
+                tf_code: function () { return 'tf_arr = tf_arr.map(v => v * 2)'; },
+                tf_run: function (a) {
+                    var r = a.map(function (x) {
+                        return { tf_id: x.tf_id, tf_v: tf_isNum(x) ? x.tf_v * 2 : x.tf_v };
+                    });
+                    return { tf_items: r, tf_ret: tf_vals(r) };
+                }
+            },
+            {
+                tf_cat: '四、遍历与计算', tf_name: 'filter', tf_kind: 'new',
+                tf_note: '筛选出满足条件的元素组成新数组，原数组不变。',
+                tf_code: function () { return 'tf_arr = tf_arr.filter(v => v >= 20)'; },
+                tf_run: function (a) {
+                    var r = a.filter(function (x) { return tf_isNum(x) && x.tf_v >= 20; });
+                    return { tf_items: r, tf_ret: tf_vals(r) };
+                }
+            },
+            {
+                tf_cat: '四、遍历与计算', tf_name: 'reduce', tf_kind: 'read',
+                tf_note: '从左到右把元素累积成一个值（求和、求积、统计、分组都靠它）。',
+                tf_code: function () { return 'tf_arr.reduce((s, v) => s + v, 0)'; },
+                tf_run: function (a) {
+                    var s = 0;
+                    a.forEach(function (x) { if (tf_isNum(x)) { s += x.tf_v; } });
+                    return {
+                        tf_items: a, tf_ret: s,
+                        tf_hit: a.map(function (x, i) { return i; }),
+                        tf_stagger: true
+                    };
+                }
+            },
+
+            {
+                tf_cat: '五、排序与反转（改变原数组）', tf_name: 'sort', tf_kind: 'mut',
+                tf_note: '就地对元素排序，默认按字符串比较，排数字必须写比较函数 (a,b)=>a-b。',
+                tf_code: function () { return 'tf_arr.sort((a, b) => a - b)'; },
+                tf_run: function (a) {
+                    var r = a.slice().sort(function (x, y) { return tf_key(x) - tf_key(y); });
+                    return { tf_items: r, tf_ret: tf_vals(r) };
+                }
+            },
+            {
+                tf_cat: '五、排序与反转（改变原数组）', tf_name: 'reverse', tf_kind: 'mut',
+                tf_note: '把数组元素顺序原地颠倒，返回同一个数组。',
+                tf_code: function () { return 'tf_arr.reverse()'; },
+                tf_run: function (a) {
+                    var r = a.slice().reverse();
+                    return { tf_items: r, tf_ret: tf_vals(r) };
+                }
+            },
+            {
+                tf_cat: '五、排序与反转（改变原数组）', tf_name: 'isArray', tf_kind: 'read',
+                tf_note: 'Array.isArray() 判断一个值是不是真正的数组（typeof 数组得到的是 object）。',
+                tf_code: function () { return 'Array.isArray(tf_arr)'; },
+                tf_run: function (a) {
+                    return {
+                        tf_items: a, tf_ret: true,
+                        tf_hit: a.map(function (x, i) { return i; }),
+                        tf_stagger: true
+                    };
+                }
+            }
+        ];
+
+        var tf_kindText = { mut: '改原数组', new: '返回新数组', read: '只读取' };
+        var tf_kindTip = {
+            mut: '会直接修改原数组本身',
+            new: '原数组不变，返回一个新数组/新值',
+            read: '只读取元素，不修改数组'
+        };
+
+        function tf_fmt(v) {
+            if (Array.isArray(v)) { return '[' + v.map(tf_fmt).join(', ') + ']'; }
+            if (typeof v === 'string') { return '"' + v + '"'; }
+            if (typeof v === 'boolean') { return v ? 'true' : 'false'; }
+            if (v === undefined) { return 'undefined'; }
+            if (v === null) { return 'null'; }
+            return String(v);
+        }
+
+        function tf_typeOf(v) {
+            if (Array.isArray(v)) { return 'Array，长度 ' + v.length; }
+            return typeof v;
+        }
+
+        function tf_text(v) {
+            return Array.isArray(v) ? '[' + v.join(',') + ']' : String(v);
+        }
+
+        function tf_render(fx) {
+            fx = fx || {};
+            var tf_box = document.getElementById('tf_array');
+            var tf_old = {};
+
+            Array.prototype.forEach.call(tf_box.querySelectorAll('.tf-cell'), function (el) {
+                tf_old[el.getAttribute('data-cy-id')] = el.getBoundingClientRect();
+            });
+
+            tf_box.innerHTML = '';
+
+            tf_items.forEach(function (item, i) {
+                var tf_cell = document.createElement('div');
+                tf_cell.className = 'tf-cell';
+                tf_cell.setAttribute('data-cy-id', item.tf_id);
+
+                if (Array.isArray(item.tf_v)) { tf_cell.className += ' tf-nest'; }
+                if (fx.tf_add && fx.tf_add.indexOf(item.tf_id) > -1) { tf_cell.className += ' tf-add'; }
+                else if (fx.tf_chg && fx.tf_chg.indexOf(item.tf_id) > -1) { tf_cell.className += ' tf-chg'; }
+                if (fx.tf_hit && fx.tf_hit.indexOf(i) > -1) {
+                    tf_cell.className += ' tf-hit';
+                    if (fx.tf_stagger) { tf_cell.style.animationDelay = (i * 0.07) + 's'; }
+                }
+
+                var tf_v = document.createElement('span');
+                tf_v.className = 'tf-val';
+                tf_v.textContent = tf_text(item.tf_v);
+
+                var tf_i = document.createElement('span');
+                tf_i.className = 'tf-idx';
+                tf_i.textContent = '[' + i + ']';
+
+                tf_cell.appendChild(tf_v);
+                tf_cell.appendChild(tf_i);
+                tf_box.appendChild(tf_cell);
+            });
+
+            Array.prototype.forEach.call(tf_box.querySelectorAll('.tf-cell'), function (tf_cell) {
+                var tf_r = tf_old[tf_cell.getAttribute('data-cy-id')];
+                if (!tf_r) { return; }
+                var tf_n = tf_cell.getBoundingClientRect();
+                var tf_dx = tf_r.left - tf_n.left;
+                var tf_dy = tf_r.top - tf_n.top;
+                if (Math.abs(tf_dx) < 1 && Math.abs(tf_dy) < 1) { return; }
+
+                tf_cell.classList.add('tf-move');
+                tf_cell.style.transition = 'none';
+                tf_cell.style.transform = 'translate(' + tf_dx + 'px,' + tf_dy + 'px)';
+                requestAnimationFrame(function () {
+                    requestAnimationFrame(function () {
+                        tf_cell.style.transition = 'transform .5s cubic-bezier(.2,.8,.25,1)';
+                        tf_cell.style.transform = 'translate(0,0)';
+                    });
+                });
+            });
+
+            document.getElementById('tf_len').textContent = tf_items.length;
+            document.getElementById('tf_now').textContent = 'tf_arr = ' + tf_fmt(tf_vals(tf_items));
+        }
+
+        function tf_log(tf_name, tf_kind, tf_ret, tf_lenLog) {
+            var tf_ul = document.getElementById('tf_log');
+            var tf_li = document.createElement('li');
+            tf_li.innerHTML = '<b>' + tf_name + '</b>' +
+                '<span class="tf-tag tf-' + tf_kind + '">' + tf_kindText[tf_kind] + '</span>' +
+                '<span>' + tf_lenLog + '</span>' +
+                '<em>' + tf_fmt(tf_ret) + '</em>';
+            tf_ul.insertBefore(tf_li, tf_ul.firstChild);
+            while (tf_ul.children.length > 8) { tf_ul.removeChild(tf_ul.lastChild); }
+        }
+
+        function tf_exec(tf_m) {
+            if (!tf_ready) { return; }
+
+            var tf_raw = document.getElementById('tf_arg').value.trim();
+            var tf_arg = tf_raw === '' ? null : (isNaN(Number(tf_raw)) ? tf_raw : Number(tf_raw));
+
+            var tf_out = tf_m.tf_run(tf_items, tf_arg) || {};
+            var tf_next = tf_out.tf_items || tf_items;
+
+            var tf_oldIds = {};
+            var tf_newIds = {};
+            tf_items.forEach(function (x) { tf_oldIds[x.tf_id] = x; });
+            tf_next.forEach(function (x) { tf_newIds[x.tf_id] = 1; });
+
+            var tf_gone = tf_items.filter(function (x) { return !tf_newIds[x.tf_id]; });
+            var tf_added = tf_next.filter(function (x) { return !tf_oldIds[x.tf_id]; }).map(function (x) { return x.tf_id; });
+            var tf_changed = tf_next.filter(function (x) {
+                var o = tf_oldIds[x.tf_id];
+                return o && JSON.stringify(o.tf_v) !== JSON.stringify(x.tf_v);
+            }).map(function (x) { return x.tf_id; });
+
+            var tf_box = document.getElementById('tf_array');
+            var tf_lenBefore = tf_items.length;
+
+            Array.prototype.forEach.call(document.querySelectorAll('.tf-mbtn'), function (b) {
+                b.classList.remove('tf-on');
+                if (b.getAttribute('data-cy-name') === tf_m.tf_name) { b.classList.add('tf-on'); }
+            });
+
+            document.getElementById('tf_result').textContent = tf_fmt(tf_out.tf_ret);
+            document.getElementById('tf_restype').textContent =
+                '类型：' + tf_typeOf(tf_out.tf_ret) + '　|　' + tf_kindTip[tf_m.tf_kind];
+            document.getElementById('tf_code').textContent =
+                '// ' + tf_m.tf_note + '\n' + tf_m.tf_code(tf_arg) + ';';
+            document.getElementById('tf_desc').innerHTML =
+                '<b>' + tf_m.tf_name + '()</b>：' + tf_m.tf_note +
+                '<br>该方法<b>' + tf_kindTip[tf_m.tf_kind] + '</b>，返回值见左侧。';
+
+            tf_ready = false;
+
+            tf_gone.forEach(function (x) {
+                var tf_el = tf_box.querySelector('[data-cy-id="' + x.tf_id + '"]');
+                if (tf_el) { tf_el.classList.add('tf-out'); }
+            });
+
+            setTimeout(function () {
+                tf_items = tf_next;
+                tf_render({
+                    tf_add: tf_added,
+                    tf_chg: tf_changed,
+                    tf_hit: tf_out.tf_hit,
+                    tf_stagger: tf_out.tf_stagger
+                });
+                tf_log(tf_m.tf_name, tf_m.tf_kind, tf_out.tf_ret,
+                    '长度 ' + tf_lenBefore + ' → ' + tf_items.length);
+                tf_ready = true;
+            }, tf_gone.length ? 320 : 0);
+        }
+
+        function tf_build() {
+            var tf_panel = document.getElementById('tf_panel');
+            var tf_groups = [];
+            var tf_map = {};
+
+            tf_methods.forEach(function (m) {
+                if (!tf_map[m.tf_cat]) {
+                    tf_map[m.tf_cat] = [];
+                    tf_groups.push(m.tf_cat);
+                }
+                tf_map[m.tf_cat].push(m);
+            });
+
+            tf_groups.forEach(function (cat) {
+                var tf_g = document.createElement('div');
+                tf_g.className = 'tf-group';
+
+                var tf_t = document.createElement('div');
+                tf_t.className = 'tf-group-title';
+                tf_t.textContent = cat;
+                tf_g.appendChild(tf_t);
+
+                tf_map[cat].forEach(function (m) {
+                    var tf_b = document.createElement('button');
+                    tf_b.type = 'button';
+                    tf_b.className = 'tf-mbtn';
+                    tf_b.setAttribute('data-cy-name', m.tf_name);
+                    tf_b.innerHTML = '<span class="tf-mname">' + m.tf_name + '</span>' +
+                        '<span class="tf-mdesc">' + m.tf_note.split('，')[0] + '</span>' +
+                        '<span class="tf-tag tf-' + m.tf_kind + '">' + tf_kindText[m.tf_kind] + '</span>';
+                    tf_b.addEventListener('click', function () { tf_exec(m); });
+                    tf_g.appendChild(tf_b);
+                });
+
+                tf_panel.appendChild(tf_g);
+            });
+
+            document.getElementById('tf_count').textContent = tf_methods.length;
+        }
+
+        document.getElementById('tf_reset').addEventListener('click', function () {
+            if (!tf_ready) { return; }
+            tf_items = tf_seed();
+            tf_render();
+            document.getElementById('tf_log').innerHTML = '';
+            document.getElementById('tf_result').textContent = '—';
+            document.getElementById('tf_restype').textContent = '数组已重置为初始值';
+            document.getElementById('tf_code').textContent = '// 点击右侧方法按钮开始演示';
+            document.getElementById('tf_desc').textContent = '数组方法分三类：改变原数组、返回新数组、只读取不修改。';
+            Array.prototype.forEach.call(document.querySelectorAll('.tf-mbtn'), function (b) {
+                b.classList.remove('tf-on');
+            });
+        });
+
+        tf_build();
+        tf_render();
+    </script>
+</body>
+</html>

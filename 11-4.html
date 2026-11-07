@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS3 3D图片动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding: 24px;
+        }
+
+        h1 {
+            font-size: 26px;
+            margin-bottom: 6px;
+        }
+
+        .cui-sub {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 18px;
+        }
+
+        h2 {
+            font-size: 18px;
+            margin: 28px 0 12px;
+            padding-left: 10px;
+            border-left: 5px solid #4dabf7;
+        }
+
+        .cui-panel {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 24px 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .cui-tip {
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .cui-tip code {
+            background: #eef1f5;
+            padding: 1px 6px;
+            border-radius: 4px;
+            color: #d63384;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+        }
+
+        /* ===== 演示一：图片立方体 ===== */
+        .cui-scene {
+            perspective: 700px;
+        }
+
+        .cui-img-cube {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            transform-style: preserve-3d;
+            animation: cui-cube-spin 12s linear infinite;
+        }
+
+        .cui-cube-face {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            overflow: hidden;
+            border: 2px solid #fff;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+        }
+
+        .cui-cube-face img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .cui-cube-face-front  { transform: translateZ(90px); }
+        .cui-cube-face-back   { transform: rotateY(180deg) translateZ(90px); }
+        .cui-cube-face-right  { transform: rotateY(90deg) translateZ(90px); }
+        .cui-cube-face-left   { transform: rotateY(-90deg) translateZ(90px); }
+        .cui-cube-face-top    { transform: rotateX(90deg) translateZ(90px); }
+        .cui-cube-face-bottom { transform: rotateX(-90deg) translateZ(90px); }
+
+        @keyframes cui-cube-spin {
+            from { transform: rotateX(-20deg) rotateY(0deg); }
+            to   { transform: rotateX(340deg) rotateY(360deg); }
+        }
+
+        /* ===== 演示二：图片环形轮播 ===== */
+        .cui-ring-scene {
+            perspective: 1000px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 10px 0 50px;
+        }
+
+        .cui-img-ring {
+            position: relative;
+            width: 220px;
+            height: 145px;
+            transform-style: preserve-3d;
+            animation: cui-ring-spin 16s linear infinite;
+        }
+
+        .cui-img-ring:hover {
+            animation-play-state: paused;
+        }
+
+        .cui-ring-face {
+            position: absolute;
+            width: 220px;
+            height: 145px;
+            left: 0;
+            top: 0;
+            overflow: hidden;
+            border: 2px solid #fff;
+            border-radius: 10px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3);
+        }
+
+        .cui-ring-face img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .cui-ring-face:nth-child(1) { transform: rotateY(0deg)   translateZ(190px); }
+        .cui-ring-face:nth-child(2) { transform: rotateY(60deg)  translateZ(190px); }
+        .cui-ring-face:nth-child(3) { transform: rotateY(120deg) translateZ(190px); }
+        .cui-ring-face:nth-child(4) { transform: rotateY(180deg) translateZ(190px); }
+        .cui-ring-face:nth-child(5) { transform: rotateY(240deg) translateZ(190px); }
+        .cui-ring-face:nth-child(6) { transform: rotateY(300deg) translateZ(190px); }
+
+        @keyframes cui-ring-spin {
+            from { transform: rotateY(0deg); }
+            to   { transform: rotateY(360deg); }
+        }
+
+        /* ===== 演示三：图片翻转卡片 ===== */
+        .cui-flip {
+            width: 280px;
+            height: 190px;
+            perspective: 900px;
+            cursor: pointer;
+        }
+
+        .cui-flip-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.9s;
+        }
+
+        .cui-flip:hover .cui-flip-inner {
+            transform: rotateY(180deg);
+        }
+
+        .cui-flip-side {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .cui-flip-side img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .cui-flip-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, #4dabf7, #7950f2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #fff;
+        }
+
+        .cui-flip-back strong {
+            font-size: 20px;
+        }
+
+        .cui-flip-back span {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* ===== 演示四：3D 图片墙（悬浮抬起） ===== */
+        .cui-wall {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .cui-wall-item {
+            width: 170px;
+            height: 120px;
+            perspective: 500px;
+        }
+
+        .cui-wall-face {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+            transition: transform 0.4s;
+        }
+
+        .cui-wall-face img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .cui-wall-item:hover .cui-wall-face {
+            transform: rotateX(18deg) rotateY(-18deg) scale(1.06) translateZ(10px);
+        }
+
+        .cui-wall-item:nth-child(2):hover .cui-wall-face {
+            transform: rotateX(-18deg) rotateY(18deg) scale(1.06);
+        }
+
+        .cui-wall-item:nth-child(3):hover .cui-wall-face {
+            transform: rotateX(18deg) rotateY(18deg) scale(1.08);
+        }
+
+        /* ===== 页脚：返回首页 ===== */
+        .cui-footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .cui-footer a {
+            display: inline-block;
+            text-decoration: none;
+            color: #fff;
+            background: linear-gradient(135deg, #4dabf7, #339af0);
+            font-weight: bold;
+            padding: 10px 22px;
+            border-radius: 999px;
+            box-shadow: 0 6px 16px rgba(77, 171, 247, 0.4);
+            transition: transform 0.2s ease;
+        }
+
+        .cui-footer a:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <h1>CSS3 3D 图片动画</h1>
+    <p class="cui-sub">把 <code>&lt;img&gt;</code> 放进 <code>preserve-3d</code> 立体空间：图片立方体、环形轮播、翻转卡片与 3D 图片墙（图片均来自本目录 <code>img/</code>）。</p>
+
+    <h2>一、图片立方体（六面贴图，自动旋转）</h2>
+    <div class="cui-panel">
+        <p class="cui-tip">六个面各贴一张图片，沿 Z 轴平移 <code>translateZ(90px)</code> 拼成立方体，关键帧同时旋转 X / Y 轴，图片跟随面一起转动。</p>
+        <div class="cui-scene">
+            <div class="cui-img-cube">
+                <div class="cui-cube-face cui-cube-face-front"><img src="./img/wangye1.jpg" alt="配图1"></div>
+                <div class="cui-cube-face cui-cube-face-back"><img src="./img/wangye2.jpg" alt="配图2"></div>
+                <div class="cui-cube-face cui-cube-face-right"><img src="./img/wangye1.jpg" alt="配图3"></div>
+                <div class="cui-cube-face cui-cube-face-left"><img src="./img/wangye2.jpg" alt="配图4"></div>
+                <div class="cui-cube-face cui-cube-face-top"><img src="./img/wangye1.jpg" alt="配图5"></div>
+                <div class="cui-cube-face cui-cube-face-bottom"><img src="./img/wangye2.jpg" alt="配图6"></div>
+            </div>
+        </div>
+    </div>
+
+    <h2>二、图片环形轮播（悬停暂停）</h2>
+    <div class="cui-panel">
+        <p class="cui-tip">6 张图片面板各旋转 60° 后推出 <code>translateZ(190px)</code> 围成一圈，绕 Y 轴持续旋转；鼠标悬停时 <code>animation-play-state: paused</code> 暂停，方便细看。</p>
+        <div class="cui-ring-scene">
+            <div class="cui-img-ring">
+                <div class="cui-ring-face"><img src="./img/wangye1.jpg" alt="轮播1"></div>
+                <div class="cui-ring-face"><img src="./img/wangye2.jpg" alt="轮播2"></div>
+                <div class="cui-ring-face"><img src="./img/wangye1.jpg" alt="轮播3"></div>
+                <div class="cui-ring-face"><img src="./img/wangye2.jpg" alt="轮播4"></div>
+                <div class="cui-ring-face"><img src="./img/wangye1.jpg" alt="轮播5"></div>
+                <div class="cui-ring-face"><img src="./img/wangye2.jpg" alt="轮播6"></div>
+            </div>
+        </div>
+    </div>
+
+    <h2>三、图片翻转卡片（backface-visibility）</h2>
+    <div class="cui-panel">
+        <p class="cui-tip">正面是图片、背面是文字说明；背面预先 <code>rotateY(180deg)</code> 并靠 <code>backface-visibility: hidden</code> 隐藏，hover 时卡片整体翻转 180°。</p>
+        <div class="cui-flip">
+            <div class="cui-flip-inner">
+                <div class="cui-flip-side cui-flip-front">
+                    <img src="./img/wangye1.jpg" alt="卡片正面">
+                </div>
+                <div class="cui-flip-side cui-flip-back">
+                    <strong>卡片背面</strong>
+                    <span>图片 + 3D 翻转的组合技巧</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2>四、3D 图片墙（悬浮抬起）</h2>
+    <div class="cui-panel">
+        <p class="cui-tip">每张图片卡片自带 <code>perspective</code>，悬停时用 <code>rotateX / rotateY / scale / translateZ</code> 组合出不同方向的立体抬起效果。</p>
+        <div class="cui-wall">
+            <div class="cui-wall-item">
+                <div class="cui-wall-face"><img src="./img/wangye2.jpg" alt="图片墙1"></div>
+            </div>
+            <div class="cui-wall-item">
+                <div class="cui-wall-face"><img src="./img/wangye1.jpg" alt="图片墙2"></div>
+            </div>
+            <div class="cui-wall-item">
+                <div class="cui-wall-face"><img src="./img/wangye2.jpg" alt="图片墙3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cui-footer">
+        <a href="./1-1.html">返回首页</a>
+    </div>
+</body>
+</html>
